@@ -1,0 +1,27 @@
+{
+  "name": "gopnik-exe",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "play": "bun src/main.ts",
+    "original": "bun oracle/cli.ts",
+    "compare": "bun test/compare.ts",
+    "fuzz": "bun test/fuzz.ts",
+    "disasm": "bun oracle/disasm.ts > analysis/g.asm",
+    "lift": "bun oracle/lift.ts > analysis/g.lift.txt",
+    "tables": "bun oracle/gen-tables.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@effect/vitest": "^4.1.4",
+    "@types/node": "^26.6.6",
+    "bun-types": "^1.4.4",
+    "capstone-wasm": "^1.0.3",
+    "typescript": "^7.0.2",
+    "vite-plus": "^1.6.0"
+  },
+  "dependencies": {
+    "chalk": "^6.0.1",
+    "effect": "^4.1.4"
+  }
+}

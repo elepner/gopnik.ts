@@ -1,0 +1,3816 @@
+;======== proc 0000:02c2 args=0w callers: 06a5a
+    WriteLn
+    WriteLn
+    WriteLn
+    WriteLn
+    WriteLn
+    PrintLn("                  ^0┌──── ┌────┐ ┌────┐  │    │  │    │  │    /")
+    PrintLn("                  ^1│     │    │ │    │  │    │  │    │  │   / ")
+    PrintLn("                  ^2│     │    │ │    │  │    │  │    │  │  /  ")
+    PrintLn("                  ^3│     │    │ │    │  ├────┤  │   /│  │_/   ")
+    PrintLn("                  ^4│     │    │ │    │  │    │  │  / │  │ \\   ")
+    PrintLn("                  ^5│     │    │ │    │  │    │  │ /  │  │  \\  ")
+    PrintLn("                  ^6│     │    │ │    │  │    │  │/   │  │   \\ ")
+    PrintLn("                  ^7│     └────┘ │    │  │    │  │    │  │    \\")
+    WriteLn
+    PrintLn("                                                ^0Версия 1.02")
+    WriteLn
+    WriteLn
+    WriteLn
+    PrintLn("                          ^6Нажми какую-нибудь кнопку")
+    WriteLn
+    WriteLn
+    WriteLn
+    WriteLn
+    PrintLn("     ^02003 year, June,Sept                                         ^2by V.P.")
+    TextColor(0)
+    key := ReadKey()
+    TextColor(15)
+    ClrScr()
+    return
+
+;======== proc 0000:074b args=1w callers: 00d0d 04fb4 05074
+    locals 0x202
+    ClrScr()
+    if P4b != 0 goto L0076b
+    L1b := 52
+    goto L0076f
+L0076b:
+    L1b := 50
+L0076f:
+    WriteLn
+    WriteLn
+    if P4b != 0 goto L007ae
+    PrintLn("                                      ^4Ты сдох.")
+    goto L007c7
+L007ae:
+    PrintLn("                                    ^2Ты победил.")
+L007c7:
+    WriteLn
+    WriteLn
+    WriteLn
+    PrintLn("          ^" + chr(L1b) + "│    │ ┌────┐ ┌────┐  ┌────┐     │    │ ┌────┐ │    │ ┌────┐")
+    PrintLn("          ^" + chr(L1b) + "│    │ │      │    │  │          │    │ │    │ │    │ │    │")
+    PrintLn("          ^" + chr(L1b) + "│    │ │      │    │  │           \\  /  │    │ │    │ │    │")
+    PrintLn("          ^" + chr(L1b) + "│   /│ │      │    │  │            \\/   │    │ │    │ │    │")
+    PrintLn("          ^" + chr(L1b) + "│  / │ │      ├────┘  ├────        /\\   │    │ ├────┤ │    │")
+    PrintLn("          ^" + chr(L1b) + "│ /  │ │      │       │           /  \\  ├────┤ │    │ ├────┤")
+    PrintLn("          ^" + chr(L1b) + "│/   │ │      │       │          │    │ │    │ │    │ │    │")
+    PrintLn("          ^" + chr(L1b) + "│    │ │      │       └────┘     │    │ │    │ │    │ │    │")
+    WriteLn
+    WriteLn
+    WriteLn
+    WriteLn
+    WriteLn
+    PrintLn("                          ^6Нажми какую-нибудь кнопку")
+    WriteLn
+    WriteLn
+    WriteLn
+    WriteLn
+    TextColor(0)
+    key := ReadKey()
+    TextColor(15)
+    ClrScr()
+    Halt(0)
+    return
+
+;======== proc 0000:0aec args=0w callers: 05133
+    locals 0xb0c
+    Lbb := 1
+    goto L00b04
+L00b01:
+    Lbb := Lbb + 1
+L00b04:
+    Lbb[di] := (((Lbb - 1) mod 8) + 48)
+    if Lbb != 10 goto L00b01
+    Lcb := 0
+L00b2a:
+    Lbb := 1
+    goto L00b33
+L00b30:
+    Lbb := Lbb + 1
+L00b33:
+    Lbb[di] := ((((Lbb + Lcb) - 1) mod 8) + 48)
+    if Lbb != 10 goto L00b30
+    Delay(5000)
+    ClrScr()
+    Lbb := 1
+    goto L00b75
+L00b72:
+    Lbb := Lbb + 1
+L00b75:
+    Write(32)
+    if Lbb != 32 goto L00b72
+    PrintLn("^" + chr(Lab) + "Т^" + chr(L9b) + "Ы ^" + chr(L8b) + "С^" + chr(L7b) + "У^" + chr(L6b) + "П^" + chr(L5b) + "Е^" + chr(L4b) + "Р ^" + chr(L3b) + "Г^" + chr(L2b) + "О^" + chr(L1b) + "П")
+    if Lcb >= 8 (unsigned) goto L00cf0
+    Lcb := Lcb + 1
+    goto L00cf4
+L00cf0:
+    Lcb := 0
+L00cf4:
+    if KeyPressed() != 0 goto L00d00
+    goto L00b2a
+L00d00:
+    key := ReadKey()
+    key := ReadKey()
+    p074b(1)
+    return
+
+;======== proc 0000:0d14 args=1w callers: 0e181 0dc0e 0ddf6 0c3d0 0b5b8
+    locals 4
+    g3952 := (Random#1(51) + 1)
+    L1b := 1
+    goto L00d38
+L00d35:
+    L1b := L1b + 1
+L00d38:
+    if (g3952 - L1b) >= 0 goto L00d5b
+    g3952 := (10 - L1b)
+    goto L00d6a
+L00d5b:
+    g3952 := (g3952 - L1b)
+    if L1b != 10 goto L00d35
+L00d6a:
+    g3952 := (g3952 + Random#2(g3692b))
+    if g3693b == 0 goto L00d9a
+    g3952 := (g3952 + Random#3(4))
+L00d9a:
+    if g3952 <= 9 goto L00da7
+    g3952 := 9
+L00da7:
+    if P4b != 1 goto L00dba
+    if g3952 <= 7 goto L00dba
+    g3952 := 7
+L00dba:
+    if P4b != 2 goto L00dc6
+    g3952 := 8
+L00dc6:
+    g395c := (Round((((real((g38a6 * (Random#7(2) + 1))) / real((Random#6(2) + 1))) + real(Random#5(5))) - 2)) + ((Random#4(g3692b) shl 1) shl 1))
+    if g395c >= 0 goto L00e54
+    g395c := 0
+L00e54:
+    if g3693b == 0 goto L00e79
+    g395c := Round((real(g395c) * 1.5))
+L00e79:
+    g3954 := 0
+    g3956 := 0
+    g3958 := 0
+    g395a := 0
+    L2b := (((DS[((g3952 shl 1) shl 1) + 0x2]b + DS[((g3952 shl 1) shl 1) + 0x3]b) + DS[((g3952 shl 1) shl 1) + 0x4]b) + DS[((g3952 shl 1) shl 1) + 0x5]b)
+    L4b := (L2b + (g395c shl 1))
+    if 1 <= L4b (unsigned) goto L00eef
+    goto L00ff3
+L00eef:
+    L1b := 1
+    goto L00ef7
+L00ef4:
+    L1b := L1b + 1
+L00ef7:
+    L3b := (Random#8(L2b) + 1)
+    if L3b > DS[((g3952 shl 1) shl 1) + 0x2]b (unsigned) goto L00f1e
+    g3954 := g3954 + 1
+    goto L00fe8
+L00f1e:
+    if L3b > (DS[((g3952 shl 1) shl 1) + 0x3]b + DS[((g3952 shl 1) shl 1) + 0x2]b) goto L00f50
+    g3956 := g3956 + 1
+    goto L00fe8
+L00f50:
+    if L3b > ((DS[((g3952 shl 1) shl 1) + 0x4]b + DS[((g3952 shl 1) shl 1) + 0x3]b) + DS[((g3952 shl 1) shl 1) + 0x2]b) goto L00f93
+    g3958 := g3958 + 1
+    goto L00fe8
+L00f93:
+    if L3b > (((DS[((g3952 shl 1) shl 1) + 0x5]b + DS[((g3952 shl 1) shl 1) + 0x4]b) + DS[((g3952 shl 1) shl 1) + 0x3]b) + DS[((g3952 shl 1) shl 1) + 0x2]b) goto L00fe8
+    g395a := g395a + 1
+    goto L00fe8
+L00fe8:
+    if L1b == L4b goto L00ff3
+    goto L00ef4
+L00ff3:
+    g395e := (g3954 div 2)
+    g3960 := g3954
+    g3964 := (((((g3958 shl 1) shl 1) + g3958) + g3954) + 10)
+    g3962 := g3964
+    g3966b := 0
+    g3967b := 0
+    g396e := (((Random#10(((g395c div 2) + Round((real((g3952 * g395c)) / 5)))) shl 1) - ((g395c div 2) + Round((real((g3952 * g395c)) / 5)))) + Random#9(6))
+    if g396e >= 0 goto L010c0
+    g396e := 0
+L010c0:
+    g396c := ((Random#12(((g395c div 2) + Round((real((g3952 * g395c)) / 5)))) - (((g395c div 2) + Round((real((g3952 * g395c)) / 5))) div 2)) + Random#11(6))
+    if g396c >= 0 goto L0115e
+    g396c := 0
+L0115e:
+    g396a := (((g395c div 10) + Random#13(2)) + 1)
+    g3968b := ((((((g3692b - 1) * (g3692b - 1)) shl 1) shl 1) div 2) + Random#14((((((g3692b - 1) * (g3692b - 1)) shl 1) shl 1) div 2)))
+    return
+
+;======== proc 0000:11c2 args=1w callers: 0ae27 0ae33
+    locals 4
+    g3952 := 10
+    if P4b != 0 goto L011ff
+    g395c := 125
+    g3954 := 41
+    g3956 := 50
+    g3958 := 123
+    g395a := 36
+    g3968b := 60
+L011ff:
+    if P4b != 1 goto L01228
+    g395c := 160
+    g3954 := 50
+    g3956 := 60
+    g3958 := 188
+    g395a := 32
+    g3968b := 80
+L01228:
+    g395e := (g3954 div 2)
+    g3960 := g3954
+    g3964 := (((((g3958 shl 1) shl 1) + g3958) + g3954) + 10)
+    g3962 := g3964
+    g3966b := 0
+    g3967b := 0
+    g396c := 0
+    g396a := 0
+    g396e := 0
+    return
+
+;======== proc 0000:1348 args=0w callers: 04c49
+    locals 0x406
+    L100b := 0
+    if g395c > 40 goto L01382
+    @L200 := ds:((g395c shl 8) + 2882)
+    goto L01396
+L01382:
+    @L200 := "Не в этой жизни."
+L01396:
+    @L200 := " - " + @L200
+    if g3952 < 8 goto L013cc
+    L200b := 0
+L013cc:
+    PrintLn("^2Это " + ds:((g3952 shl 8) + 46) + " # уровня" + @L200, g395c)
+    PrintLn("Сл:# Лв:# Жв:# Уд:#", g3954, g3956, g3958, g395a)
+    PrintLn("Урон #-#", g395e, g3960)
+    L100b := 0
+    if g3966b != 1 goto L01487
+    @L100 := @L100 + "^4Сломана челюсть  "
+L01487:
+    if g3967b != 1 goto L014b8
+    @L100 := @L100 + "^4Сломана нога  "
+L014b8:
+    L201b := 52
+    if (real(g3962) / real(g3964)) <= 0.25 (unsigned) goto L014ed
+    L201b := 54
+L014ed:
+    if (real(g3962) / real(g3964)) <= 0.5 (unsigned) goto L0151d
+    L201b := 50
+L0151d:
+    PrintLn("^" + chr(L201b) + "Здоровье #/#  " + @L100, g3962, g3964)
+    L204 := g3956
+    if L204 > 14 goto L015a4
+    PrintLn("Точность #%", ((((L204 shl 1) shl 1) + L204) + 20))
+    goto L01638
+L015a4:
+    Print("Точность 90% ")
+    L204 := (L204 - 14)
+    L206 := 1
+L015ce:
+    if L204 <= 18 goto L015e0
+    L204 := (L204 - 18)
+    L206 := L206 + 1
+    goto L015ce
+L015e0:
+    if L206 != 1 goto L0160a
+    PrintLn("   Второй удар #%", (((L204 shl 1) shl 1) + L204))
+L0160a:
+    if L206 <= 1 goto L01638
+    PrintLn("- # ударов,  Точность # удара #%", L206, (L206 + 1), (((L204 shl 1) shl 1) + L204))
+L01638:
+    if g3968b <= 0 (unsigned) goto L0165b
+    PrintLn("^2Броня #    ", g3968b)
+L0165b:
+    return
+
+;======== proc 0000:1a03 args=0w callers: 0ec89 0ee36 04c35 0512b
+    locals 0x606
+    @L100 := "7777"
+    PrintLn("^2Ты " + ds:((g389c shl 8) + 46) + " # уровня - " + ds:((g38a6 shl 8) + 2882), g38a6)
+    PrintLn("^2А зовут тебя: " + @g379c)
+    if g38a6 > 39 goto L01acb
+    PrintLn("^6Сейчас у тебя # опыта, А для прокачки надо #", g38ce, g38d0)
+L01acb:
+    if g38cdb > 0 (unsigned) goto L01ae0
+    if g38bfb != 0 goto L01ae0
+    if g38c0b == 0 goto L01ae5
+L01ae0:
+    Lffb := 49
+L01ae5:
+    if g38bfb != 0 goto L01af3
+    if g38c0b == 0 goto L01afd
+L01af3:
+    Lfeb := 49
+    Lfdb := 49
+L01afd:
+    if g38bdb != 0 goto L01b19
+    if g38beb != 0 goto L01b19
+    if g38bfb != 0 goto L01b19
+    if g38c0b == 0 goto L01b1e
+L01b19:
+    Lfcb := 49
+L01b1e:
+    PrintLn("Сл:^" + chr(Lffb) + "#^7 Лв:^" + chr(Lfeb) + "#^7 Жв:^" + chr(Lfdb) + "#^7 Уд:^" + chr(Lfcb) + "#", g389e, g38a0, g38a2, g38a4)
+    if g38bdb != 0 goto L01bd0
+    if g38beb == 0 goto L01c38
+L01bd0:
+    Print("Феньки: ")
+    if g38bdb == 0 goto L01c09
+    Print("^1Крестик(Удача +2) ")
+L01c09:
+    if g38beb == 0 goto L01c29
+    Print("^1Кольцо \"Гс\"(Удача +1) ")
+L01c29:
+    WriteLn
+L01c38:
+    if g38bfb != 0 goto L01c50
+    if g38c0b != 0 goto L01c50
+    if g38c1b != 0 goto L01c50
+    goto L01cd8
+L01c50:
+    Print("Мощные феньки: ")
+    if g38bfb == 0 goto L01c89
+    Print("^1Кольцо \"Пг\"(Всё +1) ")
+L01c89:
+    if g38c0b == 0 goto L01ca9
+    Print("^1Мега Кольцо(Всё +4) ")
+L01ca9:
+    if g38c1b == 0 goto L01cc9
+    Print("^1Кольцо \"Гп\"(Самолечение) ")
+L01cc9:
+    WriteLn
+L01cd8:
+    if g38bbb == 0 goto L01cf8
+    PrintLn("^1У тебя есть мобильник")
+L01cf8:
+    if g38b3b == 0 goto L01d18
+    PrintLn("^1У тебя есть тёмные очки")
+L01d18:
+    if g38bcb == 0 goto L01d38
+    PrintLn("^1На тебе зоновская наколка")
+L01d38:
+    if g394db != 0 goto L01d42
+    goto L01e01
+L01d42:
+    WriteLn
+    Print("^1У тебя есть пистолет")
+    if g394eb == 0 goto L01d8a
+    Print("^1 с гушителем")
+L01d8a:
+    if g394f <= 0 goto L01dab
+    PrintLn("^1! патронов - #", g394f)
+L01dab:
+    if g394f > 2 goto L01dd2
+    if g394f <= 0 goto L01dd2
+    PrintLn("^6 А птронов-то мало ")
+L01dd2:
+    if g394f > 0 goto L01df2
+    PrintLn("^1.^4 Правда без патронов")
+L01df2:
+    WriteLn
+L01e01:
+    L101b := 55
+    if g38cdb > 0 (unsigned) goto L01e37
+    if g38b5b != 0 goto L01e37
+    if g38b8b != 0 goto L01e37
+    if g38bab != 0 goto L01e37
+    if g394bb != 0 goto L01e37
+    if g38c2b != 0 goto L01e37
+    if g394cb == 0 goto L01e3c
+L01e37:
+    L101b := 49
+L01e3c:
+    Print("^" + chr(L101b) + "Урон #-#    ", g38a8, g38aa)
+    if g38b5b == 0 goto L01ea8
+    if g38b8b != 0 goto L01ea8
+    Print("^1Бутсы(+1) ")
+L01ea8:
+    if g38b5b == 0 goto L01ecf
+    if g38b8b == 0 goto L01ecf
+    Print("^4Бутсы ")
+L01ecf:
+    if g38b8b == 0 goto L01eef
+    Print("^1Понтовые бутсы(Урон+2) ")
+L01eef:
+    if g38bab == 0 goto L01f24
+    if g38c2b != 0 goto L01f24
+    if g394bb != 0 goto L01f24
+    if g394cb != 0 goto L01f24
+    Print("^1Кастет(+2) ")
+L01f24:
+    if g38bab == 0 goto L01f59
+    if g38c2b != 0 goto L01f40
+    if g394bb != 0 goto L01f40
+    if g394cb == 0 goto L01f59
+L01f40:
+    Print("^4Кастет ")
+L01f59:
+    if g394bb == 0 goto L01f87
+    if g38c2b != 0 goto L01f87
+    if g394cb != 0 goto L01f87
+    Print("^1Дубинка(+4)  ")
+L01f87:
+    if g394bb == 0 goto L01fb5
+    if g38c2b != 0 goto L01f9c
+    if g394cb == 0 goto L01fb5
+L01f9c:
+    Print("^4Дубинка ")
+L01fb5:
+    if g38c2b == 0 goto L01fdc
+    if g394cb != 0 goto L01fdc
+    Print("^1Нож(+6) ")
+L01fdc:
+    if g38c2b == 0 goto L02003
+    if g394cb == 0 goto L02003
+    Print("^4Нож ")
+L02003:
+    if g394cb == 0 goto L02023
+    Print("^1Тесак(Урон+9) ")
+L02023:
+    WriteLn
+    L100b := 0
+    if g38b0b != 1 goto L02068
+    @L100 := @L100 + "^4Сломана челюсть  "
+L02068:
+    if g394ab != 1 goto L02099
+    @L100 := @L100 + "^1Зубная защита  "
+L02099:
+    if g38b1b != 1 goto L020ca
+    @L100 := @L100 + "^4Сломана нога  "
+L020ca:
+    if g38cdb <= 0 (unsigned) goto L020fb
+    @L100 := @L100 + "^6Обдолбаный  "
+L020fb:
+    L101b := 52
+    if (real(g38ac) / real(g38ae)) <= 0.25 (unsigned) goto L02130
+    L101b := 54
+L02130:
+    if (real(g38ac) / real(g38ae)) <= 0.5 (unsigned) goto L02160
+    L101b := 50
+L02160:
+    PrintLn("^" + chr(L101b) + "Здоровье #/#  " + @L100, g38ac, g38ae)
+    L104 := g38a0
+    if L104 > 14 goto L021e7
+    PrintLn("Точность #%", ((((L104 shl 1) shl 1) + L104) + 20))
+    goto L0227b
+L021e7:
+    Print("Точность 90% ")
+    L104 := (L104 - 14)
+    L106 := 1
+L02211:
+    if L104 <= 18 goto L02223
+    L104 := (L104 - 18)
+    L106 := L106 + 1
+    goto L02211
+L02223:
+    if L106 != 1 goto L0224d
+    PrintLn("   Второй удар #%", (((L104 shl 1) shl 1) + L104))
+L0224d:
+    if L106 <= 1 goto L0227b
+    PrintLn("- # ударов,  Точность # удара #%", L106, (L106 + 1), (((L104 shl 1) shl 1) + L104))
+L0227b:
+    if g38b2b > 0 (unsigned) goto L02285
+    goto L023b4
+L02285:
+    Print("^2Броня #    ", g38b2b)
+    if g38b4b == 0 goto L022fc
+    if g38b7b == 0 goto L022e3
+    Print("^4Abibas ")
+    Print("^1Костюм Adidas(+2) ")
+    goto L022fc
+L022e3:
+    Print("^1Костюм Abibas(+1) ")
+L022fc:
+    if g38b7b == 0 goto L02323
+    if g38b4b != 0 goto L02323
+    Print("^1Костюм Adidas(+2) ")
+L02323:
+    if g38b6b == 0 goto L0237e
+    if g38b9b == 0 goto L02365
+    Print("^4Кожанка ")
+    Print("^1Крутая кожанка(+4) ")
+    goto L0237e
+L02365:
+    Print("^1Кожанка(+2) ")
+L0237e:
+    if g38b9b == 0 goto L023a5
+    if g38b6b != 0 goto L023a5
+    Print("^1Крутая кожанка(+4) ")
+L023a5:
+    WriteLn
+L023b4:
+    if g38c5 <= 0 goto L023d5
+    PrintLn("Косяки #", g38c5)
+L023d5:
+    if g38c3 <= 0 goto L02415
+    PrintLn("Пиво #.#л.", (g38c3 div 2), (((((g38c3 mod 2) shl 1) shl 1) + (g38c3 mod 2)) mod 10))
+    goto L0242e
+L02415:
+    PrintLn("^4Пива нет")
+L0242e:
+    if g38c7 <= 0 goto L02451
+    PrintLn("Бабки #", g38c7)
+    goto L0246a
+L02451:
+    PrintLn("^4Нету бабок")
+L0246a:
+    if g38c9 <= 0 goto L0248b
+    PrintLn("Хлам #", g38c9)
+L0248b:
+    return
+
+;======== proc 0000:2526 args=1w callers: 0e7df 0e124 0e21c 05148 05835 0523b 05097 0dec5 0c3c7 07fed
+    locals 0x10c
+    if g38ce >= g38d0 goto L02541
+    goto L028c1
+L02541:
+    L2 := 0
+L02546:
+    g38ce := (g38ce - g38d0)
+    g38d0 := (g38d0 + 10)
+    L2 := L2 + 1
+    if g38ce >= g38d0 goto L02546
+    Lc := L2
+    if 1 <= Lc goto L02572
+    goto L028a0
+L02572:
+    L4 := 1
+    goto L0257a
+L02577:
+    L4 := L4 + 1
+L0257a:
+    if P4b != 0 goto L0258a
+    if g38a6 != 40 goto L0258a
+    goto L028a0
+L0258a:
+    g38a6 := (g38a6 + 1)
+    Print("^1Понтовость увеличивается: ")
+    L6 := (((DS[((g389c shl 1) shl 1) + 0x2]b + DS[((g389c shl 1) shl 1) + 0x3]b) + DS[((g389c shl 1) shl 1) + 0x4]b) + DS[((g389c shl 1) shl 1) + 0x5]b)
+    L8 := 1
+    goto L025fb
+L025f8:
+    L8 := L8 + 1
+L025fb:
+    La := (Random#1(L6) + 1)
+    if DS[((g389c shl 1) shl 1) + 0x2]b >= La goto L0261d
+    goto L026a0
+L0261d:
+    g389e := g389e + 1
+    Print("^1Сила +1 ")
+    if g38a6 > 40 goto L0267f
+    ds:(((g38a6 shl 1) + g38a6) + 14543) := ds:(((g38a6 shl 1) + g38a6) + 14543) + "1"
+L0267f:
+    g38aa := g38aa + 1
+    if (g389e mod 2) != 0 goto L02695
+    g38a8 := g38a8 + 1
+L02695:
+    g38ae := g38ae + 1
+    g38ac := g38ac + 1
+    goto L0287d
+L026a0:
+    if (DS[((g389c shl 1) shl 1) + 0x3]b + DS[((g389c shl 1) shl 1) + 0x2]b) < La goto L0272a
+    g38a0 := g38a0 + 1
+    Print("^1Ловкость +1 ")
+    if g38a6 > 40 goto L02727
+    ds:(((g38a6 shl 1) + g38a6) + 14543) := ds:(((g38a6 shl 1) + g38a6) + 14543) + "2"
+L02727:
+    goto L0287d
+L0272a:
+    if ((DS[((g389c shl 1) shl 1) + 0x4]b + DS[((g389c shl 1) shl 1) + 0x3]b) + DS[((g389c shl 1) shl 1) + 0x2]b) < La goto L027d0
+    g38a2 := g38a2 + 1
+    Print("^1Живучесть +1 ")
+    if g38a6 > 40 goto L027c3
+    ds:(((g38a6 shl 1) + g38a6) + 14543) := ds:(((g38a6 shl 1) + g38a6) + 14543) + "3"
+L027c3:
+    g38ae := (g38ae + 5)
+    g38ac := (g38ac + 5)
+    goto L0287d
+L027d0:
+    if (((DS[((g389c shl 1) shl 1) + 0x5]b + DS[((g389c shl 1) shl 1) + 0x4]b) + DS[((g389c shl 1) shl 1) + 0x3]b) + DS[((g389c shl 1) shl 1) + 0x2]b) < La goto L0287d
+    g38a4 := g38a4 + 1
+    Print("^1Удача +1 ")
+    if g38a6 > 40 goto L0287b
+    ds:(((g38a6 shl 1) + g38a6) + 14543) := ds:(((g38a6 shl 1) + g38a6) + 14543) + "4"
+L0287b:
+    goto L0287d
+L0287d:
+    if L8 == 2 goto L02886
+    goto L025f8
+L02886:
+    WriteLn
+    if L4 == Lc goto L028a0
+    goto L02577
+L028a0:
+    if P4b != 0 goto L028c1
+    PrintLn("^6Сейчас у тебя # качков опыта. До слеующей прокачки надо #", g38ce, g38d0)
+L028c1:
+    return
+
+;======== proc 0000:29c4 args=2w callers: 0e966 04b00
+    locals 0x102
+    asm lodsb al, byte ptr [si]
+    asm stosb byte ptr es:[di], al
+    asm rep movsb byte ptr es:[di], byte ptr [si]
+    if @L100 == "h" goto L02a11
+    if @L100 == "mh" goto L02a11
+    goto L02c58
+L02a11:
+    L102 := g38ac
+    if g38b0b != 1 goto L02a3b
+    PrintLn("^4Ты не можешь пить пиво из-за сломаной челюсти.")
+    goto L02baa
+L02a3b:
+    if g38ac < g38ae goto L02a47
+    goto L02b67
+L02a47:
+    if g38c3 > 0 goto L02a51
+    goto L02b3a
+L02a51:
+    g38c3 := g38c3 - 1
+    if (g38ae - g38ac) < 5 goto L02a64
+    goto L02ae7
+L02a64:
+    if @L100 != "h" goto L02a94
+    Print("^2Пиво прибавляет #з. ", (g38ae - g38ac))
+L02a94:
+    g38ac := g38ae
+    if @L100 != "h" goto L02ae5
+    PrintLn("^2Здоровья:#/#. Осталось #.#л. пива", g38ac, g38ae, (g38c3 div 2), (((((g38c3 mod 2) shl 1) shl 1) + (g38c3 mod 2)) mod 10))
+L02ae5:
+    goto L02b38
+L02ae7:
+    g38ac := (g38ac + 5)
+    if @L100 != "h" goto L02b38
+    PrintLn("^2Пиво прибавляет #з. Здоровья:#/#. Осталось #.#л. пива", 5, g38ac, g38ae, (g38c3 div 2), (((((g38c3 mod 2) shl 1) shl 1) + (g38c3 mod 2)) mod 10))
+L02b38:
+    goto L02b65
+L02b3a:
+    if @L100 != "h" goto L02b65
+    PrintLn("^4Пива нету")
+L02b65:
+    goto L02b83
+L02b67:
+    PrintLn("^6Блин только тупить не надо - и так здоровья до фига.")
+    goto L02c58
+L02b83:
+    if @L100 != "h" goto L02b97
+    goto L02baa
+L02b97:
+    if g38ac >= g38ae goto L02baa
+    if g38c3 <= 0 goto L02baa
+    goto L02a3b
+L02baa:
+    if @L100 == "mh" goto L02bbf
+    goto L02c58
+L02bbf:
+    if g38ac == L102 goto L02c06
+    PrintLn("^2Пиво прибавляет #з. Здоровья:#/#. Осталось #.#л. пива", (g38ac - L102), g38ac, g38ae, (g38c3 div 2), (((((g38c3 mod 2) shl 1) shl 1) + (g38c3 mod 2)) mod 10))
+L02c06:
+    if g38ac == L102 goto L02c2f
+    if g38c3 > 0 goto L02c2f
+    PrintLn("^4Кончилось пиво")
+L02c2f:
+    if g38ac != L102 goto L02c58
+    if g38c3 > 0 goto L02c58
+    PrintLn("^4Пива нету")
+L02c58:
+    return
+
+;======== proc 0000:3d11 args=1w callers: 0ae2d 0ae39 0e222 0dc5b 0ddfc 0c436 0b829
+    locals 0x218
+    L1b := 0
+    if P4b == 0 goto L03d32
+    if P4b == 6 goto L03d32
+    goto L03e8d
+L03d32:
+    if g3952 == 0 goto L03d44
+    if g3952 == 1 goto L03d44
+    if g3952 != 2 goto L03d79
+L03d44:
+    PrintLn("Слышь Вась..")
+    PrintLn("^4А чё ваще?")
+    goto L03e8a
+L03d79:
+    if g3952 == 3 goto L03d8d
+    if g3952 == 4 goto L03d8d
+    if g3952 == 5 goto L03d8d
+    if g3952 != 6 goto L03dc2
+L03d8d:
+    PrintLn("^4Пацан ты из какого района?")
+    PrintLn("А ты по пинкам суди!")
+    goto L03e8a
+L03dc2:
+    if g3952 != 7 goto L03de3
+    PrintLn("^4Эй мудак?!")
+    goto L03e8a
+L03de3:
+    if g3952 != 8 goto L03e35
+    PrintLn("^4Блин! это же " + @g379c + "^4 - известный " + ds:((g389c shl 8) + 46))
+    goto L03e8a
+L03e35:
+    if g3952 != 9 goto L03e8a
+    PrintLn("^4Я МАНЬЯК!!!")
+    PrintLn("Рад познакомиться - " + ds:((g389c shl 8) + 46))
+L03e8a:
+    goto L03fa7
+L03e8d:
+    if P4b != 1 goto L03ead
+    PrintLn("^4Отдай кошелёк урод!")
+    goto L03fa7
+L03ead:
+    if P4b != 3 goto L03f2b
+    PrintLn("^2Ну вот мы и встретились мудак!")
+    key := ReadKey()
+    PrintLn("^4Чё те нада козёл?!")
+    key := ReadKey()
+    PrintLn("^2Урыть тебя ублюдок!")
+    key := ReadKey()
+    PrintLn("^4Ну ты меня достал ща урою!")
+    key := ReadKey()
+    goto L03fa7
+L03f2b:
+    if P4b != 4 goto L03fa7
+    PrintLn("^6Тут заходит настоящий ректор.")
+    key := ReadKey()
+    PrintLn("^4Мудак! ты тупой дебил, думал что я идиот?")
+    key := ReadKey()
+    PrintLn("^2Я думаю ты сконил!")
+    key := ReadKey()
+    PrintLn("^4Ну тада сдохни!")
+    key := ReadKey()
+L03fa7:
+    L10e := (g3956 + 4)
+    L110 := (g38a0 + 4)
+    if L10e <= 10 goto L03fec
+L03fc2:
+    if L110 <= 18 goto L03fec
+    if L10e < 28 goto L03fe2
+    L10e := (L10e - 18)
+    L110 := (L110 - 18)
+    goto L03fea
+L03fe2:
+    L10e := 10
+    goto L03fec
+L03fea:
+    goto L03fc2
+L03fec:
+    if (g3956 + 4) <= 18 goto L04042
+    if (L10e div 18) >= ((g3956 + 4) div 18) goto L04042
+    PrintLn("^2Из-за твоей хорошей ловкости враг сможет пнуть тебя раз # вместо #", (((L10e - 1) div 18) + 1), ((((g3956 + 4) - 1) div 18) + 1))
+L04042:
+    L116 := L10e
+    L10e := (g38a0 + 4)
+    L110 := (g3956 + 4)
+    if L10e <= 10 goto L0408f
+L04065:
+    if L110 <= 18 goto L0408f
+    if L10e < 28 goto L04085
+    L10e := (L10e - 18)
+    L110 := (L110 - 18)
+    goto L0408d
+L04085:
+    L10e := 10
+    goto L0408f
+L0408d:
+    goto L04065
+L0408f:
+    if (g38a0 + 4) <= 18 goto L040e5
+    if (L10e div 18) >= ((g38a0 + 4) div 18) goto L040e5
+    PrintLn("^4Из-за хорошей ловкости врага ты сможешь пнуть его раз # вместо #", (((L10e - 1) div 18) + 1), ((((g38a0 + 4) - 1) div 18) + 1))
+L040e5:
+    L118 := L10e
+    L113b := 0
+L040f2:
+    if L113b >= 5 (unsigned) goto L0411d
+    L113b := L113b + 1
+    if L113b != 5 goto L0411d
+    PrintLn("^7Начинают собираться зрители")
+L0411d:
+    if g3c83b == 0 goto L04127
+    goto L043f6
+L04127:
+    if L113b == 5 goto L04131
+    goto L043f6
+L04131:
+    if Random#1(10) == 0 goto L04141
+    goto L043f6
+L04141:
+    if Random#2(18) != 0 goto L0416b
+    PrintLn("Зрители:^6Мочи его, мочи!")
+    goto L043f6
+L0416b:
+    if Random#2(18) != 1 goto L0418c
+    PrintLn("Зрители:^6Врежь ему!")
+    goto L043f6
+L0418c:
+    if Random#2(18) != 2 goto L041ad
+    PrintLn("Зрители:^6Блин долго ты ещё будешь мудиться?")
+    goto L043f6
+L041ad:
+    if Random#2(18) != 3 goto L041ce
+    PrintLn("Зрители:^6Да вы только посмотрите на эти пинки!")
+    goto L043f6
+L041ce:
+    if Random#2(18) != 4 goto L04217
+    PrintLn("Зрители:^6Не подкачай " + ds:((g389c shl 8) + 46) + ", я на тебя трёшку поставил!")
+    goto L043f6
+L04217:
+    if Random#2(18) != 5 goto L04238
+    PrintLn("Зрители:^6Чё-тут за батва?")
+    goto L043f6
+L04238:
+    if Random#2(18) != 6 goto L04259
+    PrintLn("Зрители:^6Я знаю вон того мудака, он уже нескольких запинал!")
+    goto L043f6
+L04259:
+    if Random#2(18) != 7 goto L0427a
+    PrintLn("Зрители:^6Чё так слабо бьёшь?! Пинай сильнее!")
+    goto L043f6
+L0427a:
+    if Random#2(18) != 8 goto L042b4
+    PrintLn("Зрители:^6Дерьмово дерётесь придурки")
+    PrintLn("^2А ты: Заткнись мудак, а то щас тебя запинаю!")
+    goto L043f6
+L042b4:
+    if Random#2(18) != 9 goto L042d5
+    PrintLn("Зрители:^6Да, а помнишь мы вчера также одного пинали, пинали.. А потом подошла его братва..")
+    goto L043f6
+L042d5:
+    if Random#2(18) != 10 goto L042f6
+    PrintLn("Зрители:^6Это чё реслинг?")
+    goto L043f6
+L042f6:
+    if Random#2(18) != 11 goto L04317
+    PrintLn("Зрители:^6Двинь ему в рыло!")
+    goto L043f6
+L04317:
+    if Random#2(18) != 12 goto L04338
+    PrintLn("Зрители:^6И куда менты смотрят?")
+    goto L043f6
+L04338:
+    if Random#2(18) != 13 goto L04359
+    PrintLn("Зрители:^6Пинай!")
+    goto L043f6
+L04359:
+    if Random#2(18) != 14 goto L04379
+    PrintLn("Зрители:^6Врежь гаду!")
+    goto L043f6
+L04379:
+    if Random#2(18) != 15 goto L04399
+    PrintLn("Зрители:^6Господа делайте ваши ставки!")
+    goto L043f6
+L04399:
+    if Random#2(18) != 16 goto L043b9
+    PrintLn("Зрители:^6Ну чё там? Какой счет?")
+    goto L043f6
+L043b9:
+    if Random#2(18) != 17 goto L043f6
+    PrintLn("Зрители:^6Ну и кого там " + @g379c + " ^6сегодня пинает?")
+L043f6:
+    Print("^0Битва\\")
+    ReadStr(@g3a72)
+    ReadLn
+    LowerCase(@g3a72)
+    if @g3a72 == "k" goto L0444a
+    goto L048d7
+L0444a:
+    L10e := (g38a0 + 4)
+    L10e := L118
+L0445c:
+    L112 := (Random#3(100) + 1)
+    if (((L10e shl 1) shl 1) + L10e) >= L112 goto L0447f
+    goto L0460b
+L0447f:
+    if L112 <= 90 goto L04489
+    goto L0460b
+L04489:
+    L4 := g3962
+    L10c := ((g38a8 + Random#4((g38aa - g38a8))) + 1)
+    if sx(((g38a4 shl 1) + g38a4)) > 0 goto L044d8
+    if sx(((g38a4 shl 1) + g38a4)) < 0 goto L04546
+    if ((g38a4 shl 1) + g38a4) <= (Random#5(100) + 1) (unsigned) goto L04546
+L044d8:
+    L10c := (L10c + g38aa)
+    if Random#6(3) != 0 goto L04508
+    PrintLn("^2Точный удар!!!")
+    goto L04546
+L04508:
+    if Random#6(3) != 1 goto L04528
+    PrintLn("^2Не хило приложил!!!")
+    goto L04546
+L04528:
+    if Random#6(3) != 2 goto L04546
+    PrintLn("^2Двойной урон!!!")
+L04546:
+    L10c := (L10c - g3968b)
+    if L10c >= 0 goto L0455c
+    L10c := 0
+L0455c:
+    g3962 := (g3962 - L10c)
+    if sx(((g38a4 shl 1) + g38a4)) > 0 goto L04591
+    if sx(((g38a4 shl 1) + g38a4)) < 0 goto L045ea
+    if ((g38a4 shl 1) + g38a4) <= (Random#7((((g395a shl 1) + g395a) + 200)) + 1) (unsigned) goto L045ea
+L04591:
+    if Random#8(2) != 0 goto L045c5
+    if g3966b != 0 goto L045c3
+    PrintLn("^2Ты сломал врагу челюсть. ^4Враг: А! козёл!")
+    g3966b := 1
+L045c3:
+    goto L045ea
+L045c5:
+    if g3967b != 0 goto L045ea
+    PrintLn("^2Ты сломал врагу ногу. ^4Враг: Ну что за урод!")
+    g3967b := 1
+L045ea:
+    PrintLn("^2Ты пнул врага на #з. У него осталось #", (L4 - g3962), g3962)
+    goto L04624
+L0460b:
+    PrintLn("^4Ты промазал")
+L04624:
+    L10e := (L10e - 18)
+    if g3962 > 0 goto L04632
+    goto L04663
+L04632:
+    if L10e <= 0 goto L04652
+    PrintLn("^2Из-за большой ловкости ты можешь пнуть ещё раз")
+L04652:
+    if L10e <= 0 goto L04663
+    if g3962 < 0 goto L04663
+    goto L0445c
+L04663:
+    L10e := (g3956 + 4)
+    L10e := L116
+    if g3962 > 0 goto L0467f
+    goto L048d7
+L0467f:
+    L112 := (Random#9(100) + 1)
+    if (((L10e shl 1) shl 1) + L10e) >= L112 goto L046a2
+    goto L04888
+L046a2:
+    if L112 <= 90 goto L046ac
+    goto L04888
+L046ac:
+    L4 := g38ac
+    L10c := ((g395e + Random#10((g3960 - g395e))) + 1)
+    if sx(((g395a shl 1) + g395a)) > 0 goto L046fb
+    if sx(((g395a shl 1) + g395a)) < 0 goto L04769
+    if ((g395a shl 1) + g395a) <= (Random#11(100) + 1) (unsigned) goto L04769
+L046fb:
+    L10c := (L10c + g3960)
+    if Random#12(3) != 0 goto L0472b
+    PrintLn("^4Враг:Сдохни урод!!")
+    goto L04769
+L0472b:
+    if Random#12(3) != 1 goto L0474b
+    PrintLn("^4Тебе не хило врезали!")
+    goto L04769
+L0474b:
+    if Random#12(3) != 2 goto L04769
+    PrintLn("^4Враг:Получи гнида!!")
+L04769:
+    L10c := (L10c - g38b2b)
+    if L10c >= 0 goto L0477f
+    L10c := 0
+L0477f:
+    g38ac := (g38ac - L10c)
+    if sx(((g395a shl 1) + g395a)) > 0 goto L047ba
+    if sx(((g395a shl 1) + g395a)) >= 0 goto L047b3
+    goto L04867
+L047b3:
+    if ((g395a shl 1) + g395a) > (Random#13((((g38a4 shl 1) + g38a4) + 200)) + 1) (unsigned) goto L047ba
+    goto L04867
+L047ba:
+    if Random#14(2) != 0 goto L04842
+    if g38b0b != 0 goto L04840
+    if g394ab != 0 goto L047f3
+    PrintLn("^4Враг сломал тебе челюсть.")
+    g38b0b := 1
+L047f3:
+    if g394ab == 0 goto L04840
+    if Random#15(4) != 0 goto L04827
+    PrintLn("^4Враг сломал тебе челюсть, даже защита не помогла.")
+    g38b0b := 1
+    goto L04840
+L04827:
+    PrintLn("^2Защита спасла твои кривые клыки.")
+L04840:
+    goto L04867
+L04842:
+    if g38b1b != 0 goto L04867
+    PrintLn("^4Враг сломал тебе ногу.")
+    g38b1b := 1
+L04867:
+    PrintLn("^4Он пнул тебя на #з. У тебя осталось #", (L4 - g38ac), g38ac)
+    goto L048a1
+L04888:
+    PrintLn("^2Враг промазал")
+L048a1:
+    L10e := (L10e - 18)
+    if L10e <= 0 goto L048c6
+    PrintLn("^4Из-за большой ловкости враг может пнуть ещё раз")
+L048c6:
+    if L10e <= 0 goto L048d7
+    if g38ac < 0 goto L048d7
+    goto L0467f
+L048d7:
+    if @g3a72 == "run" goto L048eb
+    goto L04afb
+L048eb:
+    if g3c83b != 1 goto L0490e
+    PrintLn("^4Ректор: Кудa? Стоять! Бейся до конца трусливый урод!")
+    goto L04afb
+L0490e:
+    if g38b1b != 1 goto L04931
+    PrintLn("^4Ты не можешь убежать на сломаной ноге.")
+    goto L04afb
+L04931:
+    if g38a6 > 0 goto L0493b
+    goto L04ade
+L0493b:
+    Print("^4Враг: Трусливый засранец! ")
+    @L10a := ds:(((g38a6 shl 1) + g38a6) + 14543)
+    DS[((g38a6 shl 1) + g38a6) + 0x38cf]b := 0
+    L6 := 1
+    goto L0498c
+L04989:
+    L6 := L6 + 1
+L0498c:
+    if L10ab[di] != 49 goto L049e0
+    g389e := g389e - 1
+    Print("^4Сила -1 ")
+    g38aa := g38aa - 1
+    if (g389e mod 2) != 1 goto L049ca
+    g38a8 := g38a8 - 1
+L049ca:
+    g38ae := g38ae - 1
+    if g38ac <= g38ae goto L049dd
+    g38ac := g38ae
+L049dd:
+    goto L04a6f
+L049e0:
+    if L10ab[di] != 50 goto L04a09
+    g38a0 := g38a0 - 1
+    Print("^4Ловкость -1 ")
+    goto L04a6f
+L04a09:
+    if L10ab[di] != 51 goto L04a46
+    g38a2 := g38a2 - 1
+    Print("^4Живучесть -1 ")
+    g38ae := (g38ae - 5)
+    if g38ac <= g38ae goto L04a44
+    g38ac := g38ae
+L04a44:
+    goto L04a6f
+L04a46:
+    if L10ab[di] != 52 goto L04a6f
+    g38a4 := g38a4 - 1
+    Print("^4Удача -1 ")
+    goto L04a6f
+L04a6f:
+    if L6 == 2 goto L04a78
+    goto L04989
+L04a78:
+    WriteLn
+    if g389c == 5 goto L04ac3
+    if (g38a6 - ((g3692b - 1) * 10)) != 3 goto L04ac3
+    g3696b := 1
+    PrintLn("^4Такого конявого непустят в местный притон!")
+L04ac3:
+    g38a6 := g38a6 - 1
+    g38d0 := (g38d0 - 10)
+    if g38ce < g38d0 goto L04adc
+    g38ce := (g38d0 - 1)
+L04adc:
+    goto L04af7
+L04ade:
+    PrintLn("^4Враг: Засранец!")
+L04af7:
+    L1b := 1
+L04afb:
+    p29c4(@g3a72)
+    if @g3a72 == "kos" goto L04b17
+    goto L04c24
+L04b17:
+    if g38b0b != 1 goto L04b3a
+    PrintLn("^4Ты не схавать колёса из-за сломаной челюсти.")
+    goto L04c24
+L04b3a:
+    if g38cdb == 0 goto L04b44
+    goto L04c0b
+L04b44:
+    if g38c5 > 0 goto L04b4e
+    goto L04bf0
+L04b4e:
+    g38c5 := g38c5 - 1
+    g38cdb := 3
+    g389e := (g389e + 2)
+    g38a8 := g38a8 + 1
+    g38aa := (g38aa + 2)
+    if (g38ae - g38ac) >= 10 goto L04bb3
+    Print("^2Колёса прибавляют #з. ", (g38ae - g38ac))
+    g38ac := g38ae
+    PrintLn("^2Здоровья:#/#. Осталось # косяков", g38ac, g38ae, g38c5)
+    goto L04bd5
+L04bb3:
+    g38ac := (g38ac + 10)
+    PrintLn("^2Колёса прибавляют #з. Здоровья:#/#. Осталось # косяков", 10, g38ac, g38ae, g38c5)
+L04bd5:
+    PrintLn("^2Сила +2.")
+    goto L04c09
+L04bf0:
+    PrintLn("^4У тебя нет косяков")
+L04c09:
+    goto L04c24
+L04c0b:
+    PrintLn("^6Ты неможешь схавать ещё один косяк.")
+L04c24:
+    if @g3a72 != "s" goto L04c38
+    p1a03()
+L04c38:
+    if @g3a72 != "sv" goto L04c4c
+    p1348()
+L04c4c:
+    if @g3a72 != "e" goto L04c64
+    Halt(0)
+L04c64:
+    if g3c80 < 1 goto L04ca0
+    if @g3a72 != "k" goto L04ca0
+    g3c80 := g3c80 + 1
+    if g3c80 != 3 goto L04ca0
+    PrintLn("^2Подошли пацаны - Ща начнется!")
+L04ca0:
+    if @g3a72 == "v" goto L04cb4
+    goto L04d93
+L04cb4:
+    if g3696b != 1 goto L04d03
+    if ((g3692b * 10) + 10) > g38cb goto L04d03
+    if g3c80 != 0 goto L04cdb
+    g3c80 := 1
+L04cdb:
+    if g38bbb != 1 goto L04d01
+    g3c80 := 3
+    PrintLn("^2Подошли пацаны - Ща начнется!.")
+L04d01:
+    goto L04d3e
+L04d03:
+    if g3696b == 0 goto L04d25
+    PrintLn("^4Ни кто не хочет за тебя впрягаться.")
+    goto L04d3e
+L04d25:
+    PrintLn("^6Сначала надо скорешиться с местной гопотой.")
+L04d3e:
+    if g3c80 <= 0 goto L04d93
+    if g3c80 >= 3 goto L04d6c
+    PrintLn("^6Тебе надо продержатся до подхода братвы # пинка.", (3 - g3c80))
+    goto L04d93
+L04d6c:
+    if g3c80 != 3 goto L04d7a
+    if g38bbb != 0 goto L04d93
+L04d7a:
+    PrintLn("^2Они уже здесь.")
+L04d93:
+    if g3962 > 0 goto L04d9d
+    goto L04e9e
+L04d9d:
+    if g3c80 >= 3 goto L04da7
+    goto L04e9e
+L04da7:
+    L4 := g3962
+    L10c := (((g3692b shl 1) + g3692b) + Random#16(((g3692b shl 1) shl 1)))
+    L10c := (L10c - (g3968b div 3))
+    if L10c >= 0 goto L04deb
+    L10c := 0
+L04deb:
+    g3962 := (g3962 - L10c)
+    PrintLn("^2Врага отпинали на #з. У него осталось #", (L4 - g3962), g3962)
+    if Random#17(2) != 0 goto L04e43
+    g3c80 := g3c80 + 1
+    if g3c80 != 3 goto L04e43
+    PrintLn("^2Подошли пацаны.")
+L04e43:
+    if g3c80 != 7 goto L04e68
+    g3c80 := 0
+    PrintLn("^2Твою подмогу отпинали.")
+L04e68:
+    g38cb := (g38cb - (((g3692b shl 1) shl 1) + g3692b))
+    if g38cb > 0 goto L04e9e
+    g3c80 := 0
+    PrintLn("^4Подмоге надоело столько парится из-за мало понтового мудака")
+L04e9e:
+    if @g3a72 == "f" goto L04eb2
+    goto L04f82
+L04eb2:
+    if g394db != 0 goto L04ebc
+    goto L04f82
+L04ebc:
+    if g3693b != 0 goto L04ee6
+    if g394eb != 0 goto L04ee6
+    PrintLn("^6Тельзя тут стрелять! Менты накроют!")
+    goto L04f82
+L04ee6:
+    if g394f <= 0 goto L04f69
+    g394f := g394f - 1
+    if sx(g38a0) > 0 goto L04f0e
+    if sx(g38a0) < 0 goto L04f4e
+    if g38a0 <= Random#18(50) (unsigned) goto L04f4e
+L04f0e:
+    L4 := g3962
+    L10c := (Random#19(10) + 20)
+    g3962 := (g3962 - L10c)
+    PrintLn("^2Ты выстрелил и ранил врага на #з. У него осталось #з., осталось патронов #", (L4 - g3962), g3962, g394f)
+    goto L04f67
+L04f4e:
+    PrintLn("^2Это был хреновый выстрел.")
+L04f67:
+    goto L04f82
+L04f69:
+    PrintLn("^6Чё за батва? Блин патроны кончились!")
+L04f82:
+    if g38ac <= 0 goto L04f8c
+    goto L0507b
+L04f8c:
+    if g3c83b != 1 goto L04fba
+    PrintLn("^4Ты сдох. Ректор тебя замочил. Ты так и не доказал свою крутизну.")
+    key := ReadKey()
+    p074b(0)
+    goto L0507b
+L04fba:
+    if g3696b == 1 goto L04fc4
+    goto L05053
+L04fc4:
+    if g38cb >= 10 goto L04fce
+    goto L05053
+L04fce:
+    PrintLn("^1Тебе повезло знакомые пацаны отвезли тебя в больницу а то бы ты сдох.")
+    g38cb := (g38cb - 10)
+    g38c7 := (g38c7 - Round(((real(g38ae) / 5) * 3)))
+    g38ac := g38ae
+    if g38b0b == 1 goto L0502c
+    if g38b1b != 1 goto L0503b
+L0502c:
+    g38c7 := (g38c7 - 7)
+    g38b0b := 0
+    g38b1b := 0
+L0503b:
+    if g38c7 >= 0 goto L05051
+    g38cb := (g38cb + g38c7)
+    g38c7 := 0
+L05051:
+    goto L05077
+L05053:
+    PrintLn("^4Ты сдох.")
+    key := ReadKey()
+    p074b(0)
+L05077:
+    L1b := 1
+L0507b:
+    if g3962 <= 0 goto L05085
+    goto L05838
+L05085:
+    if P4b == 4 goto L0508e
+    goto L05139
+L0508e:
+    g38ce := g38d0
+    p2526(1)
+    PrintLn("^1Ты замочил самого ректора!!! ТЫ САМЫЙ КРУТОЙ!!!")
+    key := ReadKey()
+    PrintLn("^1Вновь сила торжествует над интелектом.")
+    key := ReadKey()
+    PrintLn("^1После этого сразу началась анархия и полный беспредел.")
+    key := ReadKey()
+    PrintLn("^1И не стыдно тебе гоп чёртов?")
+    key := ReadKey()
+    PrintLn("^1А результат:")
+    p1a03()
+    key := ReadKey()
+    p0aec()
+    goto L05838
+L05139:
+    if P4b != 3 goto L05189
+    g38ce := g38d0
+    p2526(1)
+    PrintLn("^1Ты замочил самого ректора!!!^6 о чёрт! да это ж не ректор был.")
+    key := ReadKey()
+    PrintLn("^6Это был проректор СУНЦа!")
+    key := ReadKey()
+    goto L051a2
+L05189:
+    PrintLn("^2Враг сдох.")
+L051a2:
+    L1b := 1
+    if P4b == 3 goto L051b2
+    if P4b != 4 goto L051b4
+L051b2:
+    goto L051ed
+L051b4:
+    PrintLn("^6За отпин врага ты получаешь # качков опыта", (((g3954 + g3956) + g3958) + g395a))
+    g38ce := (g38ce + (((g3954 + g3956) + g3958) + g395a))
+L051ed:
+    if g38ce >= g38d0 goto L05238
+    if P4b == 3 goto L05236
+    if P4b == 4 goto L05236
+    PrintLn("^6Ты запинал слишком слабого мудака для увеличения понтовости")
+    PrintLn("^6Сейчас у тебя # качков опыта, А для прокачки надо #", g38ce, g38d0)
+L05236:
+    goto L0523e
+L05238:
+    p2526(0)
+L0523e:
+    g38c3 := (g38c3 + g396a)
+    g38c7 := (g38c7 + g396c)
+    g38c9 := (g38c9 + g396e)
+    PrintLn("^1Пиво победителю!")
+    g38ac := (g38ac + 5)
+    if g38ac <= g38ae goto L05280
+    g38ac := g38ae
+L05280:
+    g38cb := (g38cb + ((g3952 + 1) + (g395c div 3)))
+    if g3696b != 0 goto L052d1
+    if (g38a6 - ((g3692b - 1) * 10)) < 3 goto L052d1
+    g3696b := 1
+    PrintLn("^1Поновость улутшилась на столько, что тебе можно заходить в местный притон!")
+L052d1:
+    if Random#20(30) <= 0 (unsigned) goto L052e1
+    goto L053f7
+L052e1:
+    if g38bfb == 0 goto L052f6
+    if g38c0b == 0 goto L052f6
+    if g38c1b != 0 goto L0530f
+L052f6:
+    PrintLn("^1Оба на! Колечко! Вот свезло, так свезло!")
+L0530f:
+    if g38bfb != 0 goto L0536a
+    PrintLn("^1Кольцо \"Помоги Господи\"")
+    g389e := g389e + 1
+    g38a0 := g38a0 + 1
+    g38a2 := g38a2 + 1
+    g38a4 := g38a4 + 1
+    g38ae := (g38ae + 6)
+    g38ac := (g38ac + 6)
+    g38aa := g38aa + 1
+    g38a8 := (g38a8 + (1 - (g389e mod 2)))
+    g38bfb := 1
+    goto L053f7
+L0536a:
+    if g38c0b != 0 goto L053b9
+    PrintLn("^1\"Мега Кольцо\"!")
+    g389e := (g389e + 4)
+    g38a0 := (g38a0 + 4)
+    g38a2 := (g38a2 + 4)
+    g38a4 := (g38a4 + 4)
+    g38ae := (g38ae + 24)
+    g38ac := (g38ac + 24)
+    g38aa := (g38aa + 4)
+    g38a8 := (g38a8 + 2)
+    g38c0b := 1
+    goto L053f7
+L053b9:
+    if g38c1b != 0 goto L053f7
+    PrintLn("^1Ваще полезное кольцо \"Господи помилуй\"")
+    PrintLn("^1Восст. жизни - 3, 5% - самозарост переломов")
+    g38c1b := 1
+L053f7:
+    if sx(g38a4) > 0 goto L0541b
+    if sx(g38a4) < 0 goto L05449
+    if g38a4 < Random#21((g3692b * 25)) (unsigned) goto L05449
+L0541b:
+    if g3952 != 2 goto L05449
+    g38c5 := (g38c5 + Random#22(3))
+    PrintLn("^1А у нарка был косячок")
+L05449:
+    if sx(g38a4) > 0 goto L05473
+    if sx(g38a4) >= 0 goto L0546c
+    goto L057ce
+L0546c:
+    if g38a4 >= Random#23((g3692b * 40)) (unsigned) goto L05473
+    goto L057ce
+L05473:
+    if g3952 == 1 goto L0547e
+    goto L05515
+L0547e:
+    if Random#24(3) != 0 goto L054b8
+    if g38bdb != 0 goto L054b6
+    g38a4 := (g38a4 + 2)
+    PrintLn("^1Ты нашёл крестик: удача +2")
+    g38bdb := 1
+L054b6:
+    goto L05512
+L054b8:
+    if Random#24(3) != 1 goto L054e8
+    if g38beb != 0 goto L054e6
+    g38a4 := g38a4 + 1
+    PrintLn("^1Ты нашёл кольцо \"Господи спаси\": удача +1")
+    g38beb := 1
+L054e6:
+    goto L05512
+L054e8:
+    if Random#24(3) != 2 goto L05512
+    if g38bbb != 0 goto L05512
+    PrintLn("^1Ты нашёл мобилу")
+    g38bbb := 1
+L05512:
+    goto L057ce
+L05515:
+    if g3952 == 3 goto L0552c
+    if g3952 == 4 goto L0552c
+    if g3952 == 5 goto L0552c
+    if g3952 == 6 goto L0552c
+    goto L0560e
+L0552c:
+    if Random#25(2) != 0 goto L0559b
+    if g38bab != 0 goto L05599
+    g38bab := 1
+    PrintLn("^1Ты надыбал кастет(урон+2)")
+    if g38c2b != 0 goto L05580
+    if g394bb != 0 goto L05580
+    if g394cb != 0 goto L05580
+    g38a8 := (g38a8 + 2)
+    g38aa := (g38aa + 2)
+    goto L05599
+L05580:
+    PrintLn("^6Но у тебя есть более мощное оружие")
+L05599:
+    goto L0560b
+L0559b:
+    if Random#25(2) != 1 goto L0560b
+    if g394bb != 0 goto L0560b
+    g394bb := 1
+    PrintLn("^1Ты отобрал у врага дубинку(урон+4)")
+    if g38c2b != 0 goto L055f2
+    if g394cb != 0 goto L055f2
+    if g38bab == 0 goto L055e6
+    g38a8 := (g38a8 + 2)
+    g38aa := (g38aa + 2)
+    goto L055f0
+L055e6:
+    g38a8 := (g38a8 + 4)
+    g38aa := (g38aa + 4)
+L055f0:
+    goto L0560b
+L055f2:
+    PrintLn("^6Но у тебя есть более мощное оружие")
+L0560b:
+    goto L057ce
+L0560e:
+    if g3952 != 7 goto L05675
+    if Random#26(2) != 0 goto L05648
+    if g38b3b != 0 goto L05646
+    g38b3b := 1
+    PrintLn("^1Ты нашёл тёмные очки.")
+L05646:
+    goto L05672
+L05648:
+    if Random#26(2) != 1 goto L05672
+    if g38bbb != 0 goto L05672
+    PrintLn("^1Ты нашёл мобилу")
+    g38bbb := 1
+L05672:
+    goto L057ce
+L05675:
+    if g3952 == 9 goto L0567d
+    goto L057ce
+L0567d:
+    if Random#27(2) == 0 goto L0568e
+    goto L0572c
+L0568e:
+    if g38c2b == 0 goto L05698
+    goto L05729
+L05698:
+    g38c2b := 1
+    PrintLn("^1Ты нашел ножик(урон+6).")
+    if 1 == 0 goto L056c3
+    if g394bb == 0 goto L056c7
+L056c3:
+    goto L056c9
+L056c7:
+L056c9:
+    if al != g38bab goto L056d9
+    g38a8 := (g38a8 + 4)
+    g38aa := (g38aa + 4)
+L056d9:
+    if g394bb == 0 goto L056ea
+    g38a8 := (g38a8 + 2)
+    g38aa := (g38aa + 2)
+L056ea:
+    if g38bab != 0 goto L05709
+    if g394bb != 0 goto L05709
+    if g394cb != 0 goto L05709
+    g38a8 := (g38a8 + 6)
+    g38aa := (g38aa + 6)
+L05709:
+    if g394cb == 0 goto L05729
+    PrintLn("^6Но утебя есть тесак который круче.")
+L05729:
+    goto L057ce
+L0572c:
+    if Random#27(2) == 1 goto L05734
+    goto L057ce
+L05734:
+    if g394cb == 0 goto L0573e
+    goto L057ce
+L0573e:
+    g394cb := 1
+    PrintLn("^1Ты нашел тесак(урон+9)!!! - ужасное оружие.")
+    if 1 == 0 goto L05770
+    if g394bb != 0 goto L05770
+    if g38c2b == 0 goto L05774
+L05770:
+    goto L05776
+L05774:
+L05776:
+    if al != g38bab goto L05786
+    g38a8 := (g38a8 + 7)
+    g38aa := (g38aa + 7)
+L05786:
+    if g394bb == 0 goto L0579e
+    if g38c2b != 0 goto L0579e
+    g38a8 := (g38a8 + 5)
+    g38aa := (g38aa + 5)
+L0579e:
+    if g38c2b == 0 goto L057af
+    g38a8 := (g38a8 + 3)
+    g38aa := (g38aa + 3)
+L057af:
+    if g38bab != 0 goto L057ce
+    if g394bb != 0 goto L057ce
+    if g38c2b != 0 goto L057ce
+    g38a8 := (g38a8 + 9)
+    g38aa := (g38aa + 9)
+L057ce:
+    if P4b != 6 goto L05838
+    g38cb := (g38cb + (g3692b * 20))
+    PrintLn("^2Ты отпинал этого мудака - пацаны этого незабудут. Понтовость улутшилась на #.", (g3692b * 20))
+    PrintLn("^6Ты получаешь # качков опыта за помощь", (g3692b * 10))
+    g38ce := (g38ce + (g3692b * 10))
+    p2526(0)
+L05838:
+    if L1b != 0 goto L05841
+    goto L040f2
+L05841:
+    g3c80 := 0
+    return
+
+;======== proc 0000:5f55 args=0w callers: 0eddc
+    locals 0x100
+    PrintLn("^0Ну слушай, " + ds:((g389c shl 8) + 46) + " " + @g379c + " ^0,в чем тут батва")
+    PrintLn("^0 Вначале ты должен выбрать свой характер.")
+    PrintLn("^0 Например " + ds:((g389c shl 8) + 46) + ":")
+    PrintLn("^0 Всего навыки в сумме составляют 12, а сила у тебя # - значит при получении", DS[((g389c shl 1) shl 1) + 0x2]b)
+    PrintLn("^0 нового уровня понтовости # из 12 шансов что увеличиться сила. То же и с ", DS[((g389c shl 1) shl 1) + 0x2]b)
+    PrintLn("^0 остальными навыками. Шансы не меняются.")
+    PrintLn("^0")
+    PrintLn("^0 Сила - увеличивает урон, и довавляет 1 здоровья")
+    PrintLn("^0 Ловкость -  +5% попадания если больше 90% то можно бить дважды.")
+    PrintLn("^0 Живучесть - 5 здоровья")
+    PrintLn("^0 Удача - будет чаще везти по жизни")
+    PrintLn("^0 ")
+    PrintLn("^0 Здоровье = 10+Живучесть*5+Сила")
+    PrintLn("^0 Урон = (Сила/2)мин - (Сила)макс урону который нанесёшь ")
+    PrintLn("^0 Точность = (20+Ловкость*5)%")
+    PrintLn("^0 Броня - насколько уменьшается сила вражеского удара.")
+    PrintLn("^0")
+    PrintLn("^0 Спомощью разных вещей можно улутшать навыки, урон, броню и т.д.")
+    PrintLn("^0 Заходя вразные места, ты узнаешь чего полезного можно из них получить.")
+    if g3692b <= 1 (unsigned) goto L061db
+    PrintLn("^0 Придя в новый район, ты должен находить все эти места снова.")
+L061db:
+    PrintLn("^0 Хочешь спросить а че от них толку та?")
+    PrintLn("^0 Базар    - Покупаешь шмотки и еду. Можно воровать кошельки - Поднимай Удачу")
+    PrintLn("^0 Больница - Лечить переломы и царапины")
+    PrintLn("^0 Подруга  - Ты бомжуешь по кабакам и забыл че такое здоровый образ жизни. У неё")
+    PrintLn("^0            дома ты можешь пожить пару дней как человек - Поправить здоровье")
+    PrintLn("^0 Притон   - Там тусуются реальные пацаны, много че можно сделать, заходи туда")
+    PrintLn("^0            почаще. А главное ты можешь позвать братву, если дела идут хреново,")
+    PrintLn("^0            следи за притонной понтовостью.")
+    PrintLn("^0 Клуб     - Можно играть на бабло(Качай Удачу), но тамошние гопники не любят")
+    PrintLn("^0            проигрывать")
+    PrintLn("^0 Качалка  - Там можно повысить свои бойцовские навыки")
+    PrintLn("^0 Барыги   - Продают вещи и арсенала гопника, им ты можешь спихнуть награбленый")
+    PrintLn("^0            хлам и продать ненужные вещи(Выделеные красным в твоей статистике)")
+    PrintLn("^0Если не видать чё вверху - выйди и открой у G.exe:Свойства/Экран/Исходный размер")
+    return
+
+;======== proc 0000:6a0d args=0w callers: 0ab72
+    locals 0x200
+    ClrScr()
+    GetDir(0, @g3d32)
+    @g3d32 := @g3d32 + "\\"
+    p02c2()
+    Randomize()
+    g3d04b := 0
+    FindFirst(@g3d32 + "save_r?.sav", 63, @g3d06)
+L06a8f:
+    if g3eb6 == 0 goto L06a99
+    goto L06b33
+L06a99:
+    if g3d04b <= 0 (unsigned) goto L06ab9
+    PrintLn("^1или")
+L06ab9:
+    g3d04b := g3d04b + 1
+    if g3d2bb == 48 goto L06b06
+    PrintLn("^1Можно начать с " + chr(g3d2bb) + " района")
+L06b06:
+    if g3d2bb != 48 goto L06b26
+    PrintLn("^1Можно начать с того места где ты сохранился")
+L06b26:
+    FindNext(@g3d06)
+    goto L06a8f
+L06b33:
+    if g3d04b > 0 (unsigned) goto L06b3d
+    goto L06dbe
+L06b3d:
+    PrintLn("^0Нажми цифру с какого района начать. 1-начать сначала")
+    key := ReadKey()
+    g3d31b := key
+    if g3d31b == 50 goto L06b84
+    if g3d31b == 51 goto L06b84
+    if g3d31b == 52 goto L06b84
+    if g3d31b == 53 goto L06b84
+    if g3d31b == 48 goto L06b84
+    goto L06dbe
+L06b84:
+    Assign(@g3c84, @g3d32 + "save_r" + chr(g3d31b) + ".sav")
+    Reset(@g3c84, 694)
+    if IOResult() == 0 goto L06be0
+    goto L06da5
+L06be0:
+    g3692b := Val(chr(g3d31b), @g3c7c)
+    ReadRec(@g3c84, @g369c)
+    Close(@g3c84)
+    PrintLn("^0Загружено из save_r" + chr(g3d31b))
+    if g3692b == 0 goto L06c5a
+    goto L06d8c
+L06c5a:
+    Assign(@g3e36, @g3d32 + "places.sav")
+    Reset(@g3e36, 1)
+    if IOResult() == 0 goto L06c98
+    goto L06d3b
+L06c98:
+    ReadRec(@g3e36, @g3694)
+    ReadRec(@g3e36, @g3695)
+    ReadRec(@g3e36, @g3696)
+    ReadRec(@g3e36, @g3697)
+    ReadRec(@g3e36, @g3698)
+    ReadRec(@g3e36, @g3699)
+    ReadRec(@g3e36, @g369a)
+    Close(@g3e36)
+    PrintLn("^0Загружено из places")
+    goto L06d8c
+L06d3b:
+    g3698b := 0
+    g3694b := 0
+    if g389c == 3 goto L06d51
+    g3699b := 0
+L06d51:
+    g369ab := 0
+    if g389c == 3 goto L06d62
+    g3697b := 0
+L06d62:
+    g3695b := 0
+    if g389c == 5 goto L06d73
+    g3696b := 0
+L06d73:
+    PrintLn("^6Чё-то глюкануло - немогу прoгрузить Places:Ресет ту Default")
+L06d8c:
+    if g3692b != 0 goto L06da0
+    g3692b := ((g38a6 div 10) + 1)
+L06da0:
+    goto L07262
+L06da5:
+    PrintLn("^6Чё-то глюкануло - нaверно нет такого сейва, Default:1")
+L06dbe:
+    g3692b := 1
+    g3698b := 1
+    g3694b := 1
+    @g369c := "^4Gopnik: ^7version 1.02 june,sept 2003"
+    g38d0 := 10
+    PrintLn("Год 2xxx от Р.Х.")
+    key := ReadKey()
+    PrintLn("Последний день ты пришел в универ")
+    PrintLn("Ты по-страшному косил и забивал")
+    PrintLn("Ты ещё мог сдать все задания, которые ты взял у друзей")
+    PrintLn("Но тут...")
+    key := ReadKey()
+    PrintLn("^6Ректор: Ах ты урод, чёртов забивала. Вали из универа!")
+    key := ReadKey()
+    PrintLn("^2Ты: А типа чё?")
+    key := ReadKey()
+    PrintLn("^6Ректор: Ты отчислен мудак!!! Как ты был лохом так и останешься.")
+    key := ReadKey()
+    PrintLn("^4Это слышали все и ты из пацана превратился в опушенного.")
+    key := ReadKey()
+    WriteLn
+    PrintLn("Ты неможешь стерпеть такой наезд, однако ректор офигительно крутой.")
+    PrintLn("Ты решил доказать свою крутизну всему миру(в твоем понимании - Городу).")
+    key := ReadKey()
+    PrintLn("Выбери кем ты будешь: ")
+    PrintLn("0-Пацан")
+    PrintLn("1-Отморозок")
+    PrintLn("2-Гопник")
+    PrintLn("3-Вор")
+    PrintLn("4-Чё за батва?")
+    ReadStr(@g3b7c)
+    ReadLn
+    g389c := Val(@g3b7c, @g3c7c)
+    if g389c == 4 goto L06ffa
+    goto L0712d
+L06ffa:
+    g389c := 0
+    WriteLn
+    PrintLn("^1Пацан - это нормальный тип. (Бонус - Гёлфренд, Клуб).")
+    PrintLn("^1Отморозок - тупой корявый мудак. (Бонус - Самолечение царапин).")
+    PrintLn("^1Гопник - гоп он и есть гоп. (Бонус - Притон)")
+    PrintLn("^1Вор - везучий ублюдок. (Бонус - Воровство, Барыги)")
+    WriteLn
+    PrintLn("А теперь выбирай: ")
+    PrintLn("0-Пацан")
+    PrintLn("1-Отморозок")
+    PrintLn("2-Гопник")
+    PrintLn("3-Вор")
+    ReadStr(@g3b7c)
+    ReadLn
+    g389c := Val(@g3b7c, @g3c7c)
+L0712d:
+    if g389c < 0 goto L0713b
+    if g389c <= 3 goto L07140
+L0713b:
+    g389c := 0
+L07140:
+    if g389c != 1 goto L07162
+    g389e := 5
+    g38a0 := 2
+    g38a2 := 4
+    g38a4 := 1
+    goto L071b8
+L07162:
+    if g389c != 2 goto L07181
+    g389e := 4
+    g38a0 := 3
+    g38a2 := 3
+    g38a4 := 2
+    goto L071b8
+L07181:
+    if g389c != 3 goto L071a0
+    g389e := 3
+    g38a0 := 3
+    g38a2 := 2
+    g38a4 := 4
+    goto L071b8
+L071a0:
+    g389e := 3
+    g38a0 := 3
+    g38a2 := 3
+    g38a4 := 3
+L071b8:
+    g389c := (g389c + 3)
+    g38ae := (((((g38a2 shl 1) shl 1) + g38a2) + 10) + g389e)
+    g38ac := g38ae
+    g38a8 := (g389e div 2)
+    g38aa := g389e
+    Print("^2А зовут тебя:^7 ")
+    ReadStr(@g379c)
+    ReadLn
+    if g379cb != 0 goto L0723a
+    @g379c := "Раз^6дол^4бай"
+L0723a:
+    @g379c := "^7 " + @g379c
+L07262:
+    if g3692b != 1 goto L0729e
+    PrintLn("^1Ты стоишь у дверей университета.")
+    PrintLn("^1Отсюда ты начнешь свой нелёгкий путь гопника.")
+    goto L07369
+L0729e:
+    if g3692b != 2 goto L072d7
+    PrintLn("^1Ты сел на автобус и попёрся на шлюз...")
+    PrintLn("^1Там бродит шлюзовская шпана.")
+    goto L07369
+L072d7:
+    if g3692b != 3 goto L0730f
+    PrintLn("^1На маршрутке ты доехал до ОбьГЭСа...")
+    PrintLn("^1Здесь бродит уже более крутая гопота.")
+    goto L07369
+L0730f:
+    if g3692b != 4 goto L07347
+    PrintLn("^1Ты приехал в Ельцовку...")
+    PrintLn("^1Ото всюду доносятся крики запинываемых.")
+    goto L07369
+L07347:
+    if g3692b != 5 goto L07369
+    PrintLn("^1Пора наконец отомстить ректору...")
+    g3c83b := 1
+L07369:
+    if g3692b != 1 goto L073bb
+    PrintLn("Доказать свою крутизну ты можешь, отпинывая разных мудаков.")
+    PrintLn("Тебе придётся поработать над сабой, чтобы стать крутым.")
+    PrintLn("Введи ^6i^7 чтобы посмотреть команды, введи ^6help^7 что бы узнать чё за батва.")
+L073bb:
+    if g389c != 5 goto L073ca
+    g3696b := 1
+    goto L073e5
+L073ca:
+    if g389c != 3 goto L073db
+    g3697b := 1
+    g3699b := 1
+    goto L073e5
+L073db:
+    if g389c != 6 goto L073e5
+    g3695b := 1
+L073e5:
+    g3e35b := 5
+    return
+
+;======== proc 0000:7538 args=0w callers: 0b3b7
+    locals 0x200
+    PrintLn("Бродя по окрестностям с самыми грязными намериниями...")
+    key := ReadKey()
+    PrintLn("Ты встретил великого мага и экстрасенса - Рушеля Блаво.")
+    key := ReadKey()
+    PrintLn("За # рублей он может сделать сохранение прямо здесь.", (g3692b * 25))
+    key := ReadKey()
+    PrintLn("Ты хочешь сохраниться?")
+    ReadStr(@L100)
+    ReadLn
+    LowerCase(@L100)
+    if @L100 == "y" goto L07600
+    goto L0775f
+L07600:
+    if (g3692b * 50) <= g38c7 goto L07613
+    goto L07744
+L07613:
+    g38c7 := (g38c7 - (g3692b * 50))
+    Assign(@g3c84, @g3d32 + "save_r0.sav")
+    Rewrite(@g3c84, 694)
+    WriteRec(@g3c84, @g369c)
+    Close(@g3c84)
+    Assign(@g3e36, @g3d32 + "places.sav")
+    Rewrite(@g3e36, 1)
+    WriteRec(@g3e36, @g3694)
+    WriteRec(@g3e36, @g3695)
+    WriteRec(@g3e36, @g3696)
+    WriteRec(@g3e36, @g3697)
+    WriteRec(@g3e36, @g3698)
+    WriteRec(@g3e36, @g3699)
+    WriteRec(@g3e36, @g369a)
+    Close(@g3e36)
+    PrintLn("^0Сохранено! ^1Можешь беспредельничать дальше.")
+    goto L0775d
+L07744:
+    PrintLn("^6Парень, все стоит бабок!")
+L0775d:
+    goto L07778
+L0775f:
+    PrintLn("^6Нехотите как хотите - мое дело предложить")
+L07778:
+    return
+
+;======== proc 0000:7c67 args=0w callers: 0b3a7
+    locals 0x100
+    if g3951b != 2 goto L07ceb
+    PrintLn("Бродя по окрестностям с самыми грязными намериниями...")
+    PrintLn("Ты наткнулся на храм Божий.")
+    key := ReadKey()
+    PrintLn("^1Бог: \"А ты опять.\"")
+    PrintLn("^1Ну ладно насылаю на тебя \"благославление\"")
+    key := ReadKey()
+L07ceb:
+    if g3951b == 1 goto L07cf5
+    goto L07dcb
+L07cf5:
+    PrintLn("Бродя по окрестностям с самыми грязными намериниями...")
+    key := ReadKey()
+    PrintLn("Ты наткнулся на храм Божий.")
+    key := ReadKey()
+    PrintLn("В прошлый раз Бог сказал чтобы ты не осквернял своей рожей святой храм")
+    key := ReadKey()
+    PrintLn("Но надо бы типа помолиться о прощении")
+    key := ReadKey()
+    PrintLn("^2\"Господи, Братан, прости грешника опять\".")
+    key := ReadKey()
+    PrintLn("^1Бог: \"Да блин, упорный чудак!\"")
+    key := ReadKey()
+    PrintLn("^1Ладно насылаю на тебя, типа, \"моё благославление\" снова")
+    key := ReadKey()
+    g3951b := g3951b + 1
+L07dcb:
+    if g3951b == 0 goto L07dd5
+    goto L07f5f
+L07dd5:
+    PrintLn("Бродя по окрестностям с самыми грязными намериниями...")
+    key := ReadKey()
+    PrintLn("Ты наткнулся на храм Божий.")
+    key := ReadKey()
+    PrintLn("Раз такая батва...")
+    key := ReadKey()
+    PrintLn("Надо типа помолиться Господу Богу...              ")
+    key := ReadKey()
+    PrintLn("Как делают новыё русские.")
+    key := ReadKey()
+    PrintLn("^2\"Господи, Братан, прости грешника\". - Начал было ты...")
+    key := ReadKey()
+    PrintLn("^1Громовой голос: \"Да пошел ты на хрен!\"")
+    key := ReadKey()
+    PrintLn("^2 - Эээ.. типа.. а чё?..")
+    key := ReadKey()
+    PrintLn("^1 - \"а чё?\" блин! " + @g379c + "^1-" + ds:((g389c shl 8) + 46) + " чёртов!")
+    key := ReadKey()
+    PrintLn("^2Ну..")
+    key := ReadKey()
+    PrintLn("^1Ладна насылаю на тебя, типа, \"моё благославление\"")
+    key := ReadKey()
+    g3951b := g3951b + 1
+L07f5f:
+    if Random#1(5) == 0 goto L07f70
+    goto L07ff3
+L07f70:
+    PrintLn("^1Да увеличится твоя понтовость!")
+    key := ReadKey()
+    PrintLn("^1Был ты " + ds:((g38a6 shl 8) + 2882) + " а стал " + ds:(((g38a6 + 1) shl 8) + 2882))
+    g38ce := g38d0
+    p2526(0)
+    goto L08242
+L07ff3:
+    if Random#1(5) == 1 goto L07ffb
+    goto L080c0
+L07ffb:
+    if Random#2(4) != 0 goto L08049
+    PrintLn("^1Да увеличиться твоя сила!")
+    g389e := g389e + 1
+    g38ae := g38ae + 1
+    g38ac := g38ac + 1
+    g38aa := g38aa + 1
+    g38a8 := (g38a8 + (1 - (g389e mod 2)))
+    goto L080bd
+L08049:
+    if Random#2(4) != 1 goto L0806d
+    PrintLn("^1Да уменьшиться твоя корявость!")
+    g38a0 := g38a0 + 1
+    goto L080bd
+L0806d:
+    if Random#2(4) != 2 goto L0809b
+    PrintLn("^1Да возрастут твой силы жизненные!")
+    g38a2 := g38a2 + 1
+    g38ae := (g38ae + 5)
+    g38ac := (g38ac + 5)
+    goto L080bd
+L0809b:
+    if Random#2(4) != 3 goto L080bd
+    PrintLn("^1Да снизойдет на тебя удача!")
+    g38a4 := g38a4 + 1
+L080bd:
+    goto L08242
+L080c0:
+    if Random#1(5) == 2 goto L080c8
+    goto L081cb
+L080c8:
+    PrintLn("^1Дарю тебе феньку!")
+    if g38bfb != 0 goto L0813c
+    PrintLn("^1Кольцо \"Помоги Господи\"")
+    g389e := g389e + 1
+    g38a0 := g38a0 + 1
+    g38a2 := g38a2 + 1
+    g38a4 := g38a4 + 1
+    g38ae := (g38ae + 6)
+    g38ac := (g38ac + 6)
+    g38aa := g38aa + 1
+    g38a8 := (g38a8 + (1 - (g389e mod 2)))
+    g38bfb := 1
+    goto L081c9
+L0813c:
+    if g38c0b != 0 goto L0818b
+    PrintLn("^1\"Мега Кольцо\"! со своего, можно сказать, пальца")
+    g389e := (g389e + 4)
+    g38a0 := (g38a0 + 4)
+    g38a2 := (g38a2 + 4)
+    g38a4 := (g38a4 + 4)
+    g38ae := (g38ae + 24)
+    g38ac := (g38ac + 24)
+    g38aa := (g38aa + 4)
+    g38a8 := (g38a8 + 2)
+    g38c0b := 1
+    goto L081c9
+L0818b:
+    if g38c1b != 0 goto L081c9
+    PrintLn("^1Ваще полезное кольцо \"Господи помилуй\"")
+    PrintLn("^1Восст. жизни - 3, 5% - самозарост переломов")
+    g38c1b := 1
+L081c9:
+    goto L08242
+L081cb:
+    if Random#1(5) != 3 goto L081ef
+    PrintLn("^1Накладываю на тебя защиту!")
+    g38b2b := g38b2b + 1
+    goto L08242
+L081ef:
+    if Random#1(5) != 4 goto L08242
+    PrintLn("^1Да увеличится, офигенно, твоя понтовость среди гопоты!")
+    g38cb := (g38cb + ((g3692b * 50) + 50))
+    PrintLn("^1Получи #!", ((g3692b * 50) + 50))
+L08242:
+    key := ReadKey()
+    if g3951b >= 2 (unsigned) goto L08269
+    PrintLn("^1А теперь вали отсюда и никогда здесь не появляйся!")
+    goto L08282
+L08269:
+    PrintLn("^1А теперь проваливай!")
+L08282:
+    g3970b := 0
+    WriteLn
+    PrintLn("Ты идещь дальше...")
+    return
+
+;======== proc 0000:ab59 args=5w callers: ENTRY
+    locals 0x200
+    p6a0d()
+L0ab75:
+    if (g3692b * 10) <= g38a6 goto L0ab88
+    goto L0ae18
+L0ab88:
+    if g3692b < 5 (unsigned) goto L0ab92
+    goto L0ae18
+L0ab92:
+    g3692b := g3692b + 1
+    g3698b := 0
+    g3694b := 0
+    if g389c == 3 goto L0abac
+    g3699b := 0
+L0abac:
+    g369ab := 0
+    if g389c == 3 goto L0abbd
+    g3697b := 0
+L0abbd:
+    g3695b := 0
+    if g389c == 5 goto L0abce
+    g3696b := 0
+L0abce:
+    g3b76b := 0
+    g3b77b := 0
+    PrintLn("^1Ты доказал, что ты самый крутой в этом районе - отправляйся в следующий")
+    PrintLn("^0Хочешь сохранить свои достижения?")
+    Print("\\")
+    ReadStr(@g3a72)
+    ReadLn
+    LowerCase(@g3a72)
+    if @g3a72 == "y" goto L0ac5e
+    goto L0ad12
+L0ac5e:
+    Str(g3692b, @g3b7c)
+    Assign(@g3c84, @g3d32 + "save_r" + @g3b7c + ".sav")
+    Rewrite(@g3c84, 694)
+    WriteRec(@g3c84, @g369c)
+    Close(@g3c84)
+    PrintLn("^1Сохранено в save_r" + @g3b7c + ".sav")
+L0ad12:
+    if g3692b != 2 goto L0ad4e
+    PrintLn("^1Ты сел на автобус и попёрся на шлюз...")
+    PrintLn("^1Там бродит шлюзовская шпана.")
+    goto L0ae18
+L0ad4e:
+    if g3692b != 3 goto L0ad87
+    PrintLn("^1На маршрутке ты доехал до ОбьГЭСа...")
+    PrintLn("^1Здесь бродит уже более крутая гопота.")
+    goto L0ae18
+L0ad87:
+    if g3692b != 4 goto L0adbf
+    PrintLn("^1Ты приехал в Ельцовку...")
+    PrintLn("^1Ото всюду доносятся крики запинываемых.")
+    goto L0ae18
+L0adbf:
+    if g3692b != 5 goto L0ae18
+    PrintLn("^1Пора наконец отомстить ректору...")
+    key := ReadKey()
+    PrintLn("^1Ты пробрался в универ, в тёмный ректорский кабинет...")
+    PrintLn("^1А вот и он...")
+    g3c83b := 1
+L0ae18:
+    if g3c83b != 1 goto L0ae3c
+    g3696b := 1
+    p11c2(0)
+    p3d11(3)
+    p11c2(1)
+    p3d11(4)
+L0ae3c:
+    Print("\\")
+    ReadStr(@g3972)
+    ReadLn
+    LowerCase(@g3972)
+    if @g3972 == "w" goto L0aea1
+    if @g3972 == "run" goto L0aea1
+    goto L0b940
+L0aea1:
+    if g38cdb <= 0 (unsigned) goto L0aeda
+    g38cdb := g38cdb - 1
+    if g38cdb != 0 goto L0aeda
+    g389e := (g389e - 2)
+    g38a8 := g38a8 - 1
+    g38aa := (g38aa - 2)
+    PrintLn("^6Глюки прошли. Сила -2.")
+L0aeda:
+    if @g3972 != "run" goto L0af04
+    PrintLn("^6Забегал мудак.")
+L0af04:
+    if g3e35b >= (g3692b * 10) goto L0af1d
+    g3e35b := g3e35b + 1
+L0af1d:
+    if g3695b == 0 goto L0af5d
+    if g394db == 0 goto L0af5d
+    if g3e32b >= 25 (unsigned) goto L0af5d
+    g3e32b := g3e32b + 1
+    if g3e32b != 25 goto L0af5d
+    if g38bbb != 1 goto L0af5d
+    PrintLn("Телефон:^6Алё, ты где? Приходи, мы вещицу для тебя раздобыли.(Иди к барыгам)")
+L0af5d:
+    if g3b78b != 0 goto L0afbc
+    if Random#1(20) != 0 goto L0afbc
+    g3b78b := 1
+    if g3696b == 0 goto L0afbc
+    if g38bbb != 1 goto L0afbc
+    PrintLn("Телефон:^6Алё," + @g379c + "^6? ты где щас? Тут помощь нужна.(Иди в притон)")
+L0afbc:
+    if g3b79b != 0 goto L0b022
+    if Random#2(20) != 0 goto L0b022
+    g3b79b := 1
+    if g3696b == 0 goto L0b022
+    if g38cb < 100 goto L0b022
+    if g38bbb != 1 goto L0b022
+    PrintLn("Телефон:^6Алё," + @g379c + "^6? ты щас где? Базар есть.(Иди в притон)")
+L0b022:
+    if g38bbb == 1 goto L0b02c
+    goto L0b0ce
+L0b02c:
+    if Random#3(200) == 0 goto L0b03c
+    goto L0b0ce
+L0b03c:
+    PrintLn("Телефон:^6Алё Вася?")
+    key := ReadKey()
+    PrintLn("^2Нет это " + @g379c + ".")
+    key := ReadKey()
+    PrintLn("Телефон:^6А Васю можно?")
+    key := ReadKey()
+    PrintLn("^2Нет, он будет в больнице в ближайшие 2 месяца.")
+L0b0ce:
+    if g38bbb == 1 goto L0b0d8
+    goto L0b16c
+L0b0d8:
+    if Random#4(100) != 0 goto L0b11e
+    if g3697b == 0 goto L0b11e
+    PrintLn("Телефон(Твоя пассия):^5Привет, это я. Зайдешь ко мне сегодня?")
+    PrintLn("^2А ты: Безбазаров, жди.")
+L0b11e:
+    if g3b76b != 1 goto L0b145
+    if g3696b == 0 goto L0b145
+    PrintLn("Телефон:^2Это ты там на базаре шухер наводил? Ну короче там менты свалили.")
+L0b145:
+    if g3b77b != 1 goto L0b16c
+    if g3696b == 0 goto L0b16c
+    PrintLn("Телефон:^2Ты че там, в клуб-та пойдёшь. Уже утряслось всё.")
+L0b16c:
+    if g3b76b <= 0 (unsigned) goto L0b177
+    g3b76b := g3b76b - 1
+L0b177:
+    if g3b77b <= 0 (unsigned) goto L0b182
+    g3b77b := g3b77b - 1
+L0b182:
+    if Random#5(10) != 0 goto L0b1b4
+    if g3698b != 0 goto L0b1b4
+    g3698b := 1
+    PrintLn("^1Ты спросил у прохожего где больница.")
+L0b1b4:
+    if Random#6(10) != 0 goto L0b1e6
+    if g3694b != 0 goto L0b1e6
+    g3694b := 1
+    PrintLn("^1Ты нашел базар.")
+L0b1e6:
+    if Random#7(100) != 0 goto L0b218
+    if g3699b != 0 goto L0b218
+    g3699b := 1
+    PrintLn("^1Ты увидел объявление \"Типа заходи в наш понтовый клуб\".")
+L0b218:
+    if Random#8(100) != 0 goto L0b24a
+    if g369ab != 0 goto L0b24a
+    g369ab := 1
+    PrintLn("^1На стене реклама \"Жизнь тяжела. Если не хочешь сдохнуть качайся!\".")
+L0b24a:
+    if g38c1b == 0 goto L0b2cc
+    if g38ac >= g38ae goto L0b26e
+    g38ac := (g38ac + 3)
+    if g38ac <= g38ae goto L0b26e
+    g38ac := g38ae
+L0b26e:
+    if Random#9(20) > 0 (unsigned) goto L0b2cc
+    if g38b0b != 0 goto L0b2a7
+    if g38b1b == 0 goto L0b2a7
+    g38b1b := 0
+    PrintLn("^2Твоя нога залечилась с Божей помощью.")
+L0b2a7:
+    if g38b0b == 0 goto L0b2cc
+    g38b0b := 0
+    PrintLn("^2Твоя челюсть залечилась с Божей помощью.")
+L0b2cc:
+    if g389c != 4 goto L0b2e3
+    if g38ac >= g38ae goto L0b2e1
+    g38ac := g38ac + 1
+L0b2e1:
+    goto L0b34d
+L0b2e3:
+    if g389c != 5 goto L0b2ea
+    goto L0b34d
+L0b2ea:
+    if g389c != 6 goto L0b34d
+    if sx(g38a4) > 0 goto L0b313
+    if sx(g38a4) < 0 goto L0b34b
+    if g38a4 < Random#10((g3692b * 20)) (unsigned) goto L0b34b
+L0b313:
+    g3b74 := (Random#11((((g3692b shl 1) shl 1) + g3692b)) + 1)
+    g38c7 := (g38c7 + g3b74)
+    PrintLn("^2Опа бабки! # рублей на пиво!", g3b74)
+L0b34b:
+    goto L0b34d
+L0b34d:
+    g3971b := (Random#12((5 * 5)) + 1)
+    if g3971b < 10 (unsigned) goto L0b368
+    g3970b := 4
+L0b368:
+    if g3971b > 9 (unsigned) goto L0b37b
+    if g3971b < 5 (unsigned) goto L0b37b
+    g3970b := 3
+L0b37b:
+    if g3971b > 4 (unsigned) goto L0b38e
+    if g3971b < 2 (unsigned) goto L0b38e
+    g3970b := 2
+L0b38e:
+    if g3971b != 1 goto L0b39a
+    g3970b := 1
+L0b39a:
+    if Random#13(200) != 0 goto L0b3aa
+    p7c67()
+L0b3aa:
+    if Random#14(100) != 0 goto L0b3ba
+    p7538()
+L0b3ba:
+    if g3970b == 1 goto L0b3c4
+    goto L0b4e8
+L0b3c4:
+    if g3693b != 0 goto L0b3ce
+L0b3ce:
+    g3693b := al
+    if g3693b != 0 goto L0b3db
+    goto L0b45b
+L0b3db:
+    if g3692b != 1 goto L0b3fb
+    PrintLn("^6Ты зашел на тропинку где бродит искитимская гопота.")
+L0b3fb:
+    if g3692b != 2 goto L0b41b
+    PrintLn("^6Ты зашел в какие-то дебри подваротен.")
+L0b41b:
+    if g3692b != 3 goto L0b43b
+    PrintLn("^6Ты зашел на планы.")
+L0b43b:
+    if g3692b != 4 goto L0b45b
+    PrintLn("^6Ты зашел чёрте куда.")
+L0b45b:
+    if g3693b == 0 goto L0b465
+    goto L0b4e5
+L0b465:
+    if g3692b != 1 goto L0b485
+    PrintLn("^6Ты вышел с тропинки.")
+L0b485:
+    if g3692b != 2 goto L0b4a5
+    PrintLn("^6Ты вышел из подваротен.")
+L0b4a5:
+    if g3692b != 3 goto L0b4c5
+    PrintLn("^6Ты вышел с планов.")
+L0b4c5:
+    if g3692b != 4 goto L0b4e5
+    PrintLn("^6Ты вышел чёрте откуда.")
+L0b4e5:
+    goto L0b940
+L0b4e8:
+    if g3970b == 2 goto L0b4ef
+    goto L0b5ae
+L0b4ef:
+    if g3697b == 0 goto L0b4f9
+    goto L0b592
+L0b4f9:
+    PrintLn("^5Идет типа клёвая цыпа. Хочешь её зацепить?")
+    ReadStr(@g3a72)
+    ReadLn
+    LowerCase(@g3a72)
+    if @g3a72 != "y" goto L0b590
+    if Random#15(2) != 0 goto L0b577
+    PrintLn("^5Ты такой подкатываешь, а она:\"Глянулся ты мне парниша\"")
+    g3697b := 1
+    goto L0b590
+L0b577:
+    PrintLn("^4Ты ещё подкатить неуспел - а она:\"Отдыхай урод\". - Тебя обломали кент")
+L0b590:
+    goto L0b5ab
+L0b592:
+    PrintLn("Совсем ничё не происходит.")
+L0b5ab:
+    goto L0b940
+L0b5ae:
+    if g3970b == 3 goto L0b5b5
+    goto L0b82f
+L0b5b5:
+    p0d14(0)
+    g3b72b := 0
+    if g3952 != 8 goto L0b5ca
+    goto L0b76a
+L0b5ca:
+    g3c7e := ((g3692b * 7) + 15)
+    if g38bcb != 1 goto L0b5ed
+    g3c7e := (g3c7e div 2)
+L0b5ed:
+    if sx(g38a4) > 0 goto L0b614
+    if sx(g38a4) < 0 goto L0b60a
+    if g38a4 >= Random#16(g3c7e) (unsigned) goto L0b614
+L0b60a:
+    if g3952 < 3 goto L0b614
+    goto L0b6a0
+L0b614:
+    if g3952 < 7 goto L0b61e
+    goto L0b6a0
+L0b61e:
+    PrintLn("^6Идет " + ds:((g3952 shl 8) + 46) + " # уровня. Хочешь наехать?", g395c)
+    ReadStr(@g3a72)
+    ReadLn
+    LowerCase(@g3a72)
+    if @g3a72 != "y" goto L0b69d
+    g3b72b := 1
+L0b69d:
+    goto L0b767
+L0b6a0:
+    PrintLn("^6Идет " + ds:((g3952 shl 8) + 46) + " # уровня, ищущий кого отпинать. Хочешь наехать?", g395c)
+    ReadStr(@g3a72)
+    ReadLn
+    LowerCase(@g3a72)
+    if @g3a72 != "y" goto L0b721
+    g3b72b := 1
+    goto L0b767
+L0b721:
+    if Random#17(2) != 0 goto L0b74e
+    PrintLn("^4Он тебя заметил.")
+    g3b72b := 1
+    goto L0b767
+L0b74e:
+    PrintLn("^2Ты смылся.")
+L0b767:
+    goto L0b81f
+L0b76a:
+    PrintLn("^6Идет ментяра # уровня гроза гопов.", g395c)
+    if sx(g38a4) > 0 goto L0b7ab
+    if sx(g38a4) < 0 goto L0b7c6
+    if g38a4 < Random#18(((g3692b * 7) + 15)) (unsigned) goto L0b7c6
+L0b7ab:
+    PrintLn("^2Ты затаился, прикинулся не гопом... Мент вроде не заметил")
+    goto L0b81f
+L0b7c6:
+    if g38b3b != 1 goto L0b801
+    PrintLn("^2Ты напялил тёмные очки и мент не узнал твою рожу, которая весит на почётном")
+    PrintLn("^2стенде \"Разыскиваются за гопничество\"")
+    goto L0b81f
+L0b801:
+    PrintLn("^4Запалил!")
+    g3b72b := 1
+L0b81f:
+    if g3b72b == 0 goto L0b82c
+    p3d11(0)
+L0b82c:
+    goto L0b940
+L0b82f:
+    if g3970b == 4 goto L0b836
+    goto L0b927
+L0b836:
+    if g38cdb <= 0 (unsigned) goto L0b863
+    if Random#19(7) != 0 goto L0b863
+    PrintLn("Все куда-то плывёт - совсем башню заклинило")
+L0b863:
+    if g38cdb > 0 (unsigned) goto L0b86d
+    goto L0b90c
+L0b86d:
+    if Random#20(7) == 0 goto L0b87d
+    goto L0b90c
+L0b87d:
+    PrintLn("^6Идет " + ds:((Random#21(7) shl 8) + 46) + " # уровня. Хочешь наехать?", Random#22(((g3692b * 10) + 1)))
+    ReadStr(@g3a72)
+    ReadLn
+    PrintLn("^6Чё за ботва? ни кого нет.. глюки какие-то...")
+    goto L0b925
+L0b90c:
+    PrintLn("Ничё не происходит.")
+L0b925:
+    goto L0b940
+L0b927:
+    PrintLn("Ничё не происходит.")
+L0b940:
+    if @g3972 == "mar" goto L0b954
+    goto L0c4b4
+L0b954:
+    if g3694b == 1 goto L0b95e
+    goto L0c49b
+L0b95e:
+    if g3b76b == 0 goto L0b968
+    goto L0c480
+L0b968:
+    PrintLn("Ты пришел на базар напиши  ^6w^7  чтобы уйти.")
+    PrintLn("Можно потискать здесь у лохов кошельки(^6t^7).")
+    PrintLn("А можно чё-то купить")
+    if g0b2eb <= g38c7 goto L0b9c5
+    g3b7ab := 52
+    goto L0b9ca
+L0b9c5:
+    g3b7ab := 48
+L0b9ca:
+    PrintLn("^61^7 - ^" + chr(g3b7ab) + "#^7 руб.  Хотдог(3-4 з)", g0b2eb)
+    if g0b2fb <= g38c7 goto L0ba21
+    g3b7ab := 52
+    goto L0ba26
+L0ba21:
+    g3b7ab := 48
+L0ba26:
+    PrintLn("^62^7 - ^" + chr(g3b7ab) + "#^7 руб.  Пиво(#з)", g0b2fb, 5)
+    if g0b30b <= g38c7 goto L0ba7e
+    g3b7ab := 52
+    goto L0ba83
+L0ba7e:
+    g3b7ab := 48
+L0ba83:
+    PrintLn("^63^7 - ^" + chr(g3b7ab) + "#^7 руб. Затемнённые очки(Чтоб менты не узнали)", g0b30b)
+    if g0b31b <= g38c7 goto L0bada
+    g3b7ab := 52
+    goto L0badf
+L0bada:
+    g3b7ab := 48
+L0badf:
+    PrintLn("^64^7 - ^" + chr(g3b7ab) + "#^7 руб. Реальный спортивный костюм abibas(Смягчает пинок на 1)", g0b31b)
+    if g0b32b <= g38c7 goto L0bb36
+    g3b7ab := 52
+    goto L0bb3b
+L0bb36:
+    g3b7ab := 48
+L0bb3b:
+    PrintLn("^65^7 - ^" + chr(g3b7ab) + "#^7 руб. Понтовые бутсы(Увеличивают урон)", g0b32b)
+    if g3692b > 1 (unsigned) goto L0bb8a
+    goto L0bc42
+L0bb8a:
+    if g0b33b <= g38c7 goto L0bb9c
+    g3b7ab := 52
+    goto L0bba1
+L0bb9c:
+    g3b7ab := 48
+L0bba1:
+    PrintLn("^66^7 - ^" + chr(g3b7ab) + "#^7 руб. Реальную кожанку(Дополнительная защита от случайностей на 2)", g0b33b)
+    if g0b34b <= g38c7 goto L0bbf8
+    g3b7ab := 52
+    goto L0bbfd
+L0bbf8:
+    g3b7ab := 48
+L0bbfd:
+    PrintLn("^67^7 - ^" + chr(g3b7ab) + "#^7 руб. Реальный спортивный костюм adidas(Смягчает пинок на 2)", g0b34b)
+L0bc42:
+    if g3692b <= 2 (unsigned) goto L0bca5
+    if g0b35b <= g38c7 goto L0bc5b
+    g3b7ab := 52
+    goto L0bc60
+L0bc5b:
+    g3b7ab := 48
+L0bc60:
+    PrintLn("^68^7 - ^" + chr(g3b7ab) + "#^7 руб. Понтовёйшие бутсы(Урон+2)", g0b35b)
+L0bca5:
+    if g3692b <= 3 (unsigned) goto L0bd08
+    if g0b36b <= g38c7 goto L0bcbe
+    g3b7ab := 52
+    goto L0bcc3
+L0bcbe:
+    g3b7ab := 48
+L0bcc3:
+    PrintLn("^69^7 - ^" + chr(g3b7ab) + "#^7 руб. Ваще крутую кожанку(Броня +4)", g0b36b)
+L0bd08:
+    Print("^0Базар\\")
+    ReadStr(@g3a72)
+    ReadLn
+    LowerCase(@g3a72)
+    if @g3a72 == "1" goto L0bd5c
+    goto L0be0a
+L0bd5c:
+    if g38b0b != 1 goto L0bd7f
+    PrintLn("^4Ты не можешь хавать из-за сломаной челюсти.")
+    goto L0be0a
+L0bd7f:
+    if g38ac >= g38ae goto L0bdf1
+    if g0b2eb <= g38c7 goto L0bdae
+    PrintLn("^4Чёрт, бабок даже на жратву не хватает.")
+    goto L0bdef
+L0bdae:
+    g38c7 := (g38c7 - g0b2eb)
+    g38ac := (g38ac + (Random#23(2) + 3))
+    if g38ac <= g38ae goto L0bdd6
+    g38ac := g38ae
+L0bdd6:
+    PrintLn("^2Ты сожрал хот-дог")
+L0bdef:
+    goto L0be0a
+L0bdf1:
+    PrintLn("^6Да неохота хавать")
+L0be0a:
+    if @g3a72 == "2" goto L0be1e
+    goto L0beb8
+L0be1e:
+    if g0b2fb <= g38c7 goto L0be44
+    PrintLn("^4Не хватает")
+    goto L0beb8
+L0be44:
+    g38c7 := (g38c7 - g0b2fb)
+    if Random#24(3) != 0 goto L0be76
+    PrintLn("^2Глинское? Чё за нафиг? А ладно.")
+    goto L0beb4
+L0be76:
+    if Random#24(3) != 1 goto L0be96
+    PrintLn("^2Пивко. Холодненькое.")
+    goto L0beb4
+L0be96:
+    if Random#24(3) != 2 goto L0beb4
+    PrintLn("^2Ну чё по пиву?.")
+L0beb4:
+    g38c3 := g38c3 + 1
+L0beb8:
+    if @g3a72 != "3" goto L0bf38
+    if g38b3b != 0 goto L0bf1f
+    if g0b30b <= g38c7 goto L0bef6
+    PrintLn("^4Не хватает бабок")
+    goto L0bf1d
+L0bef6:
+    g38b3b := 1
+    g38c7 := (g38c7 - g0b30b)
+    PrintLn("^2Модные такие очки от солнца.")
+L0bf1d:
+    goto L0bf38
+L0bf1f:
+    PrintLn("^6У тебя есть очки от солнца.")
+L0bf38:
+    if @g3a72 == "4" goto L0bf4c
+    goto L0bfe1
+L0bf4c:
+    if g38b7b != 0 goto L0bfc8
+    if g38b4b != 0 goto L0bfad
+    if g0b31b <= g38c7 goto L0bf80
+    PrintLn("^4Не хватает денег")
+    goto L0bfab
+L0bf80:
+    g38b4b := 1
+    g38c7 := (g38c7 - g0b31b)
+    PrintLn("^2Теперь ты больше похож на гопа.")
+    g38b2b := g38b2b + 1
+L0bfab:
+    goto L0bfc6
+L0bfad:
+    PrintLn("^6У тебя уже есть костюм.")
+L0bfc6:
+    goto L0bfe1
+L0bfc8:
+    PrintLn("^6У тебя есть более крутой костюм.")
+L0bfe1:
+    if @g3a72 == "5" goto L0bff5
+    goto L0c08e
+L0bff5:
+    if g38b8b != 0 goto L0c075
+    if g38b5b != 0 goto L0c05a
+    if g0b32b <= g38c7 goto L0c029
+    PrintLn("^4Нету на них денег")
+    goto L0c058
+L0c029:
+    g38b5b := 1
+    g38c7 := (g38c7 - g0b32b)
+    PrintLn("^2Зацени красовки.")
+    g38a8 := g38a8 + 1
+    g38aa := g38aa + 1
+L0c058:
+    goto L0c073
+L0c05a:
+    PrintLn("^6У тебя такие уже есть.")
+L0c073:
+    goto L0c08e
+L0c075:
+    PrintLn("^6У тебя бутсы по круче.")
+L0c08e:
+    if g3692b > 1 (unsigned) goto L0c098
+    goto L0c142
+L0c098:
+    if @g3a72 == "6" goto L0c0ac
+    goto L0c142
+L0c0ac:
+    if g38b9b != 0 goto L0c129
+    if g38b6b != 0 goto L0c10e
+    if g0b33b <= g38c7 goto L0c0e0
+    PrintLn("^4Не достаточно бабла")
+    goto L0c10c
+L0c0e0:
+    g38b6b := 1
+    g38c7 := (g38c7 - g0b33b)
+    PrintLn("^2Ну весь на понтах.")
+    g38b2b := (g38b2b + 2)
+L0c10c:
+    goto L0c127
+L0c10e:
+    PrintLn("^6Ты уже купил это.")
+L0c127:
+    goto L0c142
+L0c129:
+    PrintLn("^6Утебя есть кожанка круче.")
+L0c142:
+    if @g3a72 == "7" goto L0c156
+    goto L0c1d7
+L0c156:
+    if g38b7b != 0 goto L0c1be
+    if g0b34b <= g38c7 goto L0c183
+    PrintLn("^4Не хватает денег")
+    goto L0c1bc
+L0c183:
+    g38b7b := 1
+    g38c7 := (g38c7 - g0b34b)
+    PrintLn("^2Чистый гопник.")
+    if g38b4b == 0 goto L0c1b7
+    g38b2b := g38b2b + 1
+    goto L0c1bc
+L0c1b7:
+    g38b2b := (g38b2b + 2)
+L0c1bc:
+    goto L0c1d7
+L0c1be:
+    PrintLn("^6У тебя уже есть этот костюм.")
+L0c1d7:
+    if g3692b > 2 (unsigned) goto L0c1e1
+    goto L0c27f
+L0c1e1:
+    if @g3a72 == "8" goto L0c1f5
+    goto L0c27f
+L0c1f5:
+    if g38b8b != 0 goto L0c266
+    if g0b35b <= g38c7 goto L0c222
+    PrintLn("^4Нету на них денег")
+    goto L0c264
+L0c222:
+    g38b8b := 1
+    g38c7 := (g38c7 - g0b35b)
+    PrintLn("^2Офигенные бутцы.")
+    if g38b5b == 0 goto L0c25a
+    g38a8 := g38a8 + 1
+    g38aa := g38aa + 1
+    goto L0c264
+L0c25a:
+    g38a8 := (g38a8 + 2)
+    g38aa := (g38aa + 2)
+L0c264:
+    goto L0c27f
+L0c266:
+    PrintLn("^6У тебя такие уже есть.")
+L0c27f:
+    if g3692b > 3 (unsigned) goto L0c289
+    goto L0c31f
+L0c289:
+    if @g3a72 == "9" goto L0c29d
+    goto L0c31f
+L0c29d:
+    if g38b9b != 0 goto L0c306
+    if g0b36b <= g38c7 goto L0c2ca
+    PrintLn("^4Не достаточно бабла")
+    goto L0c304
+L0c2ca:
+    g38b9b := 1
+    g38c7 := (g38c7 - g0b36b)
+    PrintLn("^2Ну крутой, сдохнуть можно!")
+    if g38b6b == 0 goto L0c2ff
+    g38b2b := (g38b2b + 2)
+    goto L0c304
+L0c2ff:
+    g38b2b := (g38b2b + 4)
+L0c304:
+    goto L0c31f
+L0c306:
+    PrintLn("^6Ты уже купил это.")
+L0c31f:
+    if @g3a72 == "t" goto L0c333
+    goto L0c46a
+L0c333:
+    if sx(g38a4) > 0 goto L0c35d
+    if sx(g38a4) < 0 goto L0c3cd
+    if g38a4 < Random#25(((((g3692b shl 1) shl 1) + g3692b) + 5)) (unsigned) goto L0c3cd
+L0c35d:
+    if Random#26(10) >= 9 (unsigned) goto L0c3cd
+    g3b74 := (Random#27((g38a4 shl 1)) + 1)
+    g38c7 := (g38c7 + g3b74)
+    PrintLn("^2Опа бабки! # рублей на пиво!", g3b74)
+    PrintLn("^6Ты получаешь # качков опыта", (g3692b shl 1))
+    g38ce := (g38ce + (g3692b shl 1))
+    p2526(0)
+    goto L0c46a
+L0c3cd:
+    p0d14(1)
+    g3b72b := 1
+    PrintLn("^4Корявый! ты попался!")
+    PrintLn("^6Это " + ds:((g3952 shl 8) + 46) + " # уровня.", g395c)
+    p3d11(1)
+    PrintLn("^6Блин менты запалят сматывайся!.")
+    @g3a72 := "w"
+    g3b76b := 5
+L0c46a:
+    if @g3a72 == "w" goto L0c47e
+    goto L0bd08
+L0c47e:
+    goto L0c499
+L0c480:
+    PrintLn("^6На базар пока нельзя там менты бродят, тебя ищут.")
+L0c499:
+    goto L0c4b4
+L0c49b:
+    PrintLn("^6Ты незнаешь, пока ешё, где находтся базар")
+L0c4b4:
+    if @g3972 == "bmar" goto L0c4c8
+    goto L0d39c
+L0c4c8:
+    if g3695b == 1 goto L0c4d2
+    goto L0d383
+L0c4d2:
+    PrintLn("Ты пришел к барыгам напиши  ^6w^7  чтобы уйти.")
+    PrintLn("Здесь можно толкнуть хлам(^6x^7) и купить кое-что")
+    PrintLn("Ещё ты можешь продать ненужные вещи - ^6wes^7")
+    if g0b38b <= g38c7 goto L0c52f
+    g3b7ab := 52
+    goto L0c534
+L0c52f:
+    g3b7ab := 48
+L0c534:
+    PrintLn("^61^7 - ^" + chr(g3b7ab) + "#^7 руб. Косяк", g0b38b)
+    if g0b39b <= g38c7 goto L0c58b
+    g3b7ab := 52
+    goto L0c590
+L0c58b:
+    g3b7ab := 48
+L0c590:
+    PrintLn("^62^7 - ^" + chr(g3b7ab) + "#^7 руб. Краденый мобильник(Подмога быстрее приходит)", g0b39b)
+    if g0b3ab <= g38c7 goto L0c5e7
+    g3b7ab := 52
+    goto L0c5ec
+L0c5e7:
+    g3b7ab := 48
+L0c5ec:
+    PrintLn("^63^7 - ^" + chr(g3b7ab) + "#^7 руб. Офигенный косяк(Очко прокачки)", g0b3ab)
+    if g0b3bb <= g38c7 goto L0c643
+    g3b7ab := 52
+    goto L0c648
+L0c643:
+    g3b7ab := 48
+L0c648:
+    PrintLn("^64^7 - ^" + chr(g3b7ab) + "#^7 руб. Сделать типа зоновскую наколку(Шансы, что наедут -50%(кроме бандитов, ментов и маньяков))", g0b3bb)
+    if g3692b <= 1 (unsigned) goto L0c6f1
+    if g0b3cb <= g38c7 goto L0c6a6
+    g3b7ab := 52
+    goto L0c6ab
+L0c6a6:
+    g3b7ab := 48
+L0c6ab:
+    PrintLn("^65^7 - ^" + chr(g3b7ab) + "#^7 руб. Кастет(урон+2)", g0b3cb, 5)
+L0c6f1:
+    if g3692b <= 2 (unsigned) goto L0c755
+    if g0b3db <= g38c7 goto L0c70a
+    g3b7ab := 52
+    goto L0c70f
+L0c70a:
+    g3b7ab := 48
+L0c70f:
+    PrintLn("^66^7 - ^" + chr(g3b7ab) + "#^7 руб. Дубинка(урон+4), заменяет кастет", g0b3db, 5)
+L0c755:
+    if g3692b <= 3 (unsigned) goto L0c7ba
+    if g0b3eb <= g38c7 goto L0c76e
+    g3b7ab := 52
+    goto L0c773
+L0c76e:
+    g3b7ab := 48
+L0c773:
+    PrintLn("^67^7 - ^" + chr(g3b7ab) + "#^7 руб. Самопальный пистолет (Можно стрелять в бандитских районах - ^6f^7 урон(#-#)).", g0b3eb, 20, 30)
+L0c7ba:
+    if g3692b <= 3 (unsigned) goto L0c81d
+    if g0b3fb <= g38c7 goto L0c7d3
+    g3b7ab := 52
+    goto L0c7d8
+L0c7d3:
+    g3b7ab := 48
+L0c7d8:
+    PrintLn("^68^7 - ^" + chr(g3b7ab) + "#^7 руб. Патроны - 6.", g0b3fb)
+L0c81d:
+    if g3692b <= 3 (unsigned) goto L0c88e
+    if g394db == 0 goto L0c88e
+    if g3e32b != 25 goto L0c88e
+    if g0b40b <= g38c7 goto L0c844
+    g3b7ab := 52
+    goto L0c849
+L0c844:
+    g3b7ab := 48
+L0c849:
+    PrintLn("^69^7 - ^" + chr(g3b7ab) + "#^7 руб. Глушитель.", g0b3fb)
+L0c88e:
+    Print("^0Барыги\\")
+    ReadStr(@g3a72)
+    ReadLn
+    LowerCase(@g3a72)
+    if @g3a72 != "1" goto L0c92b
+    if g0b38b <= g38c7 goto L0c905
+    PrintLn("^4Чёрт, бабок не хватает.")
+    goto L0c92b
+L0c905:
+    g38c7 := (g38c7 - g0b38b)
+    g38c5 := g38c5 + 1
+    PrintLn("^2Ты купил косяк")
+L0c92b:
+    if @g3a72 != "2" goto L0c9ab
+    if g38bbb != 0 goto L0c992
+    if g0b39b <= g38c7 goto L0c969
+    PrintLn("^4Нету денег")
+    goto L0c990
+L0c969:
+    g38bbb := 1
+    g38c7 := (g38c7 - g0b39b)
+    PrintLn("^2Чё ты модный типа да?.")
+L0c990:
+    goto L0c9ab
+L0c992:
+    PrintLn("^6У тебя уже есть мобила.")
+L0c9ab:
+    if @g3a72 == "3" goto L0c9bf
+    goto L0cac7
+L0c9bf:
+    if g0b3ab <= g38c7 goto L0c9e6
+    PrintLn("^4Не хватает")
+    goto L0cac7
+L0c9e6:
+    g38c7 := (g38c7 - g0b3ab)
+    PrintLn("^2Пошли стероиды!")
+    if Random#28(4) != 0 goto L0ca53
+    g389e := g389e + 1
+    PrintLn("^1Сила +1 ")
+    g38aa := g38aa + 1
+    if (g389e mod 2) != 0 goto L0ca49
+    g38a8 := g38a8 + 1
+L0ca49:
+    g38ae := g38ae + 1
+    g38ac := g38ac + 1
+    goto L0cac7
+L0ca53:
+    if Random#28(4) != 1 goto L0ca77
+    g38a0 := g38a0 + 1
+    PrintLn("^1Ловкость +1 ")
+    goto L0cac7
+L0ca77:
+    if Random#28(4) != 2 goto L0caa5
+    g38a2 := g38a2 + 1
+    PrintLn("^1Живучесть +1 ")
+    g38ae := (g38ae + 5)
+    g38ac := (g38ac + 5)
+    goto L0cac7
+L0caa5:
+    if Random#28(4) != 3 goto L0cac7
+    g38a4 := g38a4 + 1
+    PrintLn("^1Удача +1 ")
+L0cac7:
+    if @g3a72 != "4" goto L0cb47
+    if g38bcb != 0 goto L0cb2e
+    if g0b3bb <= g38c7 goto L0cb05
+    PrintLn("^4Нету денег")
+    goto L0cb2c
+L0cb05:
+    g38bcb := 1
+    g38c7 := (g38c7 - g0b3bb)
+    PrintLn("^2Чистый зек.")
+L0cb2c:
+    goto L0cb47
+L0cb2e:
+    PrintLn("^6Сделать, конечно, можно но толку не будет.")
+L0cb47:
+    if @g3a72 == "5" goto L0cb5b
+    goto L0cc04
+L0cb5b:
+    if g394bb == 0 goto L0cb70
+    if g38c2b == 0 goto L0cb70
+    if g394cb != 0 goto L0cbeb
+L0cb70:
+    if g38bab != 0 goto L0cbd0
+    if g0b3cb <= g38c7 goto L0cb9d
+    PrintLn("^4Не хватает деньжат")
+    goto L0cbce
+L0cb9d:
+    g38bab := 1
+    g38c7 := (g38c7 - g0b3cb)
+    g38a8 := (g38a8 + 2)
+    g38aa := (g38aa + 2)
+    PrintLn("^2Ты купил кастет смотри чтоб менты с ним не запалили.")
+L0cbce:
+    goto L0cbe9
+L0cbd0:
+    PrintLn("^6У тебя есть эта железка.")
+L0cbe9:
+    goto L0cc04
+L0cbeb:
+    PrintLn("^6Нафиг тебе он нужен, когда есть более мощное оружие.")
+L0cc04:
+    if @g3a72 == "6" goto L0cc18
+    goto L0ccc4
+L0cc18:
+    if g38c2b == 0 goto L0cc29
+    if g394cb == 0 goto L0cc29
+    goto L0ccab
+L0cc29:
+    if g394bb != 0 goto L0cc90
+    if g0b3db <= g38c7 goto L0cc56
+    PrintLn("^4Не хватает на дубинку деньжат")
+    goto L0cc8e
+L0cc56:
+    g394bb := 1
+    g38c7 := (g38c7 - g0b3db)
+    if g38bab == 0 goto L0cc75
+    g38a8 := (g38a8 + 2)
+    g38aa := (g38aa + 2)
+L0cc75:
+    PrintLn("^2Ты купил дубинку - похоже задумал чё-то нехорошее.")
+L0cc8e:
+    goto L0cca9
+L0cc90:
+    PrintLn("^6У тебя есть дубина.")
+L0cca9:
+    goto L0ccc4
+L0ccab:
+    PrintLn("^6Да нафиг она нужна, когда есть более мощное оружие.")
+L0ccc4:
+    if @g3a72 == "7" goto L0ccd8
+    goto L0cd65
+L0ccd8:
+    if g394db != 0 goto L0cd4c
+    if g0b3eb <= g38c7 goto L0cd05
+    PrintLn("^4Дорогая штука!")
+    goto L0cd4a
+L0cd05:
+    g394db := 1
+    g394f := (g394f + 3)
+    g38c7 := (g38c7 - g0b3eb)
+    PrintLn("^2Спасайся кто может!!!")
+    PrintLn("^0Только помни стреляй в бандитских районах - там менты не накроют")
+L0cd4a:
+    goto L0cd65
+L0cd4c:
+    PrintLn("^6Ну.. ты.. ВАЩЕ ОФИГЕЛ!")
+L0cd65:
+    if @g3a72 != "8" goto L0cde5
+    if g394db == 0 goto L0cdcc
+    if g0b3fb <= g38c7 goto L0cda3
+    PrintLn("^4Нехватка денег.")
+    goto L0cdca
+L0cda3:
+    g394f := (g394f + 5)
+    g38c7 := (g38c7 - g0b3fb)
+    PrintLn("^2Получи пять пуль.. на руки")
+L0cdca:
+    goto L0cde5
+L0cdcc:
+    PrintLn("^6Нету пушки. Сначала купи пистолет")
+L0cde5:
+    if @g3a72 == "9" goto L0cdf9
+    goto L0ce76
+L0cdf9:
+    if g394db == 0 goto L0ce76
+    if g3e32b != 25 goto L0ce76
+    if g394eb != 0 goto L0ce5d
+    if g0b40b <= g38c7 goto L0ce34
+    PrintLn("^4Подкопи бабла.")
+    goto L0ce5b
+L0ce34:
+    g394eb := 1
+    g38c7 := (g38c7 - g0b40b)
+    PrintLn("^2Теперь стреляй где хочешь!")
+L0ce5b:
+    goto L0ce76
+L0ce5d:
+    PrintLn("^6Да купил уже, купил")
+L0ce76:
+    if @g3a72 != "x" goto L0cece
+    if g38c9 <= 0 goto L0ceb5
+    g38c7 := (g38c7 + g38c9)
+    g38c9 := 0
+    PrintLn("^6Барыги дали тебе денег за хлам.")
+    goto L0cece
+L0ceb5:
+    PrintLn("^4Тебе нечего спихнуть.")
+L0cece:
+    if @g3a72 == "wes" goto L0cee2
+    goto L0d36d
+L0cee2:
+    g3e33b := 255
+    if g38b4b != 0 goto L0cef1
+    goto L0cf9c
+L0cef1:
+    if g38b7b != 0 goto L0cefb
+    goto L0cf9c
+L0cefb:
+    PrintLn("^2У тебя есть ненужный костюм хочешь продать?")
+    Print("^0Продать вещи\\")
+    ReadStr(@g3a72)
+    ReadLn
+    LowerCase(@g3a72)
+    g3e33b := (Random#29(5) + 8)
+    if @g3a72 != "y" goto L0cf9c
+    g38b4b := 0
+    asm cwde 
+    g38c7 := (g38c7 + g3e33b)
+    asm cwde 
+    PrintLn("^2Ты продал костюм за #.", g3e33b)
+L0cf9c:
+    if g38b5b != 0 goto L0cfa6
+    goto L0d051
+L0cfa6:
+    if g38b8b != 0 goto L0cfb0
+    goto L0d051
+L0cfb0:
+    PrintLn("^2У тебя есть ненужные кроссовки хочешь продать?")
+    Print("^0Продать вещи\\")
+    ReadStr(@g3a72)
+    ReadLn
+    LowerCase(@g3a72)
+    g3e33b := (Random#30(5) + 8)
+    if @g3a72 != "y" goto L0d051
+    g38b5b := 0
+    asm cwde 
+    g38c7 := (g38c7 + g3e33b)
+    asm cwde 
+    PrintLn("^2Ты продал кроссовки за #.", g3e33b)
+L0d051:
+    if g38b6b != 0 goto L0d05b
+    goto L0d106
+L0d05b:
+    if g38b9b != 0 goto L0d065
+    goto L0d106
+L0d065:
+    PrintLn("^2У тебя есть ненужная кожанка хочешь продать?")
+    Print("^0Продать вещи\\")
+    ReadStr(@g3a72)
+    ReadLn
+    LowerCase(@g3a72)
+    g3e33b := (Random#31(8) + 13)
+    if @g3a72 != "y" goto L0d106
+    g38b6b := 0
+    asm cwde 
+    g38c7 := (g38c7 + g3e33b)
+    asm cwde 
+    PrintLn("^2Ты продал кожанку за #.", g3e33b)
+L0d106:
+    if g38bab != 0 goto L0d110
+    goto L0d1c9
+L0d110:
+    if g394bb != 0 goto L0d128
+    if g38c2b != 0 goto L0d128
+    if g394cb != 0 goto L0d128
+    goto L0d1c9
+L0d128:
+    PrintLn("^2У тебя есть кастет, а это отстой хочешь продать?")
+    Print("^0Продать вещи\\")
+    ReadStr(@g3a72)
+    ReadLn
+    LowerCase(@g3a72)
+    g3e33b := (Random#32(8) + 13)
+    if @g3a72 != "y" goto L0d1c9
+    g38bab := 0
+    asm cwde 
+    g38c7 := (g38c7 + g3e33b)
+    asm cwde 
+    PrintLn("^2Ты продал кастет за #.", g3e33b)
+L0d1c9:
+    if g394bb != 0 goto L0d1d3
+    goto L0d285
+L0d1d3:
+    if g38c2b != 0 goto L0d1e4
+    if g394cb != 0 goto L0d1e4
+    goto L0d285
+L0d1e4:
+    PrintLn("^2У тебя есть дубинка - барахло - хочешь продать?")
+    Print("^0Продать вещи\\")
+    ReadStr(@g3a72)
+    ReadLn
+    LowerCase(@g3a72)
+    g3e33b := (Random#33(15) + 25)
+    if @g3a72 != "y" goto L0d285
+    g394bb := 0
+    asm cwde 
+    g38c7 := (g38c7 + g3e33b)
+    asm cwde 
+    PrintLn("^2Ты продал дубинку за #.", g3e33b)
+L0d285:
+    if g38c2b != 0 goto L0d28f
+    goto L0d33a
+L0d28f:
+    if g394cb != 0 goto L0d299
+    goto L0d33a
+L0d299:
+    PrintLn("^2У тебя есть ножик и тeсак, хочешь продать ножик?")
+    Print("^0Продать вещи\\")
+    ReadStr(@g3a72)
+    ReadLn
+    LowerCase(@g3a72)
+    g3e33b := (Random#34(23) + 38)
+    if @g3a72 != "y" goto L0d33a
+    g38c2b := 0
+    asm cwde 
+    g38c7 := (g38c7 + g3e33b)
+    asm cwde 
+    PrintLn("^2Ты продал ножик за #.", g3e33b)
+L0d33a:
+    if g3e33b != 255 goto L0d35a
+    PrintLn("^6У тебя нет неужных вещей.")
+L0d35a:
+    @g3a72 := " "
+L0d36d:
+    if @g3a72 == "w" goto L0d381
+    goto L0c88e
+L0d381:
+    goto L0d39c
+L0d383:
+    PrintLn("^6Туда любого дебила с улицы непропустят - сначала докажи, что ты не засранец - отпинай побольше ублюдков")
+L0d39c:
+    if @g3972 == "rep" goto L0d3b0
+    goto L0d6e3
+L0d3b0:
+    if g3698b == 1 goto L0d3ba
+    goto L0d6ca
+L0d3ba:
+    PrintLn("Ты пришел на ремот, к ветеринару напиши  ^6w^7  чтобы уйти")
+    if g38ac < g38ae goto L0d3ea
+    if g38b0b != 0 goto L0d3ea
+    if g38b1b == 0 goto L0d3ee
+L0d3ea:
+    goto L0d3f0
+L0d3ee:
+L0d3f0:
+    if al == 0 goto L0d3f7
+    goto L0d4ba
+L0d3f7:
+    PrintLn("^0Док: не волнуйся всё зарастёт как на собаке")
+    if g38c7 >= 3 goto L0d41e
+    g3b7ab := 52
+    goto L0d423
+L0d41e:
+    g3b7ab := 48
+L0d423:
+    PrintLn("  ^2h^7 - за ^" + chr(g3b7ab) + "3^7 рубля тебя залатают")
+    if g38c7 >= 7 goto L0d473
+    g3b7ab := 52
+    goto L0d478
+L0d473:
+    g3b7ab := 48
+L0d478:
+    PrintLn("  ^2r^7 - за ^" + chr(g3b7ab) + "7^7 рублей починят переломы")
+L0d4ba:
+    if g38ac < g38ae goto L0d4ed
+    if g38b0b != 0 goto L0d4ed
+    if g38b1b != 0 goto L0d4ed
+    PrintLn("^0Док: вали отсюда ты здоров.")
+    goto L0d6c8
+L0d4ed:
+    Print("^0Ветеренар\\")
+    ReadStr(@g3a72)
+    ReadLn
+    LowerCase(@g3a72)
+    if @g3a72 != "r" goto L0d5af
+    if g38b0b == 1 goto L0d54c
+    if g38b1b != 1 goto L0d5af
+L0d54c:
+    if g38c7 < 7 goto L0d596
+    g38c7 := (g38c7 - 7)
+    g38b0b := 0
+    g38b1b := 0
+    PrintLn("^0Ого! да тебя не иначе как грузовик откатал!")
+    PrintLn("^2Твои переломы залечены.")
+    goto L0d5af
+L0d596:
+    PrintLn("^4Блин халявщик, медицина не бесплатная")
+L0d5af:
+    if @g3a72 == "h" goto L0d5c3
+    goto L0d6a3
+L0d5c3:
+    if g38ac < g38ae goto L0d5cf
+    goto L0d6a3
+L0d5cf:
+    if g38c7 >= 3 goto L0d5d9
+    goto L0d68a
+L0d5d9:
+    g38c7 := (g38c7 - 3)
+    g38ac := (g38ac + 5)
+    if g38ac <= g38ae goto L0d5f2
+    g38ac := g38ae
+L0d5f2:
+    if Random#35(3) != 1 goto L0d61b
+    PrintLn("^0Щас гайки подтянем и будешь как новый!")
+    goto L0d66d
+L0d61b:
+    if Random#35(3) != 2 goto L0d63b
+    PrintLn("^0Так чё тут у нас? Ага, пара швов и всё будет в порядке.")
+    goto L0d66d
+L0d63b:
+    PrintLn("^6Эй, Док а зачем тебе паяльник?")
+    PrintLn("^0Док: Молчи животное!")
+L0d66d:
+    PrintLn("^2Здоровья #/#", g38ac, g38ae)
+    goto L0d6a3
+L0d68a:
+    PrintLn("^4Блин халявщик, медицина не бесплатная")
+L0d6a3:
+    if @g3a72 == "w" goto L0d6c8
+    if @g3a72 == "e" goto L0d6c8
+    goto L0d4ba
+L0d6c8:
+    goto L0d6e3
+L0d6ca:
+    PrintLn("^6Сначала найди где находтся эта больница")
+L0d6e3:
+    if @g3972 == "girl" goto L0d6f7
+    goto L0d7ce
+L0d6f7:
+    if g3697b == 1 goto L0d701
+    goto L0d7b5
+L0d701:
+    if g38c7 >= 12 goto L0d70b
+    goto L0d79a
+L0d70b:
+    PrintLn("^2Ты пришел к своей подруге.")
+    if Random#36(2) != 0 goto L0d756
+    if g3699b != 0 goto L0d756
+    PrintLn("^2Она вытащила тебя в клуб и теперь ты знаешь где он находиться.")
+    g3699b := 1
+L0d756:
+    PrintLn("^6Ты купил ей чё-то, потратив 12 рублей.")
+    PrintLn("^2Ты расслабился, отдохнул и снова можешь творить свои гоповские дела.")
+    g38ac := g38ae
+    g38c7 := (g38c7 - 12)
+    g3b76b := 0
+    goto L0d7b3
+L0d79a:
+    PrintLn("^6Ну непойдёшь же как придурок без ничего.")
+L0d7b3:
+    goto L0d7ce
+L0d7b5:
+    PrintLn("^4У тебя пока нет девчонки.")
+L0d7ce:
+    if @g3972 != "fight" goto L0d7f8
+    PrintLn("^6Пережитки прошлого жми ^6w^7 чтобы искать врагов")
+L0d7f8:
+    if @g3972 == "pr" goto L0d80c
+    goto L0defc
+L0d80c:
+    if g3696b == 1 goto L0d816
+    goto L0dee3
+L0d816:
+    Print("Ты пришел в притон - ")
+    if g3692b != 1 goto L0d859
+    PrintLn("^0общагу №#", (Random#37(6) + 3))
+L0d859:
+    if g3692b != 2 goto L0d879
+    PrintLn("^0общагу ВКИ")
+L0d879:
+    if g3692b != 3 goto L0d899
+    PrintLn("^0гоповский притон")
+L0d899:
+    if g3692b != 4 goto L0d8b9
+    PrintLn("^0притон отморозков")
+L0d8b9:
+    WriteLn
+    if g3b78b != 1 goto L0d8e8
+    PrintLn("^6На одного пацана наехал какой-то урод")
+L0d8e8:
+    if g3b79b == 0 goto L0d90f
+    if g38cb < 100 goto L0d90f
+    PrintLn("^6Ты пацан нормальный. Есть дело.")
+L0d90f:
+    if g3695b == 0 goto L0d91d
+    if g369ab != 0 goto L0d95c
+L0d91d:
+    if ((((((g38a6 - ((g3692b - 1) * 10)) - 5) shl 1) shl 1) + ((g38a6 - ((g3692b - 1) * 10)) - 5)) + g38cb) < 40 goto L0d95c
+    PrintLn("^6Пацаны хотят тебе кое-чё сказать")
+L0d95c:
+    WriteLn
+    PrintLn("Напиши ^6w^7 чтобы уйти")
+    if g38c3 != 0 goto L0d992
+    g3b7ab := 52
+    goto L0d997
+L0d992:
+    g3b7ab := 48
+L0d997:
+    PrintLn("Напиши ^" + chr(g3b7ab) + "p^7  чтобы угостить пацанов пивом")
+    if g38cb >= 2 goto L0d9e7
+    g3b7ab := 52
+    goto L0d9ec
+L0d9e7:
+    g3b7ab := 48
+L0d9ec:
+    if g3e35b <= 0 (unsigned) goto L0da35
+    PrintLn("Напиши ^" + chr(g3b7ab) + "r^7  чтобы занять 2 рубля")
+L0da35:
+    if g3b78b != 1 goto L0da55
+    PrintLn("Напиши ^6hp^7 чтобы отпинать мудака который наезжал на пацана")
+L0da55:
+    PrintLn("Напиши ^6s^7  чтобы узнать отношение")
+    if g3695b == 0 goto L0da7c
+    if g369ab != 0 goto L0dabb
+L0da7c:
+    if ((((((g38a6 - ((g3692b - 1) * 10)) - 5) shl 1) shl 1) + ((g38a6 - ((g3692b - 1) * 10)) - 5)) + g38cb) < 40 goto L0dabb
+    PrintLn("Напиши ^6a^7  чтобы спросить чё-то")
+L0dabb:
+    if g38cb < 100 goto L0dae2
+    if g3b79b == 0 goto L0dae2
+    PrintLn("Напиши ^6d^7 чтобы пойти на дело")
+L0dae2:
+    Print("^0Притон\\")
+    ReadStr(@g3a72)
+    ReadLn
+    LowerCase(@g3a72)
+    if @g3a72 != "p" goto L0db77
+    if g38c3 <= 0 goto L0db5e
+    g38c3 := g38c3 - 1
+    g38cb := (g38cb + 5)
+    PrintLn("^2Ты угостил пацанов пивом. Понтовость улутшилась на 5.")
+    goto L0db77
+L0db5e:
+    PrintLn("^6А нет у тебя пива.")
+L0db77:
+    if @g3a72 != "r" goto L0dbf3
+    if g3e35b <= 0 (unsigned) goto L0dbda
+    if g38cb <= 0 goto L0dbbf
+    g38c7 := (g38c7 + 2)
+    g38cb := (g38cb - 2)
+    g3e35b := g3e35b - 1
+    PrintLn("^2Ты занял 2 рубля на пиво. Понтовость уменьшилась на 2.")
+    goto L0dbd8
+L0dbbf:
+    PrintLn("^6Ты не можешь занять денег.")
+L0dbd8:
+    goto L0dbf3
+L0dbda:
+    PrintLn("^6Ты уже всю мелочь выгреб!")
+L0dbf3:
+    if g3b78b != 1 goto L0dc63
+    if @g3a72 != "hp" goto L0dc63
+    p0d14(1)
+    g3b72b := 1
+    PrintLn("^6Это " + ds:((g3952 shl 8) + 46) + " # уровня.", g395c)
+    p3d11(6)
+    g3b78b := 0
+L0dc63:
+    if @g3a72 != "s" goto L0dcba
+    PrintLn("^4Твоя понтовость сейчас = #.", g38cb)
+    if ((g3692b * 10) + 10) > g38cb goto L0dcba
+    PrintLn("^0Да если чё мы за тебя впрягаемся.")
+L0dcba:
+    if g3695b == 0 goto L0dcc8
+    if g369ab != 0 goto L0dd32
+L0dcc8:
+    if (((g38a6 - ((g3692b - 1) * 10)) shl 1) + g38cb) < 40 goto L0dd32
+    if @g3a72 != "a" goto L0dd32
+    g3695b := 1
+    g369ab := 1
+    PrintLn("^0Тут у нас есть пара мест куда тебе стоит сходить")
+    PrintLn("^2Ты узнал где находится качалка и где находятся барыги")
+L0dd32:
+    if @g3a72 == "d" goto L0dd46
+    goto L0decd
+L0dd46:
+    if g38cb >= 100 goto L0dd50
+    goto L0decd
+L0dd50:
+    if g3b79b != 0 goto L0dd5a
+    goto L0decd
+L0dd5a:
+    PrintLn("^0Давай быстрее..")
+    PrintLn("^2Ты пришел воровать деньги")
+    if sx(g38a4) < 0 goto L0ddb6
+    if sx(g38a4) <= 0 goto L0ddaf
+    goto L0de36
+L0ddaf:
+    if g38a4 < Random#38((g3692b * 15)) (unsigned) goto L0ddb6
+    goto L0de36
+L0ddb6:
+    PrintLn("^4Шухер менты!")
+    if sx(g38a4) < 0 goto L0ddf3
+    if sx(g38a4) > 0 goto L0de1a
+    if g38a4 >= Random#39((g3692b * 15)) (unsigned) goto L0de1a
+L0ddf3:
+    p0d14(2)
+    p3d11(5)
+    PrintLn("^6Пора валить!")
+    goto L0de33
+L0de1a:
+    PrintLn("^2Ты смылся от ментов.")
+L0de33:
+    goto L0dec8
+L0de36:
+    PrintLn("^2Ты наваровал денег")
+    g38c7 := (g38c7 + ((g3692b * 10) + Random#40((g3692b * 10))))
+    g38c9 := (g38c9 + ((g3692b * 10) + Random#41((g3692b * 10))))
+    PrintLn("^6Ты получаешь # качков опыта", (g3692b * 12))
+    g38ce := (g38ce + (g3692b * 12))
+    p2526(0)
+L0dec8:
+    g3b79b := 0
+L0decd:
+    if @g3a72 == "w" goto L0dee1
+    goto L0dae2
+L0dee1:
+    goto L0defc
+L0dee3:
+    PrintLn("^4Тебя мудака такого туда не пустят - поднимай понтовость")
+L0defc:
+    if @g3972 == "kl" goto L0df10
+    goto L0e386
+L0df10:
+    if g3699b == 1 goto L0df1a
+    goto L0e36d
+L0df1a:
+    if g3b77b <= 0 (unsigned) goto L0df3d
+    PrintLn("^6Тебе не стоит пока туда соваться")
+    goto L0e36b
+L0df3d:
+    PrintLn("Ты пришел в клуб напиши  ^6w^7  чтобы уйти")
+    PrintLn(" Здесь можно сыграть в карты (^6p^7 Минимальная ставка- 5р.)")
+    if g38c7 < 15 goto L0df7d
+    g3b7ab := 48
+    goto L0df82
+L0df7d:
+    g3b7ab := 52
+L0df82:
+    PrintLn(" 1 -  ^" + chr(g3b7ab) + "15^7  потусоваться на дискотеке(Ловкость +1)")
+    if g3692b <= 1 (unsigned) goto L0e020
+    if g38c7 < 22 goto L0dfd9
+    g3b7ab := 48
+    goto L0dfde
+L0dfd9:
+    g3b7ab := 52
+L0dfde:
+    PrintLn(" 2 -  ^" + chr(g3b7ab) + "22^7  разузнать приемы мухлёжников(Удача +1)")
+L0e020:
+    g3c82b := 5
+L0e025:
+    Print("^0Клуб\\")
+    ReadStr(@g3a72)
+    ReadLn
+    LowerCase(@g3a72)
+    if @g3a72 == "p" goto L0e079
+    goto L0e274
+L0e079:
+    if g3c82b <= g38c7 goto L0e087
+    goto L0e258
+L0e087:
+    PrintLn("Ты поставил # рублей", g3c82b)
+    g38c7 := (g38c7 - g3c82b)
+    if sx(g38a4) > 0 goto L0e0d0
+    if sx(g38a4) < 0 goto L0e129
+    if g38a4 < Random#42((g3692b * 12)) (unsigned) goto L0e129
+L0e0d0:
+    g38c7 := (g38c7 + (g3c82b shl 1))
+    PrintLn("^2Ты выиграл # рублей ", g3c82b)
+    g3c82b := (g3c82b + 2)
+    PrintLn("^6Ты получаешь # качков опыта", g3692b)
+    g38ce := (g38ce + g3692b)
+    p2526(0)
+    goto L0e14a
+L0e129:
+    PrintLn("^4Ты проиграл # рублей", g3c82b)
+    g3c82b := 5
+L0e14a:
+    if g3c82b >= 17 (unsigned) goto L0e174
+    if g3c82b <= 5 (unsigned) goto L0e174
+    PrintLn("^6Ставки изменились. Теперь ставка - #", g3c82b)
+L0e174:
+    if g3c82b >= 17 (unsigned) goto L0e17e
+    goto L0e256
+L0e17e:
+    p0d14(1)
+    g3b72b := 1
+    PrintLn("^4Козёл! Да ты мухлевал!")
+    PrintLn("^6Это " + ds:((g3952 shl 8) + 46) + " # уровня.", g395c)
+    PrintLn("^6Ты получаешь # качков опыта за победу в игре", (((g3692b shl 1) shl 1) + g3692b))
+    g38ce := (g38ce + (((g3692b shl 1) shl 1) + g3692b))
+    p2526(0)
+    p3d11(2)
+    PrintLn("^6Уноси ноги, пока не отобрали деньги другие канадидаты")
+    g3b77b := 5
+    @g3a72 := "w"
+L0e256:
+    goto L0e274
+L0e258:
+    PrintLn("^6Не хватает денег - надо #.", g3c82b)
+L0e274:
+    if @g3a72 != "1" goto L0e2e2
+    if g38c7 >= 15 goto L0e2a7
+    PrintLn("^4Не хватает")
+    goto L0e2e2
+L0e2a7:
+    g38c7 := (g38c7 - 15)
+    PrintLn("^2Ты прокачиваешь ловкость.")
+    g38a0 := g38a0 + 1
+    PrintLn("^1Ловкость +1 ")
+L0e2e2:
+    if g3692b <= 1 (unsigned) goto L0e357
+    if @g3a72 != "2" goto L0e357
+    if g38c7 >= 22 goto L0e31c
+    PrintLn("^4Не хватает")
+    goto L0e357
+L0e31c:
+    g38c7 := (g38c7 - 22)
+    PrintLn("^2Ты прокачиваешь удачу.")
+    g38a4 := g38a4 + 1
+    PrintLn("^1Удача +1 ")
+L0e357:
+    if @g3a72 == "w" goto L0e36b
+    goto L0e025
+L0e36b:
+    goto L0e386
+L0e36d:
+    PrintLn("^6Ты пока что неузнал где в этом районе клуб")
+L0e386:
+    if @g3972 == "trn" goto L0e39a
+    goto L0e961
+L0e39a:
+    if g369ab == 1 goto L0e3a4
+    goto L0e948
+L0e3a4:
+    g3e34b := g38b2b
+    if g38b4b == 0 goto L0e3bc
+    if g38b7b != 0 goto L0e3bc
+    g3e34b := g3e34b - 1
+L0e3bc:
+    if g38b7b == 0 goto L0e3c8
+    g3e34b := (g3e34b - 2)
+L0e3c8:
+    if g38b6b == 0 goto L0e3db
+    if g38b9b != 0 goto L0e3db
+    g3e34b := (g3e34b - 2)
+L0e3db:
+    if g38b9b == 0 goto L0e3e7
+    g3e34b := (g3e34b - 4)
+L0e3e7:
+    PrintLn("Ты пришел в качалку напиши  ^6w^7  чтобы уйти")
+    if g38c7 < 20 goto L0e40e
+    g3b7ab := 48
+    goto L0e413
+L0e40e:
+    g3b7ab := 52
+L0e413:
+    PrintLn(" 1 -  ^" + chr(g3b7ab) + "20^7  качаться гателями и шгангой(Сила +1)")
+    if g38c7 < 20 goto L0e463
+    g3b7ab := 48
+    goto L0e468
+L0e463:
+    g3b7ab := 52
+L0e468:
+    PrintLn(" 2 -  ^" + chr(g3b7ab) + "20^7  качаться на тренажерах(Выносливость +1)")
+    if g3692b <= 1 (unsigned) goto L0e51a
+    if ((g3692b * 10) - 3) <= g38a6 goto L0e51a
+    if g38c7 < 10 goto L0e4d2
+    g3b7ab := 48
+    goto L0e4d7
+L0e4d2:
+    g3b7ab := 52
+L0e4d7:
+    PrintLn(" 3 -  ^" + chr(g3b7ab) + "10^7  прокачать # качков опыта", 10)
+L0e51a:
+    if g3692b <= 1 (unsigned) goto L0e576
+    if g38c7 < 30 goto L0e52f
+    g3b7ab := 48
+    goto L0e534
+L0e52f:
+    g3b7ab := 52
+L0e534:
+    PrintLn(" 4 -  ^" + chr(g3b7ab) + "30^7  купить зубную защиту боксёров(-75% что сломают челюсть)")
+L0e576:
+    if g3692b <= 2 (unsigned) goto L0e5e4
+    if g3e34b >= (g3692b shl 1) goto L0e5e4
+    if g38c7 < 20 goto L0e59d
+    g3b7ab := 48
+    goto L0e5a2
+L0e59d:
+    g3b7ab := 52
+L0e5a2:
+    PrintLn(" 5 -  ^" + chr(g3b7ab) + "20^7  прокачать пресс(Броня +1)")
+L0e5e4:
+    Print("^0Качалка\\")
+    ReadStr(@g3a72)
+    ReadLn
+    LowerCase(@g3a72)
+    if @g3a72 != "1" goto L0e6b0
+    if g38c7 >= 20 goto L0e657
+    PrintLn("^4Не хватает")
+    goto L0e6b0
+L0e657:
+    g38c7 := (g38c7 - 20)
+    PrintLn("^2Ты прокачиваешь силу.")
+    g389e := g389e + 1
+    g38ae := g38ae + 1
+    g38ac := g38ac + 1
+    if (g389e mod 2) != 0 goto L0e693
+    g38a8 := g38a8 + 1
+L0e693:
+    g38aa := g38aa + 1
+    PrintLn("^1Сила +1 ")
+L0e6b0:
+    if @g3a72 != "2" goto L0e728
+    if g38c7 >= 20 goto L0e6e3
+    PrintLn("^4Не хватает")
+    goto L0e728
+L0e6e3:
+    g38c7 := (g38c7 - 20)
+    PrintLn("^2Ты прокачиваешь выносливость.")
+    g38a2 := g38a2 + 1
+    g38ae := (g38ae + 5)
+    g38ac := (g38ac + 5)
+    PrintLn("^1Выносливость +1 ")
+L0e728:
+    if g3692b > 1 (unsigned) goto L0e732
+    goto L0e7e2
+L0e732:
+    if @g3a72 == "3" goto L0e746
+    goto L0e7e2
+L0e746:
+    if ((g3692b * 10) - 3) > g38a6 goto L0e774
+    PrintLn("^6Ты слишком крутой чтобы тренироваться здесь.")
+    goto L0e7e2
+L0e774:
+    if g38c7 >= 10 goto L0e796
+    PrintLn("^4Не хватает деньжат")
+    goto L0e7e2
+L0e796:
+    g38c7 := (g38c7 - 10)
+    PrintLn("^2Ты тренируешься.")
+    g38ce := (g38ce + 10)
+    PrintLn("^1 +# качков опыта ", 10)
+    if g38ce < g38d0 goto L0e7e2
+    p2526(0)
+L0e7e2:
+    if g3692b <= 1 (unsigned) goto L0e861
+    if @g3a72 != "4" goto L0e861
+    if g394ab != 0 goto L0e848
+    if g38c7 >= 30 goto L0e823
+    PrintLn("^4А не хватает рубликов")
+    goto L0e846
+L0e823:
+    g38c7 := (g38c7 - 30)
+    g394ab := 1
+    PrintLn("^2Ты купил защиту.")
+L0e846:
+    goto L0e861
+L0e848:
+    PrintLn("^6У тебя есть эта штучка.")
+L0e861:
+    if g3692b > 2 (unsigned) goto L0e86b
+    goto L0e932
+L0e86b:
+    if @g3a72 == "5" goto L0e87f
+    goto L0e932
+L0e87f:
+    if g3e34b >= (((g3692b - 1) - 1) * 10) goto L0e8f9
+    if g38c7 >= 20 goto L0e8b8
+    PrintLn("^4Не хватает рубликов")
+    goto L0e8f7
+L0e8b8:
+    g38c7 := (g38c7 - 20)
+    PrintLn("^2Ты прокачиваешь пресс.")
+    g38b2b := g38b2b + 1
+    g3e34b := g3e34b + 1
+    PrintLn("^1Броня +1")
+L0e8f7:
+    goto L0e932
+L0e8f9:
+    PrintLn("^6Ты максимально прокачал пресс для своего уровня")
+    if g3692b >= 4 (unsigned) goto L0e932
+    PrintLn("^6Качай дальше в следующем районе")
+L0e932:
+    if @g3a72 == "w" goto L0e946
+    goto L0e5e4
+L0e946:
+    goto L0e961
+L0e948:
+    PrintLn("^6Ты пока незнаешь где в этом районе качалка")
+L0e961:
+    p29c4(@g3972)
+    if @g3972 == "kos" goto L0e97d
+    goto L0ea8a
+L0e97d:
+    if g38b0b != 1 goto L0e9a0
+    PrintLn("^4Ты не схавать колёса из-за сломаной челюсти.")
+    goto L0ea8a
+L0e9a0:
+    if g38cdb == 0 goto L0e9aa
+    goto L0ea71
+L0e9aa:
+    if g38c5 > 0 goto L0e9b4
+    goto L0ea56
+L0e9b4:
+    g38c5 := g38c5 - 1
+    g38cdb := 10
+    g389e := (g389e + 2)
+    g38a8 := g38a8 + 1
+    g38aa := (g38aa + 2)
+    if (g38ae - g38ac) >= 10 goto L0ea19
+    Print("^2Колёса прибавляют #з. ", (g38ae - g38ac))
+    g38ac := g38ae
+    PrintLn("^2Здоровья:#/#. Осталось # косяков", g38ac, g38ae, g38c5)
+    goto L0ea3b
+L0ea19:
+    g38ac := (g38ac + 10)
+    PrintLn("^2Колёса прибавляют #з. Здоровья:#/#. Осталось # косякова", 10, g38ac, g38ae, g38c5)
+L0ea3b:
+    PrintLn("^2Сила +2.")
+    goto L0ea6f
+L0ea56:
+    PrintLn("^4У тебя нет косяков")
+L0ea6f:
+    goto L0ea8a
+L0ea71:
+    PrintLn("^6Ты неможешь схавать ещё один косяк.")
+L0ea8a:
+    if @g3972 == "i" goto L0ea9e
+    goto L0ec78
+L0ea9e:
+    PrintLn("Напиши: ^6w^7    чтобы шататься по окрестностям - искать на свою жопу приключения")
+    if g3694b != 1 goto L0ead7
+    PrintLn("Напиши: ^6mar^7  чтобы идти на рынок")
+L0ead7:
+    if g3695b != 1 goto L0eaf7
+    PrintLn("Напиши: ^6bmar^7 чтобы идти к барыгам")
+L0eaf7:
+    if g3698b != 1 goto L0eb17
+    PrintLn("Напиши: ^6rep^7  чтобы идти к ветеринару")
+L0eb17:
+    if g3697b != 1 goto L0eb37
+    PrintLn("Напиши: ^6girl^7 чтобы завалиться к своей девчонке")
+L0eb37:
+    if g3696b != 1 goto L0eb57
+    PrintLn("Напиши: ^6pr^7   чтобы идти в местный притон гопоты")
+L0eb57:
+    if g3699b != 1 goto L0eb77
+    PrintLn("Напиши: ^6kl^7   чтобы идти в клуб")
+L0eb77:
+    if g369ab != 1 goto L0eb97
+    PrintLn("Напиши: ^6trn^7  чтобы идти в качалку")
+L0eb97:
+    PrintLn("Напиши: ^6s^7    чтобы посмотреть в лужу на свою уродскую рожу")
+    PrintLn("Напиши: ^6sv^7   чтобы приглядеться к пинаемому мудаку")
+    PrintLn("Напиши: ^6k^7    чтобы гасить мудака который тебе попался на дороге")
+    PrintLn("Напиши: ^6v^7    чтобы позвать подкрепление")
+    PrintLn("Напиши: ^6kos^7  чтобы схавать косяк")
+    PrintLn("Напиши: ^6h^7    чтобы выпить пиво (если не охото к ветеринару)")
+    PrintLn("Напиши: ^6mh^7   чтобы набухаться до чёртиков")
+    PrintLn("Напиши: ^6name^7 чтобы сменить погоняло")
+    PrintLn("Напиши: ^6e^7    если захочешь выйти")
+L0ec78:
+    if @g3972 != "s" goto L0ec8c
+    p1a03()
+L0ec8c:
+    if @g3972 != "f" goto L0ecbd
+    if g394db == 0 goto L0ecbd
+    PrintLn("^6Ты чё псих? мигом менты накроют!")
+L0ecbd:
+    if @g3972 != "k" goto L0ece7
+    PrintLn("^6Чё машешь копытами? Ищи мудака которого будешь пинать!")
+L0ece7:
+    if @g3972 == "name" goto L0ecfb
+    goto L0eda1
+L0ecfb:
+    PrintLn("^2Звали тебя:^7 " + @g379c)
+    Print("^2А теперь будут:^7 ")
+    ReadStr(@g379c)
+    ReadLn
+    if g379cb != 0 goto L0ed79
+    @g379c := "Раз^6дол^4бай"
+L0ed79:
+    @g379c := "^7 " + @g379c
+L0eda1:
+    if @g3972 != "version" goto L0edcb
+    PrintLn("^4Gopnik: ^7version 1.02 june,sept 2003")
+L0edcb:
+    if @g3972 != "help" goto L0eddf
+    p5f55()
+L0eddf:
+    if @g3972 == "exit" goto L0ee04
+    if @g3972 == "e" goto L0ee04
+    goto L0ab75
+L0ee04:
+    PrintLn("^6Блин не быть тебе нормальным пацаном")
+    PrintLn("^1А результат:")
+    p1a03()
+    key := ReadKey()
+    Halt(0)
+    DS[bx + si]b := (DS[bx + si]b + 0)
+    DS[bx + si]b := (DS[bx + si]b + 0)
+    DS[bx + si]b := (DS[bx + si]b + 0)
+    DS[bx + si]b := (DS[bx + si]b + 0)
+
