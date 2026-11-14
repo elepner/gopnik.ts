@@ -4,21 +4,23 @@
  */
 import { Context, Effect, Layer, Ref } from 'effect';
 
+import { Seed } from './brands';
+
 export interface IRng {
   /** System.Random(n) */
   readonly next: (n: number) => Effect.Effect<number>;
-  readonly seed: Effect.Effect<number>;
+  readonly seed: Effect.Effect<Seed>;
   /** every call so far, for comparison with the original */
   readonly log: Effect.Effect<readonly RandCall[]>;
 }
 
 export const Rng = Context.Service<IRng>('Rng');
 
-export function rngLayer(initialSeed: number) {
+export function rngLayer(initialSeed: Seed) {
   return Layer.effect(
     Rng,
     Effect.gen(function* () {
-      const seed = yield* Ref.make(initialSeed >>> 0);
+      const seed = yield* Ref.make(initialSeed);
       const log: RandCall[] = [];
       return {
         next: (n: number) =>
@@ -40,12 +42,12 @@ export interface RandCall {
 }
 
 /** Random(n) for a word argument: returns [result, newSeed] */
-export function random(seed: number, n: number): readonly [number, number] {
+export function random(seed: Seed, n: number): readonly [number, Seed] {
   const s = nextSeed(seed);
   // s < 2^32, n < 2^16: the product is < 2^48 and exact in a double
   return [Math.floor((s * (n & 0xffff)) / 0x1_0000_0000), s];
 }
 
-export function nextSeed(seed: number): number {
-  return (Math.imul(seed, 134775813) + 1) >>> 0;
+export function nextSeed(seed: Seed): Seed {
+  return Seed((Math.imul(seed, 134775813) + 1) >>> 0);
 }

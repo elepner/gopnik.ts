@@ -2,6 +2,7 @@
 import { Effect } from 'effect';
 
 import { readKey, readLine, writeLn } from '../crt/crt';
+import { SaveName } from '../tp/brands';
 import { gainRing, levelUp, strengthUp } from './hero';
 import { Disk, Game, lowerCase, println, rnd, fmt } from './prelude';
 import { ENCOUNTERS } from './texts';
@@ -21,8 +22,8 @@ export const saveMage = Effect.gen(function* () {
   if (answer !== 'y') return yield* println(ENCOUNTERS.nehotiteKakHotiteMoe);
   if (st.district * 50 > st.money) return yield* println(ENCOUNTERS.parenVseStoitBabok);
   st.money -= st.district * 50;
-  yield* disk.write('save_r0.sav', mem.saveRecord());
-  yield* disk.write('places.sav', mem.placesRecord());
+  yield* disk.write(SaveName('save_r0.sav'), mem.saveRecord());
+  yield* disk.write(SaveName('places.sav'), mem.placesRecord());
   yield* println(ENCOUNTERS.sohranenoMozheshBespredelnichatDalshe);
 });
 

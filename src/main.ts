@@ -1,13 +1,14 @@
+/** Play the port in a terminal: `bun run play [--seed N] [--dir path]` */
 import chalk from 'chalk';
-/** Play the port in a terminal: `vp run play [-- --seed N] [--dir path]` */
 import { Effect } from 'effect';
 
-import { EndOfInput, type IKeyboard, type Key, makeCrt } from './crt/crt';
+import { biosKey, EndOfInput, type IKeyboard, type Key, makeCrt } from './crt/crt';
 import { COLS, ROWS } from './crt/screen';
 import { gameLayer, program } from './runtime';
+import { Seed } from './tp/brands';
 import { CP866, encodeCp866 } from './tp/cp866';
 
-export async function play(seed: number, dir: string) {
+export async function play(seed: Seed, dir: string) {
   const crt = makeCrt();
   const keyboard = terminalKeyboard();
   const render = Effect.sync(() =>
@@ -57,10 +58,10 @@ function renderScreen(cells: Uint8Array, row: number, col: number): string {
 }
 
 const SCANS: Record<string, Key> = {
-  '\x1b[A': { ascii: 0, scan: 0x48 },
-  '\x1b[B': { ascii: 0, scan: 0x50 },
-  '\x1b[C': { ascii: 0, scan: 0x4d },
-  '\x1b[D': { ascii: 0, scan: 0x4b },
+  '\x1b[A': biosKey(0x4800),
+  '\x1b[B': biosKey(0x5000),
+  '\x1b[C': biosKey(0x4d00),
+  '\x1b[D': biosKey(0x4b00),
 };
 
 function terminalKeyboard(): IKeyboard {
@@ -76,9 +77,9 @@ function terminalKeyboard(): IKeyboard {
     const keys: Key[] = SCANS[data]
       ? [SCANS[data]]
       : [...data].map((ch) => {
-          if (ch === '\x7f') return { ascii: 8, scan: 0x0e };
-          if (ch === '\r' || ch === '\n') return { ascii: 13, scan: 0x1c };
-          return { ascii: encodeCp866(ch)[0], scan: 0 };
+          if (ch === '\x7f') return biosKey(0x0e08);
+          if (ch === '\r' || ch === '\n') return biosKey(0x1c0d);
+          return biosKey(encodeCp866(ch)[0]);
         });
     for (const k of keys) {
       if (waiter) {
@@ -106,5 +107,5 @@ if (import.meta.main) {
     return i >= 0 ? args[i + 1] : def;
   };
   process.stdout.write('\x1b[2J');
-  await play(Number(opt('--seed', String(Date.now() & 0xffffffff))), opt('--dir', 'saves'));
+  await play(Seed(Number(opt('--seed', String(Date.now() >>> 0)))), opt('--dir', 'saves'));
 }

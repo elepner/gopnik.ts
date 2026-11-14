@@ -32,6 +32,10 @@
 - Keep code compact and colocated.
 - Avoid defensive programming; fail fast.
 - Port code keeps a comment with the original address of every translated procedure.
+- Branded types (`src/tp/brands.ts`, Effect `Brand`): `Seed`, `Cp866Byte`, `ScanCode`, `CrtColor`,
+  `DsOffset`, `District`, `TypeId`, `SaveName`. Values from outside (seed, keys, file names) go
+  through checked constructors; plain game numbers (hp, money, stats) stay `number` because they
+  take part in Integer arithmetic. State fields carry brands via `LAYOUT` (`u8<District>(…)`).
 - Relative imports have no extension: `import { Game } from './prelude'`.
 - Player-visible texts live only in `src/game/texts.ts` (`as const` groups per module, verbatim,
   typos included). Format: `^0`..`^7` colour, `#` integer argument, `# Project Memory: gopnik.exe

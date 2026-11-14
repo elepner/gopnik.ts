@@ -9,13 +9,14 @@ import { mainLoop } from './game/main';
 import { Disk, Game } from './game/prelude';
 import { newGame } from './game/start';
 import { createState } from './state/layout';
+import { SaveName, type Seed } from './tp/brands';
 import { rngLayer } from './tp/rng';
 
 /** the whole program: G.EXE's main block */
 export const program = Effect.andThen(newGame, mainLoop);
 
 export interface GameOptions {
-  readonly seed: number;
+  readonly seed: Seed;
   readonly dir: string;
   readonly keyboard: IKeyboard;
   readonly crt?: ICrt;
@@ -41,9 +42,10 @@ export function dirDisk(dir: string) {
       Effect.sync(() =>
         readdirSync(dir)
           .filter((f) => pattern.test(f))
+          .filter((f) => SaveName.is(f))
           .sort()
       ),
-    read: (name: string) =>
+    read: (name: SaveName) =>
       Effect.sync(() => {
         try {
           return new Uint8Array(readFileSync(join(dir, resolve(name))));
@@ -51,7 +53,7 @@ export function dirDisk(dir: string) {
           return undefined;
         }
       }),
-    write: (name: string, data: Uint8Array) =>
+    write: (name: SaveName, data: Uint8Array) =>
       Effect.sync(() => writeFileSync(join(dir, resolve(name)), data)),
   };
 }

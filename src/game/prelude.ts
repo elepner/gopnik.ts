@@ -4,8 +4,9 @@
  */
 import { Context, Effect } from 'effect';
 
-import { Crt, Halt, textColor, write, writeLn } from '../crt/crt';
+import { Crt, Halt, textColor, WHITE, write, writeLn } from '../crt/crt';
 import type { Memory, State } from '../state/layout';
+import { CrtColor, type SaveName } from '../tp/brands';
 import { CP866, encodeCp866 } from '../tp/cp866';
 import { i16, str } from '../tp/num';
 import { Rng } from '../tp/rng';
@@ -55,7 +56,7 @@ export interface PrintCall {
 
 export interface Segment {
   /** CRT colour 8..15 */
-  readonly color: number;
+  readonly color: CrtColor;
   readonly text: string;
 }
 
@@ -84,21 +85,21 @@ export function printf(format: string, args: readonly (number | string)[], newli
     buf.set(bytes, 1);
     const nums = [0, 1, 2, 3, 4].map((n) => str(i16(ints[n] ?? 0)));
     const segments: Segment[] = [];
-    let color = 15;
+    let color = WHITE;
     const emit = (t: string) => {
       const last = segments[segments.length - 1];
       if (last && last.color === color)
         segments[segments.length - 1] = { color, text: last.text + t };
       else segments.push({ color, text: t });
     };
-    yield* textColor(15);
+    yield* textColor(WHITE);
     let i = 0;
     let arg = 0;
     do {
       i++;
       while (buf[i] === 0x5e && len > i && buf[i + 1] >= 0x30 && buf[i + 1] <= 0x37) {
-        crt.screen.textColor(15);
-        color = buf[i + 1] - 0x30 + 8;
+        crt.screen.textColor(WHITE);
+        color = CrtColor(buf[i + 1] - 0x30 + 8);
         crt.screen.textColor(color);
         i += 2;
       }
@@ -111,7 +112,7 @@ export function printf(format: string, args: readonly (number | string)[], newli
         crt.screen.putByte(buf[i]);
       }
     } while (len > i);
-    yield* textColor(15);
+    yield* textColor(WHITE);
     if (newline) yield* writeLn;
     game.transcript.push({ text, args: ints, newline, segments });
   });
@@ -141,9 +142,9 @@ export const Game = Context.Service<IGame>('Game');
 
 export interface IDisk {
   /** Dos.FindFirst/FindNext over the game directory, in directory order */
-  readonly list: (pattern: RegExp) => Effect.Effect<readonly string[]>;
-  readonly read: (name: string) => Effect.Effect<Uint8Array | undefined>;
-  readonly write: (name: string, data: Uint8Array) => Effect.Effect<void>;
+  readonly list: (pattern: RegExp) => Effect.Effect<readonly SaveName[]>;
+  readonly read: (name: SaveName) => Effect.Effect<Uint8Array | undefined>;
+  readonly write: (name: SaveName, data: Uint8Array) => Effect.Effect<void>;
 }
 
 export const Disk = Context.Service<IDisk>('Disk');

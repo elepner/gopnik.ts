@@ -1,7 +1,17 @@
 /** Full-screen pictures: title, game over, victory animation, help. */
 import { Effect } from 'effect';
 
-import { clrScr, delay, keyPressed, readKey, textColor, write, writeLn } from '../crt/crt';
+import {
+  BLACK,
+  clrScr,
+  delay,
+  keyPressed,
+  readKey,
+  textColor,
+  write,
+  writeLn,
+  WHITE,
+} from '../crt/crt';
 import { STAT_WEIGHTS } from '../data/tables';
 import { Game, halt, println } from './prelude';
 import { SCREENS } from './texts';
@@ -23,9 +33,9 @@ export const titleScreen = Effect.gen(function* () {
   yield* println(SCREENS.nazhmiKakuyuNibudKnopku);
   yield* newLines(4);
   yield* println(SCREENS.n2003YearJuneSept);
-  yield* textColor(0);
+  yield* textColor(BLACK);
   yield* readKey;
-  yield* textColor(15);
+  yield* textColor(WHITE);
   yield* clrScr;
 });
 
@@ -42,9 +52,9 @@ export function gameOver(won: boolean) {
     yield* newLines(5);
     yield* println(SCREENS.nazhmiKakuyuNibudKnopku);
     yield* newLines(4);
-    yield* textColor(0);
+    yield* textColor(BLACK);
     yield* readKey;
-    yield* textColor(15);
+    yield* textColor(WHITE);
     yield* clrScr;
     return yield* halt;
   });

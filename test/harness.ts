@@ -8,10 +8,11 @@ import { join } from 'node:path';
 import { Cause, Effect, Exit } from 'effect';
 
 import { Dos, IMG, keyCode, LOAD_SEG, VIDEO } from '../oracle/dos';
-import { EndOfInput, type IKeyboard, makeCrt } from '../src/crt/crt';
+import { biosKey, EndOfInput, type IKeyboard, makeCrt } from '../src/crt/crt';
 import { Game } from '../src/game/prelude';
 import { gameLayer, program } from '../src/runtime';
 import { snapshot } from '../src/state/layout';
+import { Seed } from '../src/tp/brands';
 import { CP866 as CP } from '../src/tp/cp866';
 import { Rng, type RandCall } from '../src/tp/rng';
 
@@ -95,8 +96,7 @@ export async function runPort(seed: number, keys: readonly string[], dir: string
       polled = false;
       const k = queue.shift();
       if (k === undefined) return Effect.fail(new EndOfInput());
-      const ax = keyCode(k);
-      return Effect.succeed({ ascii: ax & 0xff, scan: ax >> 8 });
+      return Effect.succeed(biosKey(keyCode(k)));
     }),
     peek: Effect.sync(() => (polled = queue.length > 0)),
     delay: () => Effect.void,
@@ -108,7 +108,7 @@ export async function runPort(seed: number, keys: readonly string[], dir: string
       prints = game.transcript;
       log = yield* (yield* Rng).log;
       yield* program;
-    }).pipe(Effect.provide(gameLayer({ seed, dir, keyboard, crt })))
+    }).pipe(Effect.provide(gameLayer({ seed: Seed(seed), dir, keyboard, crt })))
   );
   if (Exit.isFailure(exit) && !/EndOfInput|Halt/.test(Cause.pretty(exit.cause)))
     throw new Error(`port crashed: ${Cause.pretty(exit.cause)}`);

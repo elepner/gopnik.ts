@@ -2,6 +2,7 @@
 import { Effect } from 'effect';
 
 import { STAT_WEIGHTS } from '../data/tables';
+import { TypeId } from '../tp/brands';
 import { div, i16, round } from '../tp/num';
 import { accuracy, healthColor } from './hero';
 import { Game, println, rnd } from './prelude';
@@ -14,19 +15,21 @@ export type SpawnKind = 0 | 1 | 2;
 export function spawnEnemy(kind: SpawnKind) {
   return Effect.gen(function* () {
     const { st } = yield* Game;
-    st.eType = (yield* rnd(51)) + 1;
+    // triangular distribution: low types are common
+    let type = (yield* rnd(51)) + 1;
     for (let l = 1; l <= 10; l++) {
-      if (st.eType - l < 0) {
-        st.eType = 10 - l;
+      if (type - l < 0) {
+        type = 10 - l;
         break;
       }
-      st.eType -= l;
+      type -= l;
     }
-    st.eType += yield* rnd(st.district);
-    if (st.trail) st.eType += yield* rnd(4);
-    if (st.eType > 9) st.eType = 9;
-    if (kind === 1 && st.eType > 7) st.eType = 7;
-    if (kind === 2) st.eType = 8;
+    type += yield* rnd(st.district);
+    if (st.trail) type += yield* rnd(4);
+    if (type > 9) type = 9;
+    if (kind === 1 && type > 7) type = 7;
+    if (kind === 2) type = 8;
+    st.eType = TypeId(type);
 
     const bonus = (yield* rnd(st.district)) * 4;
     const r5 = yield* rnd(5);
@@ -66,7 +69,7 @@ export function spawnEnemy(kind: SpawnKind) {
 export function setupRector(which: 0 | 1) {
   return Effect.gen(function* () {
     const { st } = yield* Game;
-    st.eType = 10;
+    st.eType = TypeId(10);
     const [level, str, agi, vit, luck, armor] = RECTORS[which];
     st.eLevel = level;
     st.eStr = str;

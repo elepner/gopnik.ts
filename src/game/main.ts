@@ -2,6 +2,7 @@
 import { Effect } from 'effect';
 
 import { readKey, readLine } from '../crt/crt';
+import { SaveName, TypeId } from '../tp/brands';
 import { str } from '../tp/num';
 import { saveMage, temple } from './encounters';
 import { setupRector, spawnEnemy } from './enemy';
@@ -67,7 +68,7 @@ const nextDistrict = Effect.gen(function* () {
   yield* println(MAIN.hocheshSohranitSvoiDostizheniya);
   if ((yield* prompt('\\')) === 'y') {
     st.tmp = str(st.district);
-    yield* (yield* Disk).write(`save_r${st.tmp}.sav`, mem.saveRecord());
+    yield* (yield* Disk).write(SaveName(`save_r${st.tmp}.sav`), mem.saveRecord());
     yield* println(MAIN.sohranenoVSaveR, st.tmp);
   }
   switch (st.district) {
@@ -271,7 +272,7 @@ const nothingHappens = Effect.gen(function* () {
   const { st, mem } = yield* Game;
   if (st.stoned > 0 && (yield* rnd(7)) === 0) yield* println(MAIN.vseKudaToPlyvet);
   if (st.stoned > 0 && (yield* rnd(7)) === 0) {
-    const type = mem.typeName(yield* rnd(7));
+    const type = mem.typeName(TypeId(yield* rnd(7)));
     yield* println(MAIN.idetUrovnyaHocheshNaehat, type, yield* rnd(st.district * 10 + 1));
     st.input = yield* readLine;
     yield* println(MAIN.cheZaBotvaNi);

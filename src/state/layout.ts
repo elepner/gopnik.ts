@@ -5,6 +5,7 @@
  * TS state against the emulated original field by field.
  */
 import { DS_INIT } from '../data/ds-init';
+import { type District, DsOffset, type TypeId } from '../tp/brands';
 import { decodeCp866, encodeCp866 } from '../tp/cp866';
 
 /** fresh zeroed data segment plus a named-field view over it */
@@ -14,25 +15,27 @@ export function createState(): { readonly mem: Memory; readonly st: State } {
 }
 
 type Kind = 'u8' | 'i16' | 'str';
-interface Field<K extends Kind = Kind> {
-  readonly off: number;
+/** a variable of the data segment; `T` is the (possibly branded) value type seen by the game */
+interface Field<K extends Kind = Kind, T = unknown> {
+  readonly off: DsOffset;
   readonly kind: K;
   readonly cap?: number;
+  readonly __value?: T;
 }
 
-function u8(off: number): Field<'u8'> {
-  return { off, kind: 'u8' };
+function u8<T extends number = number>(off: number): Field<'u8', T> {
+  return { off: DsOffset(off), kind: 'u8' };
 }
-function i16(off: number): Field<'i16'> {
-  return { off, kind: 'i16' };
+function i16<T extends number = number>(off: number): Field<'i16', T> {
+  return { off: DsOffset(off), kind: 'i16' };
 }
-function str(off: number, cap = 255): Field<'str'> {
-  return { off, kind: 'str', cap };
+function str(off: number, cap = 255): Field<'str', string> {
+  return { off: DsOffset(off), kind: 'str', cap };
 }
 
 export const LAYOUT = {
   // --- district / known places (PLACES.SAV = 0x3694..0x369A)
-  district: u8(0x3692), // 1..5
+  district: u8<District>(0x3692),
   trail: u8(0x3693), // on a "bandit" path where shooting is allowed
   knowsMarket: u8(0x3694),
   knowsDealers: u8(0x3695),
@@ -45,7 +48,7 @@ export const LAYOUT = {
   // --- SAVE_R?.SAV record: 0x369C..0x3951 (694 bytes)
   version: str(0x369c),
   name: str(0x379c),
-  charType: i16(0x389c), // index into TYPE_NAMES: 3 пацан, 4 отморозок, 5 гопник, 6 вор
+  charType: i16<TypeId>(0x389c), // 3 пацан, 4 отморозок, 5 гопник, 6 вор (0..4 while choosing)
   str: i16(0x389e),
   agi: i16(0x38a0),
   vit: i16(0x38a2),
@@ -92,7 +95,7 @@ export const LAYOUT = {
   templeVisits: u8(0x3951),
 
   // --- current enemy
-  eType: i16(0x3952),
+  eType: i16<TypeId>(0x3952),
   eStr: i16(0x3954),
   eAgi: i16(0x3956),
   eVit: i16(0x3958),
@@ -138,7 +141,7 @@ export const LAYOUT = {
 
 export type FieldName = keyof typeof LAYOUT;
 export type State = {
-  -readonly [K in FieldName]: (typeof LAYOUT)[K]['kind'] extends 'str' ? string : number;
+  -readonly [K in FieldName]: (typeof LAYOUT)[K] extends Field<Kind, infer T> ? T : never;
 };
 
 export const DS_LO = 0x3692;
@@ -159,19 +162,19 @@ export class Memory {
   }
 
   /** Pascal string at a DS offset */
-  pstr(off: number): string {
+  pstr(off: DsOffset): string {
     const o = off & 0xffff;
     return decodeCp866(this.bytes.subarray(o + 1, o + 1 + this.bytes[o]));
   }
 
   /** TYPE_NAMES[i] as the original indexes it: DS:002E + i*256 */
-  typeName(i: number): string {
-    return this.pstr((i << 8) + 0x2e);
+  typeName(i: TypeId): string {
+    return this.pstr(DsOffset((i << 8) + 0x2e));
   }
 
   /** RANK_NAMES[i] as the original indexes it: DS:0B42 + i*256 (no bounds) */
   rankName(i: number): string {
-    return this.pstr((i << 8) + 0xb42);
+    return this.pstr(DsOffset((i << 8) + 0xb42));
   }
 
   get(f: Field): number | string {

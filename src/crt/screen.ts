@@ -3,6 +3,7 @@
  * Cells are stored like B800:0000 — cp866 char byte + attribute byte — so they can
  * be compared 1:1 with the emulated original.
  */
+import type { CrtColor } from '../tp/brands';
 import { CP866, encodeCp866 } from '../tp/cp866';
 
 export const COLS = 80;
@@ -27,7 +28,7 @@ export class Screen {
   }
 
   /** CRT.TextColor: keeps background bits, bit 4 of color maps to blink */
-  textColor(c: number) {
+  textColor(c: CrtColor) {
     let a = c & 0xff;
     if (a & 0xf0) a = (a & 0x0f) | 0x80;
     this.attr = (this.attr & 0x70) | a;

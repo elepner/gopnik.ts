@@ -4,6 +4,7 @@
  */
 import { Context, Data, Effect } from 'effect';
 
+import { Cp866Byte, CrtColor, ScanCode } from '../tp/brands';
 import { decodeCp866 } from '../tp/cp866';
 import { Screen } from './screen';
 
@@ -63,10 +64,10 @@ export const readLine = Effect.gen(function* () {
 /** CRT.ReadKey: returns a cp866 byte; extended keys come as #0 followed by the scan code */
 export const readKey = Effect.gen(function* () {
   const crt = yield* Crt;
-  if (crt.pendingScan) {
+  if (crt.pendingScan !== undefined) {
     const scan = crt.pendingScan;
-    crt.pendingScan = 0;
-    return scan;
+    crt.pendingScan = undefined;
+    return Cp866Byte(scan);
   }
   const key = yield* (yield* Keyboard).read;
   if (key.ascii === 0) crt.pendingScan = key.scan;
@@ -75,7 +76,7 @@ export const readKey = Effect.gen(function* () {
 
 export const keyPressed = Effect.gen(function* () {
   const crt = yield* Crt;
-  if (crt.pendingScan) return true;
+  if (crt.pendingScan !== undefined) return true;
   return yield* (yield* Keyboard).peek;
 });
 
@@ -87,7 +88,7 @@ export function write(s: string) {
 
 export const writeLn = write('\r\n');
 
-export function textColor(color: number) {
+export function textColor(color: CrtColor) {
   return Effect.gen(function* () {
     (yield* Crt).screen.textColor(color);
   });
@@ -106,7 +107,7 @@ export function delay(ms: number) {
 export interface ICrt {
   readonly screen: Screen;
   /** CRT's pending scan code after ReadKey returned #0 */
-  pendingScan: number;
+  pendingScan: ScanCode | undefined;
   /** Input TextRec buffer (128 bytes); the previous line stays there for ^D/^F recall */
   readonly lineBuf: Uint8Array;
   prevLineEnd: number;
@@ -115,14 +116,27 @@ export interface ICrt {
 export const Crt = Context.Service<ICrt>('Crt');
 
 export function makeCrt(): ICrt {
-  return { screen: new Screen(), pendingScan: 0, lineBuf: new Uint8Array(128), prevLineEnd: 0 };
+  return {
+    screen: new Screen(),
+    pendingScan: undefined,
+    lineBuf: new Uint8Array(128),
+    prevLineEnd: 0,
+  };
 }
 
 /** a BIOS keystroke: cp866 byte and scan code; ascii 0 = extended key */
 export interface Key {
-  readonly ascii: number;
-  readonly scan: number;
+  readonly ascii: Cp866Byte;
+  readonly scan: ScanCode;
 }
+
+/** a keystroke from its BIOS word (INT 16h AX: scan code in the high byte) */
+export function biosKey(ax: number): Key {
+  return { ascii: Cp866Byte(ax & 0xff), scan: ScanCode(ax >> 8) };
+}
+
+export const WHITE = CrtColor(15);
+export const BLACK = CrtColor(0);
 
 export interface IKeyboard {
   /** INT 16h AH=0 — blocks until a key is available */

@@ -2,6 +2,7 @@
 import { Effect } from 'effect';
 
 import { clrScr, readKey, readLine, writeLn } from '../crt/crt';
+import { District, SaveName, TypeId } from '../tp/brands';
 import { div, val } from '../tp/num';
 import { Disk, Game, println, print } from './prelude';
 import { titleScreen } from './screens';
@@ -29,13 +30,13 @@ export const newGame = Effect.gen(function* () {
     st.saveKey = yield* readKey;
     const key = String.fromCharCode(st.saveKey);
     if ('23450'.includes(key)) {
-      const rec = yield* disk.read(`save_r${key}.sav`);
+      const rec = yield* disk.read(SaveName(`save_r${key}.sav`));
       if (rec) {
-        st.district = val(key)[0];
+        st.district = District(val(key)[0]);
         mem.loadRecord(rec);
         yield* println(START.zagruzhenoIzSaveR, key);
         if (st.district === 0) yield* loadPlaces;
-        if (st.district === 0) st.district = div(st.level, 10) + 1;
+        if (st.district === 0) st.district = District(div(st.level, 10) + 1);
         return yield* arrive;
       }
       yield* println(START.cheToGlyukanuloNaverno);
@@ -47,7 +48,7 @@ export const newGame = Effect.gen(function* () {
 
 const loadPlaces = Effect.gen(function* () {
   const { mem } = yield* Game;
-  const places = yield* (yield* Disk).read('places.sav');
+  const places = yield* (yield* Disk).read(SaveName('places.sav'));
   if (places) {
     mem.loadPlaces(places);
     yield* println(START.zagruzhenoIzPlaces);
@@ -72,7 +73,7 @@ export const resetPlaces = Effect.gen(function* () {
 /** 0000:6DBE */
 const createCharacter = Effect.gen(function* () {
   const { st } = yield* Game;
-  st.district = 1;
+  st.district = District(1);
   st.knowsHospital = 1;
   st.knowsMarket = 1;
   st.version = START.gopnikVersion102;
@@ -101,7 +102,7 @@ const createCharacter = Effect.gen(function* () {
   yield* println(START.n4CheZaBatva);
   yield* readType;
   if (st.charType === 4) {
-    st.charType = 0;
+    st.charType = TypeId(0);
     yield* writeLn;
     yield* println(START.patsanEtoNormalnyyTip);
     yield* println(START.otmorozokTupoyKoryavyyMudak);
@@ -112,13 +113,13 @@ const createCharacter = Effect.gen(function* () {
     for (const line of TYPE_MENU) yield* println(line);
     yield* readType;
   }
-  if (st.charType < 0 || st.charType > 3) st.charType = 0;
+  if (st.charType < 0 || st.charType > 3) st.charType = TypeId(0);
   const [str, agi, vit, luck] = START_STATS[st.charType];
   st.str = str;
   st.agi = agi;
   st.vit = vit;
   st.luck = luck;
-  st.charType += 3;
+  st.charType = TypeId(st.charType + 3);
   st.hpMax = st.vit * 5 + 10 + st.str;
   st.hp = st.hpMax;
   st.dmgMin = div(st.str, 2);
@@ -143,7 +144,7 @@ const readType = Effect.gen(function* () {
   const { st } = yield* Game;
   st.tmp = yield* readLine;
   const [v, code] = val(st.tmp);
-  st.charType = v;
+  st.charType = TypeId(v);
   st.valCode = code;
 });
 
