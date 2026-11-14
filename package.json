@@ -12,7 +12,8 @@
     "tables": "bun oracle/gen-tables.ts",
     "typecheck": "tsc --noEmit",
     "bot": "bun test/bot.ts",
-    "replay": "bun test/replay.ts"
+    "replay": "bun test/replay.ts",
+    "greedy": "bun test/greedy.ts"
   },
   "devDependencies": {
     "@effect/vitest": "^4.1.4",
