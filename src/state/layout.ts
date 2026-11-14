@@ -4,6 +4,7 @@
  * SAVE_R*.SAV files interchangeable with the original, and lets tests diff the
  * TS state against the emulated original field by field.
  */
+import { DS_INIT } from '../data/ds-init.ts';
 import { decodeCp866, encodeCp866 } from '../tp/cp866.ts';
 
 /** fresh zeroed data segment plus a named-field view over it */
@@ -152,6 +153,26 @@ const HISTORY_OFF = 0x38cf;
 export class Memory {
   readonly bytes = new Uint8Array(0x10000);
   readonly view = new DataView(this.bytes.buffer);
+
+  constructor() {
+    this.bytes.set(DS_INIT);
+  }
+
+  /** Pascal string at a DS offset */
+  pstr(off: number): string {
+    const o = off & 0xffff;
+    return decodeCp866(this.bytes.subarray(o + 1, o + 1 + this.bytes[o]));
+  }
+
+  /** TYPE_NAMES[i] as the original indexes it: DS:002E + i*256 */
+  typeName(i: number): string {
+    return this.pstr((i << 8) + 0x2e);
+  }
+
+  /** RANK_NAMES[i] as the original indexes it: DS:0B42 + i*256 (no bounds) */
+  rankName(i: number): string {
+    return this.pstr((i << 8) + 0xb42);
+  }
 
   get(f: Field): number | string {
     switch (f.kind) {

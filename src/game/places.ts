@@ -142,7 +142,7 @@ const BEER_LINES = [
 ];
 
 const pickpocket = Effect.gen(function* () {
-  const { st } = yield* Game;
+  const { st, mem } = yield* Game;
   if ((yield* luckAtLeast(st.district * 5 + 5)) && (yield* rnd(10)) < 9) {
     st.found = (yield* rnd(st.luck * 2)) + 1;
     st.money += st.found;
@@ -153,7 +153,7 @@ const pickpocket = Effect.gen(function* () {
   yield* spawnEnemy(1);
   st.engaged = 1;
   yield* println('^4Корявый! ты попался!');
-  yield* println(`^6Это ${TYPE_NAMES[st.eType]} # уровня.`, st.eLevel);
+  yield* println(`^6Это ${mem.typeName(st.eType)} # уровня.`, st.eLevel);
   yield* fight(1);
   yield* println('^6Блин менты запалят сматывайся!.');
   st.input = 'w';
@@ -456,7 +456,7 @@ export const girlfriend = Effect.gen(function* () {
 
 /** 0000:D80C — `pr`: the den */
 export const den = Effect.gen(function* () {
-  const { st } = yield* Game;
+  const { st, mem } = yield* Game;
   if (st.denAccess !== 1)
     return yield* println('^4Тебя мудака такого туда не пустят - поднимай понтовость');
   yield* print('Ты пришел в притон - ');
@@ -505,7 +505,7 @@ export const den = Effect.gen(function* () {
     if (st.denQuestHelp === 1 && st.input === 'hp') {
       yield* spawnEnemy(1);
       st.engaged = 1;
-      yield* println(`^6Это ${TYPE_NAMES[st.eType]} # уровня.`, st.eLevel);
+      yield* println(`^6Это ${mem.typeName(st.eType)} # уровня.`, st.eLevel);
       yield* fight(6);
       st.denQuestHelp = 0;
     }
@@ -589,7 +589,7 @@ export const club = Effect.gen(function* () {
 });
 
 const playCards = Effect.gen(function* () {
-  const { st } = yield* Game;
+  const { st, mem } = yield* Game;
   yield* println('Ты поставил # рублей', st.bet);
   st.money -= st.bet;
   if (yield* luckAtLeast(st.district * 12)) {
@@ -606,7 +606,7 @@ const playCards = Effect.gen(function* () {
   yield* spawnEnemy(1);
   st.engaged = 1;
   yield* println('^4Козёл! Да ты мухлевал!');
-  yield* println(`^6Это ${TYPE_NAMES[st.eType]} # уровня.`, st.eLevel);
+  yield* println(`^6Это ${mem.typeName(st.eType)} # уровня.`, st.eLevel);
   yield* println('^6Ты получаешь # качков опыта за победу в игре', st.district * 5);
   st.exp += st.district * 5;
   yield* levelUp(false);

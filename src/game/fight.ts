@@ -129,8 +129,8 @@ export function fight(kind: FightKind) {
 
 function greeting(kind: FightKind) {
   return Effect.gen(function* () {
-    const { st } = yield* Game;
-    const type = TYPE_NAMES[st.charType];
+    const { st, mem } = yield* Game;
+    const type = mem.typeName(st.charType);
     if (kind === 0 || kind === 6) {
       if (st.eType <= 2) {
         yield* println('Слышь Вась..');
@@ -181,10 +181,10 @@ function extraHits(attacker: number, defender: number): number {
 }
 
 const crowdShout = Effect.gen(function* () {
-  const { st } = yield* Game;
+  const { st, mem } = yield* Game;
   const r = yield* rnd(18);
   if (r === 4)
-    return [`Зрители:^6Не подкачай ${TYPE_NAMES[st.charType]}, я на тебя трёшку поставил!`];
+    return [`Зрители:^6Не подкачай ${mem.typeName(st.charType)}, я на тебя трёшку поставил!`];
   if (r === 17) return [`Зрители:^6Ну и кого там ${st.name} ^6сегодня пинает?`];
   if (r === 8)
     return [

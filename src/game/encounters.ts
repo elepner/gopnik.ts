@@ -28,7 +28,7 @@ export const saveMage = Effect.gen(function* () {
 
 /** 0000:7C67 — the temple: a random blessing */
 export const temple = Effect.gen(function* () {
-  const { st } = yield* Game;
+  const { st, mem } = yield* Game;
   const lines = (...ls: string[]) =>
     Effect.forEach(ls, (l) => Effect.andThen(println(l), readKey), { discard: true });
   if (st.templeVisits === 2) {
@@ -61,7 +61,7 @@ export const temple = Effect.gen(function* () {
       '^2"Господи, Братан, прости грешника". - Начал было ты...',
       '^1Громовой голос: "Да пошел ты на хрен!"',
       '^2 - Эээ.. типа.. а чё?..',
-      `^1 - "а чё?" блин! ${st.name}^1-${TYPE_NAMES[st.charType]} чёртов!`,
+      `^1 - "а чё?" блин! ${st.name}^1-${mem.typeName(st.charType)} чёртов!`,
       '^2Ну..',
       '^1Ладна насылаю на тебя, типа, "моё благославление"'
     );
@@ -71,7 +71,7 @@ export const temple = Effect.gen(function* () {
     case 0:
       yield* println('^1Да увеличится твоя понтовость!');
       yield* readKey;
-      yield* println(`^1Был ты ${RANK_NAMES[st.level]} а стал ${RANK_NAMES[st.level + 1]}`);
+      yield* println(`^1Был ты ${mem.rankName(st.level)} а стал ${mem.rankName(st.level + 1)}`);
       st.exp = st.expNext;
       yield* levelUp(false);
       break;

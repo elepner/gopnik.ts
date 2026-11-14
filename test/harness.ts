@@ -56,11 +56,12 @@ export function runOriginal(seed: number, keys: readonly string[], dir: string):
     state: snapshot(dos.cpu.mem, ds),
     rand: dos.randLog.length,
   });
+  let i = 0;
+  dos.onPoll = () => (i < keys.length ? keyCode(keys[i++]) : undefined);
   dos.run();
   const snaps = [snap()];
-  for (const k of keys) {
-    if (dos.exited) break;
-    dos.send(k);
+  while (i < keys.length && !dos.exited) {
+    dos.send(keys[i++]);
     if (!dos.exited) snaps.push(snap());
   }
   return { snaps, rand: dos.randLog.map((r) => ({ n: r.n, result: r.result })) };
@@ -72,15 +73,19 @@ export async function runPort(seed: number, keys: readonly string[], dir: string
   const snaps: Snapshot[] = [];
   let mem: Uint8Array | undefined;
   let log: readonly RandCall[] = [];
+  // a key seen by KeyPressed was already "in the buffer": reading it is not a new wait
+  let polled = false;
   const keyboard: IKeyboard = {
     read: Effect.suspend(() => {
-      snaps.push({ cells: crt.screen.cells.slice(), state: snapshot(mem!), rand: log.length });
+      if (!polled)
+        snaps.push({ cells: crt.screen.cells.slice(), state: snapshot(mem!), rand: log.length });
+      polled = false;
       const k = queue.shift();
       if (k === undefined) return Effect.fail(new EndOfInput());
       const ax = keyCode(k);
       return Effect.succeed({ ascii: ax & 0xff, scan: ax >> 8 });
     }),
-    peek: Effect.sync(() => queue.length > 0),
+    peek: Effect.sync(() => (polled = queue.length > 0)),
     delay: () => Effect.void,
   };
   const exit = await Effect.runPromiseExit(

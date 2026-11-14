@@ -97,11 +97,11 @@ const deriveEnemy = Effect.gen(function* () {
 
 /** 0000:1348 — `sv`: inspect the enemy */
 export const showEnemy = Effect.gen(function* () {
-  const { st } = yield* Game;
-  let title = st.eLevel > 40 ? 'Не в этой жизни.' : RANK_NAMES[st.eLevel];
+  const { st, mem } = yield* Game;
+  let title = st.eLevel > 40 ? 'Не в этой жизни.' : mem.rankName(st.eLevel);
   title = ' - ' + title;
   if (st.eType >= 8) title = '';
-  yield* println(`^2Это ${TYPE_NAMES[st.eType]} # уровня${title}`, st.eLevel);
+  yield* println(`^2Это ${mem.typeName(st.eType)} # уровня${title}`, st.eLevel);
   yield* println('Сл:# Лв:# Жв:# Уд:#', st.eStr, st.eAgi, st.eVit, st.eLuck);
   yield* println('Урон #-#', st.eDmgMin, st.eDmgMax);
   let injuries = '';

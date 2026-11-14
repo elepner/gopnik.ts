@@ -8,9 +8,12 @@ import { Game, print, println, rnd } from './prelude.ts';
 
 /** 0000:1A03 — `s`: look at yourself in a puddle */
 export const showStats = Effect.gen(function* () {
-  const { st } = yield* Game;
+  const { st, mem } = yield* Game;
   const c = ['7', '7', '7', '7'];
-  yield* println(`^2Ты ${TYPE_NAMES[st.charType]} # уровня - ${RANK_NAMES[st.level]}`, st.level);
+  yield* println(
+    `^2Ты ${mem.typeName(st.charType)} # уровня - ${mem.rankName(st.level)}`,
+    st.level
+  );
   yield* println(`^2А зовут тебя: ${st.name}`);
   if (st.level <= 39)
     yield* println('^6Сейчас у тебя # опыта, А для прокачки надо #', st.exp, st.expNext);

@@ -69,7 +69,7 @@ export const victoryAnimation = Effect.gen(function* () {
     yield* clrScr;
     yield* write(' '.repeat(32));
     yield* println(
-      `^${c(10)}Т^${c(9)}Ы ^${c(8)}С^${c(7)}У^${c(6)}П^${c(5)}Е^${c(4)}Р ^${c(3)}Г^${c(2)}О^${c(1)}П`
+      `^${c(1)}Т^${c(2)}Ы ^${c(3)}С^${c(4)}У^${c(5)}П^${c(6)}Е^${c(7)}Р ^${c(8)}Г^${c(9)}О^${c(10)}П`
     );
     shift = shift >= 8 ? 0 : shift + 1;
     if (yield* keyPressed) break;
@@ -81,8 +81,8 @@ export const victoryAnimation = Effect.gen(function* () {
 
 /** 0000:5F55 — `help` */
 export const help = Effect.gen(function* () {
-  const { st } = yield* Game;
-  const type = TYPE_NAMES[st.charType];
+  const { st, mem } = yield* Game;
+  const type = mem.typeName(st.charType);
   yield* println(`^0Ну слушай, ${type} ${st.name} ^0,в чем тут батва`);
   yield* println('^0 Вначале ты должен выбрать свой характер.');
   yield* println(`^0 Например ${type}:`);

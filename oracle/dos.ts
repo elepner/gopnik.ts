@@ -92,6 +92,8 @@ export class Dos implements CpuHost {
   readonly cpu = new Cpu(this);
   seed: number;
   keys: number[] = [];
+  /** scripted runs: KeyPressed with an empty queue takes the next scripted key, if any */
+  onPoll?: () => number | undefined;
   readonly randLog: RandCall[] = [];
   stdout = '';
   exited = false;
@@ -384,6 +386,10 @@ export class Dos implements CpuHost {
         break;
       case 0x01:
       case 0x11:
+        if (!this.keys.length && this.onPoll) {
+          const k = this.onPoll();
+          if (k !== undefined) this.keys.push(k);
+        }
         if (this.keys.length) {
           c.r[AX] = this.keys[0];
           c.zf = false;

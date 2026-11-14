@@ -238,14 +238,14 @@ const prettyGirl = Effect.gen(function* () {
 });
 
 const meetSomeone = Effect.gen(function* () {
-  const { st } = yield* Game;
+  const { st, mem } = yield* Game;
   yield* spawnEnemy(0);
   st.engaged = 0;
   if (st.eType !== 8) {
     st.sneak = st.district * 7 + 15;
     if (st.tattoo === 1) st.sneak = Math.trunc(st.sneak / 2);
     const calm = ((yield* luckAtLeast(st.sneak)) || st.eType < 3) && st.eType < 7;
-    const type = TYPE_NAMES[st.eType];
+    const type = mem.typeName(st.eType);
     if (calm) {
       yield* println(`^6Идет ${type} # уровня. Хочешь наехать?`, st.eLevel);
       st.input = lowerCase(yield* readLine);
@@ -277,13 +277,13 @@ const meetSomeone = Effect.gen(function* () {
 });
 
 const nothingHappens = Effect.gen(function* () {
-  const { st } = yield* Game;
+  const { st, mem } = yield* Game;
   if (st.stoned > 0 && (yield* rnd(7)) === 0)
     yield* println('Все куда-то плывёт - совсем башню заклинило');
   if (st.stoned > 0 && (yield* rnd(7)) === 0) {
-    const type = TYPE_NAMES[yield* rnd(7)];
+    const type = mem.typeName(yield* rnd(7));
     yield* println(`^6Идет ${type} # уровня. Хочешь наехать?`, yield* rnd(st.district * 10 + 1));
-    yield* readLine;
+    st.input = yield* readLine;
     yield* println('^6Чё за ботва? ни кого нет.. глюки какие-то...');
   } else yield* println('Ничё не происходит.');
 });
