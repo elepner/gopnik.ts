@@ -2,3 +2,4 @@ node_modules
 vendor
 oracle/.work
 saves/
+logs/

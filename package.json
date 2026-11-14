@@ -10,7 +10,9 @@
     "disasm": "bun oracle/disasm.ts > analysis/g.asm",
     "lift": "bun oracle/lift.ts > analysis/g.lift.txt",
     "tables": "bun oracle/gen-tables.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "bot": "bun test/bot.ts",
+    "replay": "bun test/replay.ts"
   },
   "devDependencies": {
     "@effect/vitest": "^4.1.4",

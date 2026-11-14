@@ -52,8 +52,8 @@ export function expandKeys(tokens: readonly string[]): string[] {
 
 /** runs both sides and returns the first difference, if any */
 export async function compare(seed: number, keys: readonly string[], saves?: string) {
-  const original = runOriginal(seed, keys, workdir('original', saves));
-  const port = await runPort(seed, keys, workdir('port', saves));
+  const original = runOriginal(seed, keys, workdirFor('original', saves));
+  const port = await runPort(seed, keys, workdirFor('port', saves));
   return { original, port, divergence: firstDivergence(original, port, keys) };
 }
 
@@ -196,7 +196,7 @@ export function screenText(cells: Uint8Array): string {
 
 const ROOT = join(import.meta.dirname, '..');
 
-function workdir(side: string, saves?: string) {
+export function workdirFor(side: string, saves?: string) {
   const dir = join(
     ROOT,
     'oracle/.work',
