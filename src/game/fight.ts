@@ -5,7 +5,7 @@ import { readKey, readLine, writeLn } from '../crt/crt';
 import { div, mod, round } from '../tp/num';
 import { showEnemy } from './enemy';
 import { drinkBeer, gainRing, levelUp, showStats } from './hero';
-import { Game, halt, lowerCase, print, println, rnd, fmt } from './prelude';
+import { fmt, Game, halt, lowerCase, luckAtLeast, print, println, rnd } from './prelude';
 import { gameOver, victoryAnimation } from './screens';
 import { FIGHT } from './texts';
 
@@ -206,11 +206,11 @@ const CROWD: Record<number, string> = {
   16: FIGHT.zriteliNuCheTam,
 };
 
-/** `x > Random(n) + 1` as the original's Longint compare: no Random call when x < 0 */
+/** `x > Random(n) + 1` (Longint compare; Random is always called first) */
 function luckBeats(x: number, n: number) {
   return Effect.gen(function* () {
-    if (x < 0) return false;
-    return x > (yield* rnd(n)) + 1;
+    const r = yield* rnd(n);
+    return x > r + 1;
   });
 }
 
@@ -398,7 +398,8 @@ const shoot = Effect.gen(function* () {
   if (!st.trail && !st.silencer) return yield* println(FIGHT.telzyaTutStrelyatMenty);
   if (st.bullets <= 0) return yield* println(FIGHT.cheZaBatvaBlin);
   st.bullets--;
-  if (st.agi >= 0 && st.agi > (yield* rnd(50))) {
+  const aim = yield* rnd(50);
+  if (st.agi > aim) {
     const prev = st.eHp;
     st.eHp -= (yield* rnd(10)) + 20;
     yield* println(FIGHT.tyVystrelilIRanil, prev - st.eHp, st.eHp, st.bullets);
@@ -462,15 +463,6 @@ function enemyDied(kind: FightKind) {
       st.exp += st.district * 10;
       yield* levelUp(false);
     }
-  });
-}
-
-/** `luck >= Random(n)` as the original's Longint compare: no Random call when luck < 0 */
-function luckAtLeast(n: number) {
-  return Effect.gen(function* () {
-    const { st } = yield* Game;
-    if (st.luck < 0) return false;
-    return st.luck >= (yield* rnd(n));
   });
 }
 

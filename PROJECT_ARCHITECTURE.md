@@ -47,6 +47,9 @@ Entry point for assistants is `PROJECT_MEMORY.md`.
 - Keep original quirks and bugs (wrong price shown, odd boolean expressions, typos in texts).
 - Evaluation order inside one TP expression can differ from source order; the lifter numbers
   Random calls (`Random#k`) — follow that order.
+- The lifter renders Longint compares (`if sx(x) > 0 … if x <= Random(n)`) as if Random were
+  called inside the last condition; in the binary Random is always evaluated first. Check the
+  raw listing (`analysis/g.asm`) whenever a Random sits inside a condition chain.
 
 ## Verification
 - `oracle/cli.ts` runs the original with a seed and a key script and prints screens.

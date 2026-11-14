@@ -55,3 +55,12 @@ each entry names the original code address and the place in the port.
 
 12. **Typos are part of the texts** — e.g. "Поновость улутшилась", "слеующей", "Тельзя тут
     стрелять", "косякова", "гушителем", "птронов". They are kept verbatim.
+
+## Integer overflow
+
+13. **Stats and money wrap around at 32767** — all counters are 16-bit `Integer`s. A thief who
+    keeps buying luck in the club eventually overflows `luck` into negative numbers; from then
+    on every luck check fails (`luck >= Random(n)`), stolen sums use `Random(luck*2)` with the
+    wrapped value, and `money` itself can wrap negative after a big theft. The port stores state
+    in the original byte layout, so it wraps identically. Note for porting: every luck check of
+    the original calls `Random` *before* comparing, also when the luck is negative.

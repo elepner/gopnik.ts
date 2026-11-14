@@ -19,7 +19,7 @@ export interface BotRun {
 }
 
 /** plays one game on the original; returns the keys it pressed */
-export function playToWin(seed: number, save: string, maxInputs = 20000): BotRun {
+export function playToWin(seed: number, save: string, maxInputs = 40000, cls = '3'): BotRun {
   const dir = join(import.meta.dirname, '..', 'oracle/.work', `bot-${process.pid}-${seed}`);
   Bun.spawnSync(['rm', '-rf', dir]);
   Bun.spawnSync(['mkdir', '-p', dir]);
@@ -52,6 +52,7 @@ export function playToWin(seed: number, save: string, maxInputs = 20000): BotRun
   dos.run();
   press('space', save);
   let inputs = 0;
+  let stole = false; // one pickpocket attempt per market visit
   while (!dos.exited && inputs++ < maxInputs) {
     const screen = text(dos);
     if (screen.includes('Ты победил.')) {
@@ -75,7 +76,7 @@ export function playToWin(seed: number, save: string, maxInputs = 20000): BotRun
         .pop() ?? '';
     // questions answered with a whole line (Read + ReadLn) rather than a key
     if (last.endsWith('4-Чё за батва?') || last.endsWith('3-Вор')) {
-      press('1', 'enter'); // Отморозок: the strongest start
+      press(cls, 'enter'); // 3 = Вор: luck pays off everywhere
       continue;
     }
     if (last.includes('А зовут тебя:') || last.includes('А теперь будут:')) {
@@ -90,7 +91,10 @@ export function playToWin(seed: number, save: string, maxInputs = 20000): BotRun
       const me = snapshot(dos.cpu.mem, (LOAD_SEG + IMG.dataSeg) * 16);
       const level = Number(last.match(/ (\d+) уровня/)?.[1] ?? 0);
       const fit = Number(me.hp) > Number(me.hpMax) * 0.7;
-      press(level <= Number(me.level) - 2 && fit ? 'y' : 'n', 'enter');
+      // лохи и дохляки are easy prey even a few levels above us
+      const weak = /Идет (Дохляк|Нефор|Нарк) /.test(last);
+      const limit = weak ? Number(me.level) + 3 : Math.max(1, Number(me.level) - 2);
+      press(level <= limit && fit ? 'y' : 'n', 'enter');
       continue;
     }
     if (
@@ -124,8 +128,22 @@ export function playToWin(seed: number, save: string, maxInputs = 20000): BotRun
     }
     // walking around: heal (beer, vet, market), then look for fights
     const money = Number(st.money);
+    const fit = hp > max * 0.8 && !st.jawBroken && !st.legBroken;
+    const behind = (Number(st.str) + Number(st.vit)) * 2 < Number(st.agi) + Number(st.luck);
     if (last.endsWith('Базар\\')) {
-      if (Number(st.beer) < 10 && money >= 5) press('2', 'enter');
+      if (Number(st.beer) < 20 && money >= 5) press('2', 'enter');
+      else if (!stole && fit && Number(st.level) >= 5) {
+        stole = true;
+        press('t', 'enter');
+      } else press('w', 'enter');
+    } else if (last.endsWith('Качалка\\')) {
+      // strength and stamina too, about half as much as agility and luck
+      if (behind && money >= 20) press(Number(st.str) <= Number(st.vit) ? '1' : '2', 'enter');
+      else press('w', 'enter');
+    } else if (last.endsWith('Клуб\\')) {
+      // spend everything on luck and agility
+      if (Number(st.district) > 1 && money >= 22) press('2', 'enter');
+      else if (money >= 15) press('1', 'enter');
       else press('w', 'enter');
     } else if (last.endsWith('Ветеренар\\')) {
       if (hp < max && money >= 3) press('h', 'enter');
@@ -133,11 +151,20 @@ export function playToWin(seed: number, save: string, maxInputs = 20000): BotRun
       else press('w', 'enter');
     } else if (last !== '\\') press('w', 'enter'); // leave any other place
     else if (lowHp && Number(st.beer) > 0 && !st.jawBroken) press(...'mh', 'enter');
-    else if ((lowHp || st.jawBroken || st.legBroken) && st.knowsHospital && money >= 3)
+    else if (
+      st.knowsHospital &&
+      ((lowHp && money >= 3) || ((st.jawBroken || st.legBroken) && money >= 7))
+    )
       press(...'rep', 'enter');
-    else if (Number(st.beer) < 4 && st.knowsMarket && money >= 10 && !st.marketHeat)
+    else if (Number(st.beer) < 10 && st.knowsMarket && money >= 5 && !st.marketHeat) {
+      stole = false;
       press(...'mar', 'enter');
-    else press('w', 'enter');
+    } else if (st.knowsGym && behind && money >= 45) press(...'trn', 'enter');
+    else if (st.knowsClub && !st.clubHeat && money >= 25) press(...'kl', 'enter');
+    else if (fit && Number(st.level) >= 5 && st.knowsMarket && !st.marketHeat && money < 22) {
+      stole = false;
+      press(...'mar', 'enter');
+    } else press('w', 'enter');
   }
   const st = snapshot(dos.cpu.mem, (LOAD_SEG + IMG.dataSeg) * 16);
   const where = `district ${st.district} level ${st.level} exp ${st.exp}/${st.expNext} hp ${st.hp}/${st.hpMax} money ${st.money}`;

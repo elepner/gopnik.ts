@@ -7,7 +7,7 @@ import { mod } from '../tp/num';
 import { spawnEnemy } from './enemy';
 import { fight } from './fight';
 import { levelUp } from './hero';
-import { Game, lowerCase, print, printf, println, rnd } from './prelude';
+import { Game, lowerCase, luckAtLeast, print, printf, println, rnd } from './prelude';
 import { PLACES } from './texts';
 
 /** 0000:B940 — `mar` */
@@ -635,15 +635,6 @@ export function prompt(text: string) {
     yield* print(text);
     st.input = lowerCase(yield* readLine);
     return st.input;
-  });
-}
-
-/** `luck >= Random(n)` as the original's Longint compare: no Random call when luck < 0 */
-export function luckAtLeast(n: number) {
-  return Effect.gen(function* () {
-    const { st } = yield* Game;
-    if (st.luck < 0) return false;
-    return st.luck >= (yield* rnd(n));
   });
 }
 

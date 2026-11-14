@@ -129,6 +129,18 @@ export function rnd(n: number) {
 
 export const halt = Effect.fail(new Halt({ code: 0 }));
 
+/**
+ * `luck >= Random(n)`: the original compares Longints, but always calls Random first —
+ * also when luck has overflowed into negative numbers.
+ */
+export function luckAtLeast(n: number) {
+  return Effect.gen(function* () {
+    const { st } = yield* Game;
+    const r = yield* rnd(n);
+    return st.luck >= r;
+  });
+}
+
 export interface IGame {
   readonly st: State;
   readonly mem: Memory;
