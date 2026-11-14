@@ -1,17 +1,17 @@
 /** The main command loop of G.EXE (0000:AB59) and walking around (`w`/`run`). */
 import { Effect } from 'effect';
 
-import { readKey, readLine } from '../crt/crt.ts';
-import { TYPE_NAMES } from '../data/tables.ts';
-import { str } from '../tp/num.ts';
-import { saveMage, temple } from './encounters.ts';
-import { setupRector, spawnEnemy } from './enemy.ts';
-import { fight, smokeJoint } from './fight.ts';
-import { drinkBeer, showStats } from './hero.ts';
-import { club, dealers, den, girlfriend, gym, luckAtLeast, market, prompt, vet } from './places.ts';
-import { Disk, Game, halt, lowerCase, print, println, rnd } from './prelude.ts';
-import { help } from './screens.ts';
-import { resetPlaces } from './start.ts';
+import { readKey, readLine } from '../crt/crt';
+import { str } from '../tp/num';
+import { saveMage, temple } from './encounters';
+import { setupRector, spawnEnemy } from './enemy';
+import { fight, smokeJoint } from './fight';
+import { drinkBeer, showStats } from './hero';
+import { club, dealers, den, girlfriend, gym, luckAtLeast, market, prompt, vet } from './places';
+import { Disk, Game, halt, lowerCase, print, println, rnd } from './prelude';
+import { help } from './screens';
+import { resetPlaces } from './start';
+import { MAIN } from './texts';
 
 /** 0000:AB75 */
 export const mainLoop = Effect.gen(function* () {
@@ -33,7 +33,7 @@ export const mainLoop = Effect.gen(function* () {
     if (cmd === 'bmar') yield* dealers;
     if (cmd === 'rep') yield* vet;
     if (cmd === 'girl') yield* girlfriend;
-    if (cmd === 'fight') yield* println('^6Пережитки прошлого жми ^6w^7 чтобы искать врагов');
+    if (cmd === 'fight') yield* println(MAIN.perezhitkiProshlogoZhmiW);
     if (cmd === 'pr') yield* den;
     if (cmd === 'kl') yield* club;
     if (cmd === 'trn') yield* gym;
@@ -41,14 +41,14 @@ export const mainLoop = Effect.gen(function* () {
     if (cmd === 'kos') yield* smokeJoint(10);
     if (cmd === 'i') yield* commands;
     if (cmd === 's') yield* showStats;
-    if (cmd === 'f' && st.pistol) yield* println('^6Ты чё псих? мигом менты накроют!');
-    if (cmd === 'k') yield* println('^6Чё машешь копытами? Ищи мудака которого будешь пинать!');
+    if (cmd === 'f' && st.pistol) yield* println(MAIN.tyChePsihMigom);
+    if (cmd === 'k') yield* println(MAIN.cheMasheshKopytamiIschi);
     if (cmd === 'name') yield* rename;
-    if (cmd === 'version') yield* println('^4Gopnik: ^7version 1.02 june,sept 2003');
+    if (cmd === 'version') yield* println(MAIN.gopnikVersion102);
     if (cmd === 'help') yield* help;
     if (cmd === 'exit' || cmd === 'e') {
-      yield* println('^6Блин не быть тебе нормальным пацаном');
-      yield* println('^1А результат:');
+      yield* println(MAIN.blinNeBytTebe);
+      yield* println(MAIN.aRezultat);
       yield* showStats;
       yield* readKey;
       return yield* halt;
@@ -63,31 +63,31 @@ const nextDistrict = Effect.gen(function* () {
   yield* resetPlaces;
   st.marketHeat = 0;
   st.clubHeat = 0;
-  yield* println('^1Ты доказал, что ты самый крутой в этом районе - отправляйся в следующий');
-  yield* println('^0Хочешь сохранить свои достижения?');
+  yield* println(MAIN.tyDokazalChtoTy);
+  yield* println(MAIN.hocheshSohranitSvoiDostizheniya);
   if ((yield* prompt('\\')) === 'y') {
     st.tmp = str(st.district);
     yield* (yield* Disk).write(`save_r${st.tmp}.sav`, mem.saveRecord());
-    yield* println(`^1Сохранено в save_r${st.tmp}.sav`);
+    yield* println(MAIN.sohranenoVSaveR, st.tmp);
   }
   switch (st.district) {
     case 2:
-      yield* println('^1Ты сел на автобус и попёрся на шлюз...');
-      yield* println('^1Там бродит шлюзовская шпана.');
+      yield* println(MAIN.tySelNaAvtobus);
+      yield* println(MAIN.tamBroditShlyuzovskayaShpana);
       break;
     case 3:
-      yield* println('^1На маршрутке ты доехал до ОбьГЭСа...');
-      yield* println('^1Здесь бродит уже более крутая гопота.');
+      yield* println(MAIN.naMarshrutkeTyDoehal);
+      yield* println(MAIN.zdesBroditUzheBolee);
       break;
     case 4:
-      yield* println('^1Ты приехал в Ельцовку...');
-      yield* println('^1Ото всюду доносятся крики запинываемых.');
+      yield* println(MAIN.tyPriehalVEltsovku);
+      yield* println(MAIN.otoVsyuduDonosyatsyaKriki);
       break;
     case 5:
-      yield* println('^1Пора наконец отомстить ректору...');
+      yield* println(MAIN.poraNakonetsOtomstitRektoru);
       yield* readKey;
-      yield* println('^1Ты пробрался в универ, в тёмный ректорский кабинет...');
-      yield* println('^1А вот и он...');
+      yield* println(MAIN.tyProbralsyaVUniver);
+      yield* println(MAIN.aVotIOn);
       st.rector = 1;
       break;
   }
@@ -102,64 +102,58 @@ const walk = Effect.gen(function* () {
       st.str -= 2;
       st.dmgMin--;
       st.dmgMax -= 2;
-      yield* println('^6Глюки прошли. Сила -2.');
+      yield* println(MAIN.glyukiProshliSila2);
     }
   }
-  if (st.cmd === 'run') yield* println('^6Забегал мудак.');
+  if (st.cmd === 'run') yield* println(MAIN.zabegalMudak);
   if (st.loans < st.district * 10) st.loans++;
   if (st.knowsDealers && st.pistol && st.phoneCalls < 25) {
     st.phoneCalls++;
-    if (st.phoneCalls === 25 && st.phone === 1)
-      yield* println(
-        'Телефон:^6Алё, ты где? Приходи, мы вещицу для тебя раздобыли.(Иди к барыгам)'
-      );
+    if (st.phoneCalls === 25 && st.phone === 1) yield* println(MAIN.telefonAleTyGde);
   }
   if (!st.denQuestHelp && (yield* rnd(20)) === 0) {
     st.denQuestHelp = 1;
-    if (st.denAccess && st.phone === 1)
-      yield* println(`Телефон:^6Алё,${st.name}^6? ты где щас? Тут помощь нужна.(Иди в притон)`);
+    if (st.denAccess && st.phone === 1) yield* println(MAIN.telefonAleTyGde2, st.name);
   }
   if (!st.denQuestJob && (yield* rnd(20)) === 0) {
     st.denQuestJob = 1;
     if (st.denAccess && st.respect >= 100 && st.phone === 1)
-      yield* println(`Телефон:^6Алё,${st.name}^6? ты щас где? Базар есть.(Иди в притон)`);
+      yield* println(MAIN.telefonAleTySchas, st.name);
   }
   if (st.phone === 1 && (yield* rnd(200)) === 0) {
-    yield* println('Телефон:^6Алё Вася?');
+    yield* println(MAIN.telefonAleVasya);
     yield* readKey;
-    yield* println(`^2Нет это ${st.name}.`);
+    yield* println(MAIN.netEto, st.name);
     yield* readKey;
-    yield* println('Телефон:^6А Васю можно?');
+    yield* println(MAIN.telefonAVasyuMozhno);
     yield* readKey;
-    yield* println('^2Нет, он будет в больнице в ближайшие 2 месяца.');
+    yield* println(MAIN.netOnBudetV);
   }
   if (st.phone === 1) {
     if ((yield* rnd(100)) === 0 && st.hasGirl) {
-      yield* println('Телефон(Твоя пассия):^5Привет, это я. Зайдешь ко мне сегодня?');
-      yield* println('^2А ты: Безбазаров, жди.');
+      yield* println(MAIN.telefonTvoyaPassiyaPrivet);
+      yield* println(MAIN.aTyBezbazarovZhdi);
     }
-    if (st.marketHeat === 1 && st.denAccess)
-      yield* println('Телефон:^2Это ты там на базаре шухер наводил? Ну короче там менты свалили.');
-    if (st.clubHeat === 1 && st.denAccess)
-      yield* println('Телефон:^2Ты че там, в клуб-та пойдёшь. Уже утряслось всё.');
+    if (st.marketHeat === 1 && st.denAccess) yield* println(MAIN.telefonEtoTyTam);
+    if (st.clubHeat === 1 && st.denAccess) yield* println(MAIN.telefonTyCheTam);
   }
   if (st.marketHeat > 0) st.marketHeat--;
   if (st.clubHeat > 0) st.clubHeat--;
   if ((yield* rnd(10)) === 0 && !st.knowsHospital) {
     st.knowsHospital = 1;
-    yield* println('^1Ты спросил у прохожего где больница.');
+    yield* println(MAIN.tySprosilUProhozhego);
   }
   if ((yield* rnd(10)) === 0 && !st.knowsMarket) {
     st.knowsMarket = 1;
-    yield* println('^1Ты нашел базар.');
+    yield* println(MAIN.tyNashelBazar);
   }
   if ((yield* rnd(100)) === 0 && !st.knowsClub) {
     st.knowsClub = 1;
-    yield* println('^1Ты увидел объявление "Типа заходи в наш понтовый клуб".');
+    yield* println(MAIN.tyUvidelObyavlenieTipa);
   }
   if ((yield* rnd(100)) === 0 && !st.knowsGym) {
     st.knowsGym = 1;
-    yield* println('^1На стене реклама "Жизнь тяжела. Если не хочешь сдохнуть качайся!".');
+    yield* println(MAIN.naSteneReklamaZhizn);
   }
   if (st.ringGp) {
     if (st.hp < st.hpMax) {
@@ -169,11 +163,11 @@ const walk = Effect.gen(function* () {
     if ((yield* rnd(20)) === 0) {
       if (!st.jawBroken && st.legBroken) {
         st.legBroken = 0;
-        yield* println('^2Твоя нога залечилась с Божей помощью.');
+        yield* println(MAIN.tvoyaNogaZalechilasS);
       }
       if (st.jawBroken) {
         st.jawBroken = 0;
-        yield* println('^2Твоя челюсть залечилась с Божей помощью.');
+        yield* println(MAIN.tvoyaChelyustZalechilasS);
       }
     }
   }
@@ -182,7 +176,7 @@ const walk = Effect.gen(function* () {
   } else if (st.charType === 6 && (yield* luckAtLeast(st.district * 20))) {
     st.found = (yield* rnd(st.district * 5)) + 1;
     st.money += st.found;
-    yield* println('^2Опа бабки! # рублей на пиво!', st.found);
+    yield* println(MAIN.opaBabkiRubleyNa, st.found);
   }
   st.eventRoll = (yield* rnd(25)) + 1;
   if (st.eventRoll >= 10) st.event = 4;
@@ -201,7 +195,7 @@ const walk = Effect.gen(function* () {
     case 4:
       return yield* nothingHappens;
     default:
-      return yield* println('Ничё не происходит.');
+      return yield* println(MAIN.nicheNeProishodit);
   }
 });
 
@@ -213,28 +207,28 @@ const toggleTrail = Effect.gen(function* () {
 });
 
 const TRAIL_IN = [
-  '^6Ты зашел на тропинку где бродит искитимская гопота.',
-  '^6Ты зашел в какие-то дебри подваротен.',
-  '^6Ты зашел на планы.',
-  '^6Ты зашел чёрте куда.',
+  MAIN.tyZashelNaTropinku,
+  MAIN.tyZashelVKakie,
+  MAIN.tyZashelNaPlany,
+  MAIN.tyZashelCherteKuda,
 ];
 const TRAIL_OUT = [
-  '^6Ты вышел с тропинки.',
-  '^6Ты вышел из подваротен.',
-  '^6Ты вышел с планов.',
-  '^6Ты вышел чёрте откуда.',
+  MAIN.tyVyshelSTropinki,
+  MAIN.tyVyshelIzPodvaroten,
+  MAIN.tyVyshelSPlanov,
+  MAIN.tyVyshelCherteOtkuda,
 ];
 
 const prettyGirl = Effect.gen(function* () {
   const { st } = yield* Game;
-  if (st.hasGirl) return yield* println('Совсем ничё не происходит.');
-  yield* println('^5Идет типа клёвая цыпа. Хочешь её зацепить?');
+  if (st.hasGirl) return yield* println(MAIN.sovsemNicheNeProishodit);
+  yield* println(MAIN.idetTipaKlevayaTsypa);
   st.input = lowerCase(yield* readLine);
   if (st.input !== 'y') return;
   if ((yield* rnd(2)) === 0) {
-    yield* println('^5Ты такой подкатываешь, а она:"Глянулся ты мне парниша"');
+    yield* println(MAIN.tyTakoyPodkatyvaeshA);
     st.hasGirl = 1;
-  } else yield* println('^4Ты ещё подкатить неуспел - а она:"Отдыхай урод". - Тебя обломали кент');
+  } else yield* println(MAIN.tyEschePodkatitNeuspel);
 });
 
 const meetSomeone = Effect.gen(function* () {
@@ -247,29 +241,26 @@ const meetSomeone = Effect.gen(function* () {
     const calm = ((yield* luckAtLeast(st.sneak)) || st.eType < 3) && st.eType < 7;
     const type = mem.typeName(st.eType);
     if (calm) {
-      yield* println(`^6Идет ${type} # уровня. Хочешь наехать?`, st.eLevel);
+      yield* println(MAIN.idetUrovnyaHocheshNaehat, type, st.eLevel);
       st.input = lowerCase(yield* readLine);
       if (st.input === 'y') st.engaged = 1;
     } else {
-      yield* println(`^6Идет ${type} # уровня, ищущий кого отпинать. Хочешь наехать?`, st.eLevel);
+      yield* println(MAIN.idetUrovnyaIschuschiyKogo, type, st.eLevel);
       st.input = lowerCase(yield* readLine);
       if (st.input === 'y') st.engaged = 1;
       else if ((yield* rnd(2)) === 0) {
-        yield* println('^4Он тебя заметил.');
+        yield* println(MAIN.onTebyaZametil);
         st.engaged = 1;
-      } else yield* println('^2Ты смылся.');
+      } else yield* println(MAIN.tySmylsya);
     }
   } else {
-    yield* println('^6Идет ментяра # уровня гроза гопов.', st.eLevel);
-    if (yield* luckAtLeast(st.district * 7 + 15))
-      yield* println('^2Ты затаился, прикинулся не гопом... Мент вроде не заметил');
+    yield* println(MAIN.idetMentyaraUrovnyaGroza, st.eLevel);
+    if (yield* luckAtLeast(st.district * 7 + 15)) yield* println(MAIN.tyZatailsyaPrikinulsyaNe);
     else if (st.glasses === 1) {
-      yield* println(
-        '^2Ты напялил тёмные очки и мент не узнал твою рожу, которая весит на почётном'
-      );
-      yield* println('^2стенде "Разыскиваются за гопничество"');
+      yield* println(MAIN.tyNapyalilTemnyeOchki);
+      yield* println(MAIN.stendeRazyskivayutsyaZaGopnichestvo);
     } else {
-      yield* println('^4Запалил!');
+      yield* println(MAIN.zapalil);
       st.engaged = 1;
     }
   }
@@ -278,50 +269,47 @@ const meetSomeone = Effect.gen(function* () {
 
 const nothingHappens = Effect.gen(function* () {
   const { st, mem } = yield* Game;
-  if (st.stoned > 0 && (yield* rnd(7)) === 0)
-    yield* println('Все куда-то плывёт - совсем башню заклинило');
+  if (st.stoned > 0 && (yield* rnd(7)) === 0) yield* println(MAIN.vseKudaToPlyvet);
   if (st.stoned > 0 && (yield* rnd(7)) === 0) {
     const type = mem.typeName(yield* rnd(7));
-    yield* println(`^6Идет ${type} # уровня. Хочешь наехать?`, yield* rnd(st.district * 10 + 1));
+    yield* println(MAIN.idetUrovnyaHocheshNaehat, type, yield* rnd(st.district * 10 + 1));
     st.input = yield* readLine;
-    yield* println('^6Чё за ботва? ни кого нет.. глюки какие-то...');
-  } else yield* println('Ничё не происходит.');
+    yield* println(MAIN.cheZaBotvaNi);
+  } else yield* println(MAIN.nicheNeProishodit);
 });
 
 /** `i` */
 const commands = Effect.gen(function* () {
   const { st } = yield* Game;
-  yield* println(
-    'Напиши: ^6w^7    чтобы шататься по окрестностям - искать на свою жопу приключения'
-  );
-  if (st.knowsMarket === 1) yield* println('Напиши: ^6mar^7  чтобы идти на рынок');
-  if (st.knowsDealers === 1) yield* println('Напиши: ^6bmar^7 чтобы идти к барыгам');
-  if (st.knowsHospital === 1) yield* println('Напиши: ^6rep^7  чтобы идти к ветеринару');
-  if (st.hasGirl === 1) yield* println('Напиши: ^6girl^7 чтобы завалиться к своей девчонке');
-  if (st.denAccess === 1) yield* println('Напиши: ^6pr^7   чтобы идти в местный притон гопоты');
-  if (st.knowsClub === 1) yield* println('Напиши: ^6kl^7   чтобы идти в клуб');
-  if (st.knowsGym === 1) yield* println('Напиши: ^6trn^7  чтобы идти в качалку');
+  yield* println(MAIN.napishiWChtobyShatatsya);
+  if (st.knowsMarket === 1) yield* println(MAIN.napishiMarChtobyIdti);
+  if (st.knowsDealers === 1) yield* println(MAIN.napishiBmarChtobyIdti);
+  if (st.knowsHospital === 1) yield* println(MAIN.napishiRepChtobyIdti);
+  if (st.hasGirl === 1) yield* println(MAIN.napishiGirlChtobyZavalitsya);
+  if (st.denAccess === 1) yield* println(MAIN.napishiPrChtobyIdti);
+  if (st.knowsClub === 1) yield* println(MAIN.napishiKlChtobyIdti);
+  if (st.knowsGym === 1) yield* println(MAIN.napishiTrnChtobyIdti);
   for (const line of COMMANDS) yield* println(line);
 });
 
 const COMMANDS = [
-  'Напиши: ^6s^7    чтобы посмотреть в лужу на свою уродскую рожу',
-  'Напиши: ^6sv^7   чтобы приглядеться к пинаемому мудаку',
-  'Напиши: ^6k^7    чтобы гасить мудака который тебе попался на дороге',
-  'Напиши: ^6v^7    чтобы позвать подкрепление',
-  'Напиши: ^6kos^7  чтобы схавать косяк',
-  'Напиши: ^6h^7    чтобы выпить пиво (если не охото к ветеринару)',
-  'Напиши: ^6mh^7   чтобы набухаться до чёртиков',
-  'Напиши: ^6name^7 чтобы сменить погоняло',
-  'Напиши: ^6e^7    если захочешь выйти',
+  MAIN.napishiSChtobyPosmotret,
+  MAIN.napishiSvChtobyPriglyadetsya,
+  MAIN.napishiKChtobyGasit,
+  MAIN.napishiVChtobyPozvat,
+  MAIN.napishiKosChtobyShavat,
+  MAIN.napishiHChtobyVypit,
+  MAIN.napishiMhChtobyNabuhatsya,
+  MAIN.napishiNameChtobySmenit,
+  MAIN.napishiEEsliZahochesh,
 ];
 
 /** `name` */
 const rename = Effect.gen(function* () {
   const { st } = yield* Game;
-  yield* println(`^2Звали тебя:^7 ${st.name}`);
-  yield* print('^2А теперь будут:^7 ');
+  yield* println(MAIN.zvaliTebya, st.name);
+  yield* print(MAIN.aTeperBudut);
   st.name = yield* readLine;
-  if (st.name === '') st.name = 'Раз^6дол^4бай';
-  st.name = '^7 ' + st.name;
+  if (st.name === '') st.name = MAIN.razDolBay;
+  st.name = MAIN.namePrefix + st.name;
 });

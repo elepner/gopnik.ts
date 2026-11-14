@@ -1,10 +1,11 @@
 /** Enemies: generation, the rector bosses, `sv` (inspect the enemy). */
 import { Effect } from 'effect';
 
-import { RANK_NAMES, STAT_WEIGHTS, TYPE_NAMES } from '../data/tables.ts';
-import { div, i16, round } from '../tp/num.ts';
-import { accuracy, healthColor } from './hero.ts';
-import { Game, println, rnd } from './prelude.ts';
+import { STAT_WEIGHTS } from '../data/tables';
+import { div, i16, round } from '../tp/num';
+import { accuracy, healthColor } from './hero';
+import { Game, println, rnd } from './prelude';
+import { ENEMY } from './texts';
 
 /** who spawned the enemy: walking, being caught (market/club/den help), the den job (cop) */
 export type SpawnKind = 0 | 1 | 2;
@@ -98,16 +99,16 @@ const deriveEnemy = Effect.gen(function* () {
 /** 0000:1348 — `sv`: inspect the enemy */
 export const showEnemy = Effect.gen(function* () {
   const { st, mem } = yield* Game;
-  let title = st.eLevel > 40 ? 'Не в этой жизни.' : mem.rankName(st.eLevel);
+  let title = st.eLevel > 40 ? ENEMY.neVEtoyZhizni : mem.rankName(st.eLevel);
   title = ' - ' + title;
   if (st.eType >= 8) title = '';
-  yield* println(`^2Это ${mem.typeName(st.eType)} # уровня${title}`, st.eLevel);
-  yield* println('Сл:# Лв:# Жв:# Уд:#', st.eStr, st.eAgi, st.eVit, st.eLuck);
-  yield* println('Урон #-#', st.eDmgMin, st.eDmgMax);
+  yield* println(ENEMY.etoUrovnya, mem.typeName(st.eType), st.eLevel, title);
+  yield* println(ENEMY.slLvZhvUd, st.eStr, st.eAgi, st.eVit, st.eLuck);
+  yield* println(ENEMY.uron, st.eDmgMin, st.eDmgMax);
   let injuries = '';
-  if (st.eJawBroken === 1) injuries += '^4Сломана челюсть  ';
-  if (st.eLegBroken === 1) injuries += '^4Сломана нога  ';
-  yield* println(`^${healthColor(st.eHp, st.eHpMax)}Здоровье #/#  ${injuries}`, st.eHp, st.eHpMax);
+  if (st.eJawBroken === 1) injuries += ENEMY.slomanaChelyust;
+  if (st.eLegBroken === 1) injuries += ENEMY.slomanaNoga;
+  yield* println(ENEMY.zdorove, healthColor(st.eHp, st.eHpMax), st.eHp, st.eHpMax, injuries);
   yield* accuracy(st.eAgi);
-  if (st.eArmor > 0) yield* println('^2Броня #    ', st.eArmor);
+  if (st.eArmor > 0) yield* println(ENEMY.bronya, st.eArmor);
 });

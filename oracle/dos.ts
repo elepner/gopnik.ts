@@ -18,8 +18,8 @@ import {
 } from 'node:fs';
 import { join } from 'node:path';
 
-import { decodeCp866, encodeCp866 } from '../src/tp/cp866.ts';
-import { AX, BX, CS, CX, Cpu, type CpuHost, DI, DS, DX, ES, SI, SP, SS } from './cpu.ts';
+import { decodeCp866, encodeCp866 } from '../src/tp/cp866';
+import { AX, BX, CS, CX, Cpu, type CpuHost, DI, DS, DX, ES, SI, SP, SS } from './cpu';
 
 export const LOAD_SEG = 0x0200;
 const PSP_SEG = LOAD_SEG - 0x10;
@@ -33,7 +33,9 @@ export const IMG = {
   random: 0x108cb,
   randomRet: 0x108e5,
   dataSeg: 0x10ae,
-  randSeed: 0x367e, // DS offset
+  randSeed: 0x367e,
+  print: 0x0eed0,
+  printLn: 0x0eed0 + 0x1c2, // DS offset
 } as const;
 
 const KEYS: Record<string, number> = {
@@ -95,6 +97,8 @@ export class Dos implements CpuHost {
   /** scripted runs: KeyPressed with an empty queue takes the next scripted key, if any */
   onPoll?: () => number | undefined;
   readonly randLog: RandCall[] = [];
+  /** every call of the game's Print/PrintLn (segment 0EED): text and its 5 integer arguments */
+  readonly printLog: { text: string; args: number[]; newline: boolean }[] = [];
   stdout = '';
   exited = false;
   exitCode = 0;
@@ -136,6 +140,19 @@ export class Dos implements CpuHost {
     });
     this.cpu.addBreakpoint(base + IMG.randomRet, (c) => {
       this.randLog[this.randLog.length - 1].result = c.r[DX];
+    });
+    // custom print unit: PrintLn calls Print, so PrintLn only marks the next Print
+    let newline = false;
+    this.cpu.addBreakpoint(base + IMG.printLn, () => {
+      newline = true;
+    });
+    this.cpu.addBreakpoint(base + IMG.print, (c) => {
+      const sp = c.lin(c.s[SS], c.r[SP]);
+      const args = [12, 10, 8, 6, 4].map((o) => (c.rd16(sp + o) << 16) >> 16);
+      const s = c.lin(c.rd16(sp + 16), c.rd16(sp + 14));
+      const text = decodeCp866(c.mem.slice(s + 1, s + 1 + c.mem[s]));
+      this.printLog.push({ text, args, newline });
+      newline = false;
     });
   }
 

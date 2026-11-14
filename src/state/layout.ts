@@ -4,8 +4,8 @@
  * SAVE_R*.SAV files interchangeable with the original, and lets tests diff the
  * TS state against the emulated original field by field.
  */
-import { DS_INIT } from '../data/ds-init.ts';
-import { decodeCp866, encodeCp866 } from '../tp/cp866.ts';
+import { DS_INIT } from '../data/ds-init';
+import { decodeCp866, encodeCp866 } from '../tp/cp866';
 
 /** fresh zeroed data segment plus a named-field view over it */
 export function createState(): { readonly mem: Memory; readonly st: State } {

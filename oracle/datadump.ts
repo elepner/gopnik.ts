@@ -1,5 +1,5 @@
 /** Dump the initialized data segment of G.EXE (typed constants). bun oracle/datadump.ts */
-import { img, pstr, hex } from './disasm.ts';
+import { img, pstr, hex } from './disasm';
 const DS = 0x10ae * 16;
 const size = img.length - DS;
 console.log(`DS init size = 0x${size.toString(16)}`);

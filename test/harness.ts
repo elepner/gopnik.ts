@@ -7,13 +7,13 @@ import { join } from 'node:path';
 
 import { Cause, Effect, Exit } from 'effect';
 
-import { Dos, IMG, keyCode, LOAD_SEG, VIDEO } from '../oracle/dos.ts';
-import { EndOfInput, type IKeyboard, makeCrt } from '../src/crt/crt.ts';
-import { Game } from '../src/game/prelude.ts';
-import { gameLayer, program } from '../src/runtime.ts';
-import { snapshot } from '../src/state/layout.ts';
-import { CP866 as CP } from '../src/tp/cp866.ts';
-import { Rng, type RandCall } from '../src/tp/rng.ts';
+import { Dos, IMG, keyCode, LOAD_SEG, VIDEO } from '../oracle/dos';
+import { EndOfInput, type IKeyboard, makeCrt } from '../src/crt/crt';
+import { Game } from '../src/game/prelude';
+import { gameLayer, program } from '../src/runtime';
+import { snapshot } from '../src/state/layout';
+import { CP866 as CP } from '../src/tp/cp866';
+import { Rng, type RandCall } from '../src/tp/rng';
 
 export interface Snapshot {
   readonly cells: Uint8Array;
@@ -24,6 +24,14 @@ export interface Snapshot {
 export interface Run {
   readonly snaps: readonly Snapshot[];
   readonly rand: readonly RandCall[];
+  /** structured output: every Print/PrintLn with its text and integer arguments */
+  readonly prints: readonly PrintRecord[];
+}
+
+export interface PrintRecord {
+  readonly text: string;
+  readonly args: readonly number[];
+  readonly newline: boolean;
 }
 
 export interface Divergence {
@@ -64,7 +72,11 @@ export function runOriginal(seed: number, keys: readonly string[], dir: string):
     dos.send(keys[i++]);
     if (!dos.exited) snaps.push(snap());
   }
-  return { snaps, rand: dos.randLog.map((r) => ({ n: r.n, result: r.result })) };
+  return {
+    snaps,
+    rand: dos.randLog.map((r) => ({ n: r.n, result: r.result })),
+    prints: dos.printLog,
+  };
 }
 
 export async function runPort(seed: number, keys: readonly string[], dir: string): Promise<Run> {
@@ -73,6 +85,7 @@ export async function runPort(seed: number, keys: readonly string[], dir: string
   const snaps: Snapshot[] = [];
   let mem: Uint8Array | undefined;
   let log: readonly RandCall[] = [];
+  let prints: readonly PrintRecord[] = [];
   // a key seen by KeyPressed was already "in the buffer": reading it is not a new wait
   let polled = false;
   const keyboard: IKeyboard = {
@@ -90,14 +103,16 @@ export async function runPort(seed: number, keys: readonly string[], dir: string
   };
   const exit = await Effect.runPromiseExit(
     Effect.gen(function* () {
-      mem = (yield* Game).mem.bytes;
+      const game = yield* Game;
+      mem = game.mem.bytes;
+      prints = game.transcript;
       log = yield* (yield* Rng).log;
       yield* program;
     }).pipe(Effect.provide(gameLayer({ seed, dir, keyboard, crt })))
   );
   if (Exit.isFailure(exit) && !/EndOfInput|Halt/.test(Cause.pretty(exit.cause)))
     throw new Error(`port crashed: ${Cause.pretty(exit.cause)}`);
-  return { snaps, rand: log };
+  return { snaps, rand: log, prints };
 }
 
 export function firstDivergence(a: Run, b: Run, keys: readonly string[]): Divergence | undefined {
@@ -127,6 +142,31 @@ export function firstDivergence(a: Run, b: Run, keys: readonly string[]): Diverg
           port: String(y.state[f]),
         };
   }
+  for (let i = 0; i < Math.min(a.prints.length, b.prints.length); i++) {
+    const x = a.prints[i];
+    const y = b.prints[i];
+    const used = Math.min(5, [...x.text].filter((c) => c === '#').length);
+    if (
+      x.text !== y.text ||
+      x.newline !== y.newline ||
+      x.args.slice(0, used).join() !== y.args.slice(0, used).join()
+    )
+      return {
+        step: -1,
+        key: undefined,
+        what: `print #${i}`,
+        original: JSON.stringify(x),
+        port: JSON.stringify(y),
+      };
+  }
+  if (a.prints.length !== b.prints.length)
+    return {
+      step: -1,
+      key: undefined,
+      what: 'print count',
+      original: String(a.prints.length),
+      port: String(b.prints.length),
+    };
   for (let i = 0; i < Math.min(a.rand.length, b.rand.length); i++)
     if (a.rand[i].n !== b.rand[i].n || a.rand[i].result !== b.rand[i].result)
       return {

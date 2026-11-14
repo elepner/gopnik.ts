@@ -4,12 +4,12 @@ import { join } from 'node:path';
 
 import { Effect, Layer } from 'effect';
 
-import { Crt, type ICrt, type IKeyboard, Keyboard, makeCrt } from './crt/crt.ts';
-import { mainLoop } from './game/main.ts';
-import { Disk, Game } from './game/prelude.ts';
-import { newGame } from './game/start.ts';
-import { createState } from './state/layout.ts';
-import { rngLayer } from './tp/rng.ts';
+import { Crt, type ICrt, type IKeyboard, Keyboard, makeCrt } from './crt/crt';
+import { mainLoop } from './game/main';
+import { Disk, Game } from './game/prelude';
+import { newGame } from './game/start';
+import { createState } from './state/layout';
+import { rngLayer } from './tp/rng';
 
 /** the whole program: G.EXE's main block */
 export const program = Effect.andThen(newGame, mainLoop);
@@ -26,7 +26,7 @@ export function gameLayer(opts: GameOptions) {
   return Layer.mergeAll(
     Layer.succeed(Crt, opts.crt ?? makeCrt()),
     Layer.succeed(Keyboard, opts.keyboard),
-    Layer.succeed(Game, { st, mem, printBuf: new Uint8Array(256) }),
+    Layer.succeed(Game, { st, mem, printBuf: new Uint8Array(256), transcript: [] }),
     Layer.succeed(Disk, dirDisk(opts.dir)),
     rngLayer(opts.seed)
   );

@@ -4,8 +4,8 @@
  */
 import { Context, Data, Effect } from 'effect';
 
-import { decodeCp866 } from '../tp/cp866.ts';
-import { Screen } from './screen.ts';
+import { decodeCp866 } from '../tp/cp866';
+import { Screen } from './screen';
 
 /**
  * CRT's text-file input routine (CrtRead) followed by Read(s)+ReadLn:

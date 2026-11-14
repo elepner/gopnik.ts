@@ -9,7 +9,6 @@
     "types": ["bun-types"],
     "lib": ["ES2022", "DOM"],
     "noEmit": true,
-    "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true
   },
   "include": ["oracle", "src", "test"]

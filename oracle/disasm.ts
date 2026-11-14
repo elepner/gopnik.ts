@@ -9,7 +9,7 @@ import { join } from 'node:path';
  */
 import { Capstone, Const, loadCapstone } from 'capstone-wasm';
 
-import { decodeCp866 } from '../src/tp/cp866.ts';
+import { decodeCp866 } from '../src/tp/cp866';
 
 await loadCapstone();
 

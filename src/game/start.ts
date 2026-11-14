@@ -1,10 +1,11 @@
 /** Game start: save selection, intro story, character creation. */
 import { Effect } from 'effect';
 
-import { clrScr, readKey, readLine, writeLn } from '../crt/crt.ts';
-import { div, val } from '../tp/num.ts';
-import { Disk, Game, println, print } from './prelude.ts';
-import { titleScreen } from './screens.ts';
+import { clrScr, readKey, readLine, writeLn } from '../crt/crt';
+import { div, val } from '../tp/num';
+import { Disk, Game, println, print } from './prelude';
+import { titleScreen } from './screens';
+import { START } from './texts';
 
 /** 0000:6A0D */
 export const newGame = Effect.gen(function* () {
@@ -17,14 +18,14 @@ export const newGame = Effect.gen(function* () {
   st.saveCount = 0;
   const saves = yield* disk.list(/^save_r.\.sav$/i);
   for (const name of saves) {
-    if (st.saveCount > 0) yield* println('^1или');
+    if (st.saveCount > 0) yield* println(START.ili);
     st.saveCount++;
     const ch = name.toUpperCase()[6];
-    if (ch !== '0') yield* println(`^1Можно начать с ${ch} района`);
-    if (ch === '0') yield* println('^1Можно начать с того места где ты сохранился');
+    if (ch !== '0') yield* println(START.mozhnoNachatSRayona, ch);
+    if (ch === '0') yield* println(START.mozhnoNachatSTogo);
   }
   if (st.saveCount > 0) {
-    yield* println('^0Нажми цифру с какого района начать. 1-начать сначала');
+    yield* println(START.nazhmiTsifruSKakogo);
     st.saveKey = yield* readKey;
     const key = String.fromCharCode(st.saveKey);
     if ('23450'.includes(key)) {
@@ -32,12 +33,12 @@ export const newGame = Effect.gen(function* () {
       if (rec) {
         st.district = val(key)[0];
         mem.loadRecord(rec);
-        yield* println(`^0Загружено из save_r${key}`);
+        yield* println(START.zagruzhenoIzSaveR, key);
         if (st.district === 0) yield* loadPlaces;
         if (st.district === 0) st.district = div(st.level, 10) + 1;
         return yield* arrive;
       }
-      yield* println('^6Чё-то глюкануло - нaверно нет такого сейва, Default:1');
+      yield* println(START.cheToGlyukanuloNaverno);
     }
   }
   yield* createCharacter;
@@ -49,11 +50,11 @@ const loadPlaces = Effect.gen(function* () {
   const places = yield* (yield* Disk).read('places.sav');
   if (places) {
     mem.loadPlaces(places);
-    yield* println('^0Загружено из places');
+    yield* println(START.zagruzhenoIzPlaces);
     return;
   }
   yield* resetPlaces;
-  yield* println('^6Чё-то глюкануло - немогу прoгрузить Places:Ресет ту Default');
+  yield* println(START.cheToGlyukanuloNemogu);
 });
 
 /** places a character type keeps when moving to a new district (also used on load failure) */
@@ -74,40 +75,40 @@ const createCharacter = Effect.gen(function* () {
   st.district = 1;
   st.knowsHospital = 1;
   st.knowsMarket = 1;
-  st.version = '^4Gopnik: ^7version 1.02 june,sept 2003';
+  st.version = START.gopnikVersion102;
   st.expNext = 10;
-  yield* println('Год 2xxx от Р.Х.');
+  yield* println(START.god2xxxOtR);
   yield* readKey;
-  yield* println('Последний день ты пришел в универ');
-  yield* println('Ты по-страшному косил и забивал');
-  yield* println('Ты ещё мог сдать все задания, которые ты взял у друзей');
-  yield* println('Но тут...');
+  yield* println(START.posledniyDenTyPrishel);
+  yield* println(START.tyPoStrashnomuKosil);
+  yield* println(START.tyEscheMogSdat);
+  yield* println(START.noTut);
   yield* readKey;
-  yield* println('^6Ректор: Ах ты урод, чёртов забивала. Вали из универа!');
+  yield* println(START.rektorAhTyUrod);
   yield* readKey;
-  yield* println('^2Ты: А типа чё?');
+  yield* println(START.tyATipaChe);
   yield* readKey;
-  yield* println('^6Ректор: Ты отчислен мудак!!! Как ты был лохом так и останешься.');
+  yield* println(START.rektorTyOtchislenMudak);
   yield* readKey;
-  yield* println('^4Это слышали все и ты из пацана превратился в опушенного.');
+  yield* println(START.etoSlyshaliVseI);
   yield* readKey;
   yield* writeLn;
-  yield* println('Ты неможешь стерпеть такой наезд, однако ректор офигительно крутой.');
-  yield* println('Ты решил доказать свою крутизну всему миру(в твоем понимании - Городу).');
+  yield* println(START.tyNemozheshSterpetTakoy);
+  yield* println(START.tyReshilDokazatSvoyu);
   yield* readKey;
-  yield* println('Выбери кем ты будешь: ');
+  yield* println(START.vyberiKemTyBudesh);
   for (const line of TYPE_MENU) yield* println(line);
-  yield* println('4-Чё за батва?');
+  yield* println(START.n4CheZaBatva);
   yield* readType;
   if (st.charType === 4) {
     st.charType = 0;
     yield* writeLn;
-    yield* println('^1Пацан - это нормальный тип. (Бонус - Гёлфренд, Клуб).');
-    yield* println('^1Отморозок - тупой корявый мудак. (Бонус - Самолечение царапин).');
-    yield* println('^1Гопник - гоп он и есть гоп. (Бонус - Притон)');
-    yield* println('^1Вор - везучий ублюдок. (Бонус - Воровство, Барыги)');
+    yield* println(START.patsanEtoNormalnyyTip);
+    yield* println(START.otmorozokTupoyKoryavyyMudak);
+    yield* println(START.gopnikGopOnI);
+    yield* println(START.vorVezuchiyUblyudokBonus);
     yield* writeLn;
-    yield* println('А теперь выбирай: ');
+    yield* println(START.aTeperVybiray);
     for (const line of TYPE_MENU) yield* println(line);
     yield* readType;
   }
@@ -122,13 +123,13 @@ const createCharacter = Effect.gen(function* () {
   st.hp = st.hpMax;
   st.dmgMin = div(st.str, 2);
   st.dmgMax = st.str;
-  yield* print('^2А зовут тебя:^7 ');
+  yield* print(START.aZovutTebya);
   st.name = yield* readLine;
-  if (st.name === '') st.name = 'Раз^6дол^4бай';
-  st.name = '^7 ' + st.name;
+  if (st.name === '') st.name = START.razDolBay;
+  st.name = START.namePrefix + st.name;
 });
 
-const TYPE_MENU = ['0-Пацан', '1-Отморозок', '2-Гопник', '3-Вор'];
+const TYPE_MENU = [START.n0Patsan, START.n1Otmorozok, START.n2Gopnik, START.n3Vor];
 
 /** [str, agi, vit, luck] by the chosen number */
 const START_STATS = [
@@ -151,32 +152,30 @@ const arrive = Effect.gen(function* () {
   const { st } = yield* Game;
   switch (st.district) {
     case 1:
-      yield* println('^1Ты стоишь у дверей университета.');
-      yield* println('^1Отсюда ты начнешь свой нелёгкий путь гопника.');
+      yield* println(START.tyStoishUDverey);
+      yield* println(START.otsyudaTyNachneshSvoy);
       break;
     case 2:
-      yield* println('^1Ты сел на автобус и попёрся на шлюз...');
-      yield* println('^1Там бродит шлюзовская шпана.');
+      yield* println(START.tySelNaAvtobus);
+      yield* println(START.tamBroditShlyuzovskayaShpana);
       break;
     case 3:
-      yield* println('^1На маршрутке ты доехал до ОбьГЭСа...');
-      yield* println('^1Здесь бродит уже более крутая гопота.');
+      yield* println(START.naMarshrutkeTyDoehal);
+      yield* println(START.zdesBroditUzheBolee);
       break;
     case 4:
-      yield* println('^1Ты приехал в Ельцовку...');
-      yield* println('^1Ото всюду доносятся крики запинываемых.');
+      yield* println(START.tyPriehalVEltsovku);
+      yield* println(START.otoVsyuduDonosyatsyaKriki);
       break;
     case 5:
-      yield* println('^1Пора наконец отомстить ректору...');
+      yield* println(START.poraNakonetsOtomstitRektoru);
       st.rector = 1;
       break;
   }
   if (st.district === 1) {
-    yield* println('Доказать свою крутизну ты можешь, отпинывая разных мудаков.');
-    yield* println('Тебе придётся поработать над сабой, чтобы стать крутым.');
-    yield* println(
-      'Введи ^6i^7 чтобы посмотреть команды, введи ^6help^7 что бы узнать чё за батва.'
-    );
+    yield* println(START.dokazatSvoyuKrutiznuTy);
+    yield* println(START.tebePridetsyaPorabotatNad);
+    yield* println(START.vvediIChtobyPosmotret);
   }
   if (st.charType === 5) st.denAccess = 1;
   else if (st.charType === 3) {

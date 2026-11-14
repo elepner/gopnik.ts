@@ -2,7 +2,7 @@
  * Random play-throughs compared against the original.
  *   bun test/fuzz.ts [--from 1] [--count 20] [--len 400] [--saves dir]
  */
-import { compare, expandKeys, scenario } from './harness.ts';
+import { compare, expandKeys, scenario } from './harness';
 
 const args = process.argv.slice(2);
 const opt = (name: string, def: number) => {

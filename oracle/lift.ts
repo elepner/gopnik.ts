@@ -18,7 +18,7 @@ import {
   segOf,
   segoff,
   type Insn,
-} from './disasm.ts';
+} from './disasm';
 
 type Entry = { e: string; w: number; kind?: 'seg' | 'hi' | 'real' | 'tmpstr' };
 

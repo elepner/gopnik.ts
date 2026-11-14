@@ -3,7 +3,7 @@
  * Cells are stored like B800:0000 — cp866 char byte + attribute byte — so they can
  * be compared 1:1 with the emulated original.
  */
-import { CP866, encodeCp866 } from '../tp/cp866.ts';
+import { CP866, encodeCp866 } from '../tp/cp866';
 
 export const COLS = 80;
 export const ROWS = 25;

@@ -2,10 +2,10 @@ import chalk from 'chalk';
 /** Play the port in a terminal: `vp run play [-- --seed N] [--dir path]` */
 import { Effect } from 'effect';
 
-import { EndOfInput, type IKeyboard, type Key, makeCrt } from './crt/crt.ts';
-import { COLS, ROWS } from './crt/screen.ts';
-import { gameLayer, program } from './runtime.ts';
-import { CP866, encodeCp866 } from './tp/cp866.ts';
+import { EndOfInput, type IKeyboard, type Key, makeCrt } from './crt/crt';
+import { COLS, ROWS } from './crt/screen';
+import { gameLayer, program } from './runtime';
+import { CP866, encodeCp866 } from './tp/cp866';
 
 export async function play(seed: number, dir: string) {
   const crt = makeCrt();

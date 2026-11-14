@@ -1,6 +1,6 @@
-import { decodeCp866 } from '../src/tp/cp866.ts';
+import { decodeCp866 } from '../src/tp/cp866';
 /** Extract typed-constant tables from G.EXE's data segment into src/data/tables.ts */
-import { img } from './disasm.ts';
+import { img } from './disasm';
 const DS = 0x10ae * 16;
 const pstr = (off: number) => decodeCp866(img.subarray(DS + off + 1, DS + off + 1 + img[DS + off]));
 const bytes = (off: number, n: number) => [...img.subarray(DS + off, DS + off + n)];

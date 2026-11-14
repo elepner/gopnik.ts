@@ -6,7 +6,7 @@
 import { cpSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { Dos } from './dos.ts';
+import { Dos } from './dos';
 
 const ROOT = join(import.meta.dir, '..');
 

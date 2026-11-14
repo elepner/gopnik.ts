@@ -1,5 +1,5 @@
 /** bun test/compare.ts [--seed N] [--saves dir] key1 key2 ... — report the first divergence */
-import { compare, expandKeys, screenText } from './harness.ts';
+import { compare, expandKeys, screenText } from './harness';
 
 const args = process.argv.slice(2);
 const take = (flag: string) => {
@@ -11,7 +11,7 @@ const saves = take('--saves');
 const keys = expandKeys(args);
 const { original, port, divergence } = await compare(seed, keys, saves);
 console.log(
-  `steps: original ${original.snaps.length}, port ${port.snaps.length}; random: ${original.rand.length} vs ${port.rand.length}`
+  `steps: original ${original.snaps.length}, port ${port.snaps.length}; random: ${original.rand.length} vs ${port.rand.length}; prints: ${original.prints.length} vs ${port.prints.length}`
 );
 if (!divergence) console.log('IDENTICAL');
 else {
