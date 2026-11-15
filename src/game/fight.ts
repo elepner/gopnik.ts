@@ -21,6 +21,7 @@ import { showEnemy } from './enemy';
 import { type FightEvent, type Hit, type Side, tell } from './fight-view';
 import { DEN_LEVEL, drinkBeer, levelInDistrict, showStats } from './hero';
 import { halt, lowerCase, rnd, started } from './prelude';
+import { random, type Rule, run } from './rule';
 
 /** why the fight started */
 export type FightKind =
@@ -99,8 +100,8 @@ export function fight(kind: FightKind) {
       if (input === CMD.fight.exit) return yield* halt;
       if (input === CMD.fight.kick && backupApproaches(st.combat))
         yield* tell({ type: 'backupArrived', by: 'kicks' });
-      if (input === CMD.fight.callBackup) yield* tell(...callBackup(st));
-      if (alive(st.enemy) && backupHere(st.combat)) yield* tell(...(yield* backupKicks(st)));
+      if (input === CMD.fight.callBackup) yield* run(callBackup(st));
+      if (alive(st.enemy) && backupHere(st.combat)) yield* run(backupKicks(st));
       if (input === CMD.fight.shoot && st.player.body.pockets.pistol) yield* tell(yield* shoot(st));
 
       if (!alive(st.player)) {
@@ -293,7 +294,7 @@ function backupApproaches(combat: Combat): boolean {
 }
 
 /** `v`: call the den lads; the phone brings them at once */
-function* callBackup(st: Game): Generator<FightEvent> {
+function* callBackup(st: Game): Rule {
   if (st.world.places.den && respected(st)) {
     if (!backupCalled(st.combat)) st.combat.backup = 1;
     if (st.player.body.pockets.phone) {
@@ -310,30 +311,26 @@ function* callBackup(st: Game): Generator<FightEvent> {
 }
 
 /** the lads kick the enemy every turn, for respect, until they are beaten or fed up */
-function backupKicks(st: Game) {
-  return Effect.gen(function* () {
-    const events: FightEvent[] = [];
-    const prev = st.enemy.health.current;
-    let dmg = st.world.district * 3 + (yield* rnd(st.world.district * 4));
-    dmg -= div(st.enemy.armor, 3);
-    if (dmg < 0) dmg = 0;
-    st.enemy.health.current = i16(st.enemy.health.current - dmg);
-    events.push({ type: 'backupKicked', damage: prev - st.enemy.health.current });
-    if ((yield* rnd(2)) === 0) {
-      st.combat.backup = i16(st.combat.backup + 1);
-      if (st.combat.backup === BACKUP_ARRIVED) events.push({ type: 'backupArrived', by: 'time' });
-    }
-    if (st.combat.backup === BACKUP_BEATEN) {
-      st.combat.backup = 0;
-      events.push({ type: 'backupBeaten' });
-    }
-    st.player.respect = i16(st.player.respect - st.world.district * 5);
-    if (st.player.respect <= 0) {
-      st.combat.backup = 0;
-      events.push({ type: 'backupFedUp' });
-    }
-    return events;
-  });
+function* backupKicks(st: Game): Rule {
+  const prev = st.enemy.health.current;
+  let dmg = st.world.district * 3 + (yield* random(st.world.district * 4));
+  dmg -= div(st.enemy.armor, 3);
+  if (dmg < 0) dmg = 0;
+  st.enemy.health.current = i16(st.enemy.health.current - dmg);
+  yield { type: 'backupKicked', damage: prev - st.enemy.health.current };
+  if ((yield* random(2)) === 0) {
+    st.combat.backup = i16(st.combat.backup + 1);
+    if (st.combat.backup === BACKUP_ARRIVED) yield { type: 'backupArrived', by: 'time' };
+  }
+  if (st.combat.backup === BACKUP_BEATEN) {
+    st.combat.backup = 0;
+    yield { type: 'backupBeaten' };
+  }
+  st.player.respect = i16(st.player.respect - st.world.district * 5);
+  if (st.player.respect <= 0) {
+    st.combat.backup = 0;
+    yield { type: 'backupFedUp' };
+  }
 }
 
 /** `f`: only reached with a pistol in the pocket */

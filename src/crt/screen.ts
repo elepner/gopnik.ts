@@ -82,12 +82,8 @@ export class Screen {
   }
 
   text(): string {
-    const lines: string[] = [];
-    for (let r = 0; r < ROWS; r++) {
-      let line = '';
-      for (let c = 0; c < COLS; c++) line += CP866[this.cells[(r * COLS + c) * 2]];
-      lines.push(line.trimEnd());
-    }
-    return lines.join('\n');
+    const row = (r: number) =>
+      Array.from({ length: COLS }, (_, c) => CP866[this.cells[(r * COLS + c) * 2]]).join('');
+    return Array.from({ length: ROWS }, (_, r) => row(r).trimEnd()).join('\n');
   }
 }

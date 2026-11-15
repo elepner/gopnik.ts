@@ -108,13 +108,14 @@
   parameters, not state: the only shared input in the state is `session.lastAnswer`. They still
   sit in the original's data segment, so `legacy.ts` lists them in `SCRATCH_FIELDS` and the
   comparison snapshots skip them (`snapshot(..., true)` keeps them for the bots).
-- The fight is split into rules, loop and view. A rule (`kick`, `flee`, `callBackup`, `loot`…)
-  takes `st`, updates it and returns the events of its update; it never prints. The loop
-  (`fight`, `kickSeries`, `enemyDied`) runs the rules and publishes their events with `tell`
-  right away, before the next rule: `fight-view.ts` turns events into texts and key pauses and
-  reads what the state already knows (health left, bullets, names) from the state. Don't put
-  state into events; a rule may only return several events if none of them reads state a later
-  update of the same rule changes.
+- The fight is split into rules, loop and view. A rule takes `st`, updates it and reports what
+  happened; it never prints. A rule with one outcome returns its event (`flee`, `smoke`); a rule
+  with several is a `Rule` generator (`rule.ts`: `callBackup`, `backupKicks`, `loot`) that
+  `yield`s events and asks for Random with `yield* random(n)` / `lucky(st, n)`; `run(rule)`
+  answers with the game's Rng and shows each event the moment it is yielded. No arrays built
+  with `push`. The loop (`fight`, `kickSeries`) runs the rules and `tell`s returned events right
+  away: `fight-view.ts` turns events into texts and key pauses and reads what the state already
+  knows (health left, bullets, names) from the state. Don't put state into events.
 - `fight(kind)` only fights and returns its outcome (`won`, `died`, `fled`, `bailedOut`); the
   caller decides what follows, right after the call (not later in the main loop: places go on
   printing and reading after a fight). `aftermath.ts`: `settle(outcome)` claims a victory or ends
@@ -174,6 +175,7 @@
 
 ## Commit messages by Agents
 
+- Don't commit right after the tests pass: leave the change for the user's review, commit when asked.
 - Keep commit messages short.
 - Do not use conventional commits.
 - No need to specify agents in co-authors.

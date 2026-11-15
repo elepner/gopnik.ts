@@ -11,7 +11,8 @@ import { div, i16 } from '../tp/num';
 import type { FightOutcome } from './fight';
 import { type FightEvent, tell } from './fight-view';
 import { DEN_LEVEL, levelInDistrict, levelUp, nextRing } from './hero';
-import { luckAtLeast, rnd, started } from './prelude';
+import { rnd, started } from './prelude';
+import { lucky, random, type Rule, run } from './rule';
 import { gameOver, victoryAnimation } from './screens';
 
 /** the usual aftermath: a victory is claimed, a death ends the game */
@@ -69,7 +70,7 @@ const spoils = Effect.gen(function* () {
     const ring = nextRing(st);
     if (ring) yield* tell({ type: 'ringDropped', ring });
   }
-  yield* tell(...(yield* loot(st)));
+  yield* run(loot(st));
   st.combat.backup = 0;
 });
 
@@ -117,79 +118,73 @@ function rewardDenHelp(st: Game): FightEvent {
 }
 
 /** what a lucky hero finds on the enemy, by its kind */
-function loot(st: Game) {
-  return Effect.gen(function* () {
-    const events: FightEvent[] = [];
-    if ((yield* luckAtLeast(st.world.district * 25)) && st.enemy.type === 'nark') {
-      st.player.resources.joints = i16(st.player.resources.joints + (yield* rnd(3)));
-      events.push({ type: 'narkJoints' });
+function* loot(st: Game): Rule {
+  if ((yield* lucky(st, st.world.district * 25)) && st.enemy.type === 'nark') {
+    st.player.resources.joints = i16(st.player.resources.joints + (yield* random(3)));
+    yield { type: 'narkJoints' };
+  }
+  if (!(yield* lucky(st, st.world.district * 40))) return;
+  const weapon = (n: number) => {
+    st.player.damage.min = i16(st.player.damage.min + n);
+    st.player.damage.max = i16(st.player.damage.max + n);
+  };
+  const w = st.player.body.hands.weapons;
+  const group = ENEMIES[st.enemy.type].group;
+  if (st.enemy.type === 'nefor') {
+    const r = yield* random(3);
+    if (r === 0 && !st.player.body.neck.cross) {
+      st.player.stats.luck = i16(st.player.stats.luck + 2);
+      st.player.body.neck.cross = true;
+      yield { type: 'found', item: 'cross' };
+    } else if (r === 1 && !st.player.body.hands.rings.spasi) {
+      st.player.stats.luck = i16(st.player.stats.luck + 1);
+      st.player.body.hands.rings.spasi = true;
+      yield { type: 'found', item: 'spasiRing' };
+    } else if (r === 2 && !st.player.body.pockets.phone) {
+      st.player.body.pockets.phone = true;
+      yield { type: 'found', item: 'phone' };
     }
-    if (!(yield* luckAtLeast(st.world.district * 40))) return events;
-    const found = (item: Extract<FightEvent, { type: 'found' }>['item']) =>
-      events.push({ type: 'found', item });
-    const weapon = (n: number) => {
-      st.player.damage.min = i16(st.player.damage.min + n);
-      st.player.damage.max = i16(st.player.damage.max + n);
-    };
-    const w = st.player.body.hands.weapons;
-    const group = ENEMIES[st.enemy.type].group;
-    if (st.enemy.type === 'nefor') {
-      const r = yield* rnd(3);
-      if (r === 0 && !st.player.body.neck.cross) {
-        st.player.stats.luck = i16(st.player.stats.luck + 2);
-        st.player.body.neck.cross = true;
-        found('cross');
-      } else if (r === 1 && !st.player.body.hands.rings.spasi) {
-        st.player.stats.luck = i16(st.player.stats.luck + 1);
-        st.player.body.hands.rings.spasi = true;
-        found('spasiRing');
-      } else if (r === 2 && !st.player.body.pockets.phone) {
-        st.player.body.pockets.phone = true;
-        found('phone');
-      }
-    } else if (group === 'lad') {
-      const r = yield* rnd(2);
-      if (r === 0 && !w.knuckles) {
-        w.knuckles = true;
-        found('knuckles');
-        if (noneOf(w, 'knife', 'club', 'cleaver')) weapon(2);
-        else events.push({ type: 'betterWeaponInHand' });
-      } else if (r === 1 && !w.club) {
-        w.club = true;
-        found('club');
-        if (noneOf(w, 'knife', 'cleaver')) weapon(w.knuckles ? 2 : 4);
-        else events.push({ type: 'betterWeaponInHand' });
-      }
-    } else if (group === 'thug') {
-      const r = yield* rnd(2);
-      if (r === 0 && !st.player.body.eyes.glasses) {
-        st.player.body.eyes.glasses = true;
-        found('glasses');
-      } else if (r === 1 && !st.player.body.pockets.phone) {
-        st.player.body.pockets.phone = true;
-        found('phone');
-      }
-    } else if (group === 'maniac') {
-      const r = yield* rnd(2);
-      if (r === 0 && !w.knife) {
-        w.knife = true;
-        found('knife');
-        // sic: the original's boolean arithmetic, stacking bonuses
-        if (!w.club === w.knuckles) weapon(4);
-        if (w.club) weapon(2);
-        if (noneOf(w, 'knuckles', 'club', 'cleaver')) weapon(6);
-        if (w.cleaver) events.push({ type: 'cleaverInHand' });
-      } else if (r === 1 && !w.cleaver) {
-        w.cleaver = true;
-        found('cleaver');
-        if ((!w.club && !w.knife) === w.knuckles) weapon(7);
-        if (w.club && !w.knife) weapon(5);
-        if (w.knife) weapon(3);
-        if (noneOf(w, 'knuckles', 'club', 'knife')) weapon(9);
-      }
+  } else if (group === 'lad') {
+    const r = yield* random(2);
+    if (r === 0 && !w.knuckles) {
+      w.knuckles = true;
+      yield { type: 'found', item: 'knuckles' };
+      if (noneOf(w, 'knife', 'club', 'cleaver')) weapon(2);
+      else yield { type: 'betterWeaponInHand' };
+    } else if (r === 1 && !w.club) {
+      w.club = true;
+      yield { type: 'found', item: 'club' };
+      if (noneOf(w, 'knife', 'cleaver')) weapon(w.knuckles ? 2 : 4);
+      else yield { type: 'betterWeaponInHand' };
     }
-    return events;
-  });
+  } else if (group === 'thug') {
+    const r = yield* random(2);
+    if (r === 0 && !st.player.body.eyes.glasses) {
+      st.player.body.eyes.glasses = true;
+      yield { type: 'found', item: 'glasses' };
+    } else if (r === 1 && !st.player.body.pockets.phone) {
+      st.player.body.pockets.phone = true;
+      yield { type: 'found', item: 'phone' };
+    }
+  } else if (group === 'maniac') {
+    const r = yield* random(2);
+    if (r === 0 && !w.knife) {
+      w.knife = true;
+      yield { type: 'found', item: 'knife' };
+      // sic: the original's boolean arithmetic, stacking bonuses
+      if (!w.club === w.knuckles) weapon(4);
+      if (w.club) weapon(2);
+      if (noneOf(w, 'knuckles', 'club', 'cleaver')) weapon(6);
+      if (w.cleaver) yield { type: 'cleaverInHand' };
+    } else if (r === 1 && !w.cleaver) {
+      w.cleaver = true;
+      yield { type: 'found', item: 'cleaver' };
+      if ((!w.club && !w.knife) === w.knuckles) weapon(7);
+      if (w.club && !w.knife) weapon(5);
+      if (w.knife) weapon(3);
+      if (noneOf(w, 'knuckles', 'club', 'knife')) weapon(9);
+    }
+  }
 }
 
 /** none of these weapons in hand (a new weapon only adds the difference to the best one) */

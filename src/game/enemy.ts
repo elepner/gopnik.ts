@@ -3,6 +3,7 @@ import { Effect } from 'effect';
 
 import { ENEMIES, enemyAt } from '../state/kinds';
 import { typeName, rankName } from '../state/names';
+import type { Enemy } from '../state/state';
 import { div, i16, round, u8 } from '../tp/num';
 import { accuracy, healthColor } from './hero';
 import { println, rnd, started } from './prelude';
@@ -120,17 +121,19 @@ export const showEnemy = Effect.gen(function* () {
     )
   );
   yield* println(ENEMY.uron(st.enemy.damage.min, st.enemy.damage.max));
-  const injuries: Text[] = [];
-  if (st.enemy.injuries.jaw) injuries.push(ENEMY.slomanaChelyust());
-  if (st.enemy.injuries.leg) injuries.push(ENEMY.slomanaNoga());
   yield* println(
     ENEMY.zdorove(
       healthColor(st.enemy.health.current, st.enemy.health.max),
       st.enemy.health.current,
       st.enemy.health.max,
-      text(...injuries)
+      text(...enemyInjuries(st.enemy))
     )
   );
   yield* accuracy(st.enemy.stats.agility);
   if (st.enemy.armor > 0) yield* println(ENEMY.bronya(st.enemy.armor));
 });
+
+function* enemyInjuries(enemy: Enemy): Generator<Text> {
+  if (enemy.injuries.jaw) yield ENEMY.slomanaChelyust();
+  if (enemy.injuries.leg) yield ENEMY.slomanaNoga();
+}

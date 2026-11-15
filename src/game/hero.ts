@@ -122,17 +122,12 @@ export const showStats = Effect.gen(function* () {
     yield* print(HERO.nozh());
   if (st.player.body.hands.weapons.cleaver) yield* print(HERO.tesakUron9());
   yield* writeLn;
-  const injuries: Text[] = [];
-  if (st.player.injuries.jaw) injuries.push(HERO.slomanaChelyust());
-  if (st.player.body.mouth.guard) injuries.push(HERO.zubnayaZaschita());
-  if (st.player.injuries.leg) injuries.push(HERO.slomanaNoga());
-  if (st.player.stoned > 0) injuries.push(HERO.obdolbanyy());
   yield* println(
     HERO.zdorove(
       healthColor(st.player.health.current, st.player.health.max),
       st.player.health.current,
       st.player.health.max,
-      text(...injuries)
+      text(...heroInjuries(st))
     )
   );
   yield* accuracy(st.player.stats.agility);
@@ -388,4 +383,12 @@ export const DEN_LEVEL = 3;
 /** the hero's level counted from the start of the current district (10 levels each) */
 export function levelInDistrict(st: Game): number {
   return st.player.progression.level - (st.world.district - 1) * 10;
+}
+
+/** what is wrong with the hero, after the health */
+function* heroInjuries(st: Game): Generator<Text> {
+  if (st.player.injuries.jaw) yield HERO.slomanaChelyust();
+  if (st.player.body.mouth.guard) yield HERO.zubnayaZaschita();
+  if (st.player.injuries.leg) yield HERO.slomanaNoga();
+  if (st.player.stoned > 0) yield HERO.obdolbanyy();
 }

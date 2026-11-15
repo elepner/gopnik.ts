@@ -70,23 +70,21 @@ export function crtColor(color: Color): number {
 
 function tag(color: Color | undefined): Tag {
   const code = color === undefined ? '' : `^${COLORS.indexOf(color)}`;
-  return (strings, ...slots) => {
-    let format = code;
-    const args: number[] = [];
-    strings.forEach((chunk, i) => {
-      if (/[#^]/.test(chunk)) throw new Error(`literal text must not contain # or ^: ${chunk}`);
-      format += chunk;
-      if (i >= slots.length) return;
-      const slot = slots[i];
-      if (typeof slot === 'number') {
-        format += '#';
-        args.push(slot);
-      } else if (typeof slot === 'string') format += slot;
-      else {
-        format += slot.format;
-        args.push(...slot.args);
-      }
-    });
-    return { format, args };
-  };
+  return (strings, ...slots) =>
+    text(
+      { format: code, args: [] },
+      literal(strings[0]!),
+      ...slots.flatMap((slot, i) => [slotText(slot), literal(strings[i + 1]!)])
+    );
+}
+
+function literal(chunk: string): Text {
+  if (/[#^]/.test(chunk)) throw new Error(`literal text must not contain # or ^: ${chunk}`);
+  return { format: chunk, args: [] };
+}
+
+function slotText(slot: Slot): Text {
+  if (typeof slot === 'number') return { format: '#', args: [slot] };
+  if (typeof slot === 'string') return { format: slot, args: [] };
+  return slot;
 }
