@@ -1,7 +1,8 @@
 # Bugs and quirks of the original G.EXE
 
-Found while reverse-engineering `original/g.exe`. The port reproduces every one of them on purpose;
-each entry names the original code address and the place in the port.
+Found while reverse-engineering `original/g.exe`. The port reproduced every one of them on purpose
+up to `a8f415b`; since then they get fixed one by one (marked **Fixed in the port**). Each entry
+names the original code address and the place in the port.
 
 ## Gameplay logic
 
@@ -23,11 +24,11 @@ each entry names the original code address and the place in the port.
 4. **Silencer shows the wrong price** — `0000:C849`: the menu line for the silencer is coloured by
    the silencer price (60) but prints the bullets price (70).
 
-5. **Buying a club without knuckles gives no damage** — `0000:CC56`: the +2 bonus is only applied
+5. **Fixed in the port.** **Buying a club without knuckles gives no damage** — `0000:CC56`: the +2 bonus is only applied
    when you already own knuckles (meant as "club replaces knuckles"), so a club bought on its own
    adds nothing. Taking a club from an enemy works correctly.
 
-6. **Knife/cleaver bonuses use broken boolean arithmetic** — `0000:56B6`, `0000:575C`:
+6. **Fixed in the port.** **Knife/cleaver bonuses use broken boolean arithmetic** — `0000:56B6`, `0000:575C`:
    `if (not club) = knuckles then +4` (knife) and `if (not club and not knife) = knuckles then +7`
    (cleaver) compare booleans with `=`, and several bonus branches can stack, so the resulting
    damage depends on the item combination in odd ways.
@@ -77,12 +78,12 @@ each entry names the original code address and the place in the port.
     meant to arrive on their own once, before the entry condition changed. The port keeps the
     check (`backupKicks`); it costs no Random.
 
-15. **Bought knuckles always add +2** — dealers `0000:CB5B`: the dealers refuse knuckles only to
+15. **Fixed in the port.** **Bought knuckles always add +2** — dealers `0000:CB5B`: the dealers refuse knuckles only to
     a hero holding a club, a knife and a cleaver at once; otherwise the purchase adds +2 to the
     damage, also when a better weapon is already in hand (a club, a knife or a cleaver). Found
     knuckles get it right: they add nothing then.
 
-16. **Endless damage: sell a weapon, get it back** — dealers `wes` (`0000:D110`) buy the worse
+16. **Fixed in the port.** **Endless damage: sell a weapon, get it back** — dealers `wes` (`0000:D110`) buy the worse
     weapon and keep its bonus, which is right (bug 7), but the weapon can come back and add again:
     - knuckles (`0000:CB5B`): with a better weapon in hand they sell for 13..20 roubles and the
       dealers sell them again for 25 with +2 (bug 15): +2 min and max damage for 5..12 roubles a
@@ -91,25 +92,24 @@ each entry names the original code address and the place in the port.
       hand; with the knuckles kept it adds +2 again: a round with a knife costs 11..25 roubles;
     - the knife: sold next to a cleaver, it can be found on a maniac again; with the cleaver and
       the knuckles but no club the broken arithmetic of bug 6 adds +4 again.
-    Found knuckles and a found club next to a better weapon rightly add nothing.
+      Found knuckles and a found club next to a better weapon rightly add nothing.
 
-17. **Weapon damage depends on the order the weapons came in** — bugs 5, 6 and 15 together: the
+17. **Fixed in the port.** **Weapon damage depends on the order the weapons came in** — bugs 5, 6 and 15 together: the
     intended total is the best weapon in hand (knuckles 2, club 4 "replaces knuckles", knife 6,
     cleaver 9), added as differences; the differences are wrong in 128 of the orders a hero can
     get them in. For example:
 
-    | order | total | best weapon |
-    | --- | --- | --- |
-    | knife → cleaver (both from maniacs, common) | +16 | +9 |
-    | club (found) → cleaver | +16 | +9 |
-    | club (found) → knife | +10 | +6 |
-    | club (found) → cleaver → knife | +22 | +9 |
-    | cleaver → knuckles (bought) | +11 | +9 |
-    | club (bought) without knuckles | 0 | +4 |
-    | club (bought) → knuckles (found) | 0 | +4 |
+    | order                                       | total | best weapon |
+    | ------------------------------------------- | ----- | ----------- |
+    | knife → cleaver (both from maniacs, common) | +16   | +9          |
+    | club (found) → cleaver                      | +16   | +9          |
+    | club (found) → knife                        | +10   | +6          |
+    | club (found) → cleaver → knife              | +22   | +9          |
+    | cleaver → knuckles (bought)                 | +11   | +9          |
+    | club (bought) without knuckles              | 0     | +4          |
+    | club (bought) → knuckles (found)            | 0     | +4          |
 
-    The port keeps what each weapon actually added (`boosts.weapons`), so it plays the same; a
-    "fixed" mode could compute the weapons' boost as the best weapon in hand instead.
+    The port now derives the weapons' damage from the best weapon in hand (see the fix below).
 
 ## Weapon bugs reproduced on the original
 
@@ -120,12 +120,12 @@ the dealers known and 1000 roubles; the state was written with the port's codec 
 `SAVE_R0.SAV` + `PLACES.SAV` and loaded with the menu key `0` (only save 0 loads the known
 places; a district 5 save starts the rector's fight at once). Damage starts at 57–102.
 
-| scenario | keys after `bmar` | damage in the original | money |
-| --- | --- | --- | --- |
-| 15/16: knuckles next to a club, three rounds of selling and buying them back | `wes` `y` `5` ×3 | 57–102 → 59–104 → 61–106 → 63–108 | 1000 → 971 |
-| 15: knuckles bought with a club in hand | `5` | 57–102 → 59–104 | −25 |
-| 16: a club bought next to a knife (knuckles kept), then sold and bought back three times | `6`, then `wes` `n` `y` `6` ×3 | 57–102 → 59–104 → … → 65–110 | 1000 → 895 |
-| 5: a club bought without knuckles | `6` | 57–102, unchanged | −50 |
+| scenario                                                                                 | keys after `bmar`              | damage in the original            | money      |
+| ---------------------------------------------------------------------------------------- | ------------------------------ | --------------------------------- | ---------- |
+| 15/16: knuckles next to a club, three rounds of selling and buying them back             | `wes` `y` `5` ×3               | 57–102 → 59–104 → 61–106 → 63–108 | 1000 → 971 |
+| 15: knuckles bought with a club in hand                                                  | `5`                            | 57–102 → 59–104                   | −25        |
+| 16: a club bought next to a knife (knuckles kept), then sold and bought back three times | `6`, then `wes` `n` `y` `6` ×3 | 57–102 → 59–104 → … → 65–110      | 1000 → 895 |
+| 5: a club bought without knuckles                                                        | `6`                            | 57–102, unchanged                 | −50        |
 
 The original says "Ты продал кастет за #." and "Ты купил кастет смотри чтоб менты с ним не
 запалили." on every round, and the damage grows by 2 each time.
@@ -137,12 +137,18 @@ pass), damage 300–400 (one kick kills) and the weapons of the scenario in hand
 the wanted weapon with nothing else found before it, then the same seed and keys were played on
 the original:
 
-| scenario | seed, keys | damage in the original | should be |
-| --- | --- | --- | --- |
-| 6/17: a knife in hand, a maniac drops a cleaver | 35, `w y k k` ×3 | 300–400 → 310–410 (+10) | +3 (9 − 6) |
-| 17: a found club in hand, a maniac drops a knife | 9, `w y k k` | 300–400 → 306–406 (+6) | +2 (6 − 4) |
-| 16: a cleaver and knuckles, the knife sold, a maniac drops a knife again | 1, `w y k k` ×5 | 300–400 → 304–404 (+4) | 0 |
+| scenario                                                                 | seed, keys       | damage in the original  | should be  |
+| ------------------------------------------------------------------------ | ---------------- | ----------------------- | ---------- |
+| 6/17: a knife in hand, a maniac drops a cleaver                          | 35, `w y k k` ×3 | 300–400 → 310–410 (+10) | +3 (9 − 6) |
+| 17: a found club in hand, a maniac drops a knife                         | 9, `w y k k`     | 300–400 → 306–406 (+6)  | +2 (6 − 4) |
+| 16: a cleaver and knuckles, the knife sold, a maniac drops a knife again | 1, `w y k k` ×5  | 300–400 → 304–404 (+4)  | 0          |
 
 Each time the original says "Ты нашел тесак(урон+9)!!! - ужасное оружие." or "Ты нашел
 ножик(урон+6).", and the port goes the same way step by step. (A club with knuckles, then a knife,
 adds a correct +2: the search first hit that one when a lad dropped knuckles before the maniac.)
+
+**The fix** (bugs 5, 6, 15, 16, 17): the weapons' damage is not added up any more but derived:
+only the best weapon in hand counts (knuckles 2, club 4, knife 6, cleaver 9,
+`WEAPON_DAMAGE` in `src/state/attributes.ts`). The dealers don't sell knuckles or a club next to
+a better weapon ("Нафиг тебе он нужен, когда есть более мощное оружие."), a found worse weapon
+says "Но у тебя есть более мощное оружие", and selling a spare weapon changes nothing.

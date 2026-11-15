@@ -6,7 +6,7 @@
 import { DS_INIT } from '../data/ds-init';
 import { District, DsOffset, type TypeId } from '../tp/brands';
 import { decodeCp866, encodeCp866 } from '../tp/cp866';
-import { attr, fromTotals, set } from './attributes';
+import { attr, fromTotals } from './attributes';
 import { CHARACTER_CLASSES, CHARACTER_TYPES, ENEMIES, enemyAt } from './kinds';
 import { type Attribute, type GameState, startGame, type StatKey } from './state';
 
@@ -215,9 +215,9 @@ const BINDINGS: Record<StateField, Binding> = {
 /** a field of some object of the state; the codec is the one place that addresses fields by name */
 type Holder = (s: GameState) => object;
 
-/** the hero's attribute as the game uses it; written as the total */
+/** the hero's attribute as the game uses it; a total read back goes into the base as it is, `fromTotals` splits it once everything is loaded */
 function attribute(a: Attribute): Binding {
-  return [(s) => attr(s.player, a), (s, v) => set(s.player, a, Number(v))];
+  return [(s) => attr(s.player, a), (s, v) => (s.player.base[a] = Number(v))];
 }
 function num(obj: Holder, key: string): Binding {
   return [

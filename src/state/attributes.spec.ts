@@ -1,7 +1,17 @@
 import { describe, expect, it } from '@effect/vitest';
 
 import { i16 } from '../tp/num';
-import { attr, boost, boostAll, fromTotals, inc, JOINT, set, unboost } from './attributes';
+import {
+  attr,
+  boost,
+  boostAll,
+  fromTotals,
+  inc,
+  JOINT,
+  outclassed,
+  set,
+  unboost,
+} from './attributes';
 import { createState } from './state';
 
 const hero = () => createState().player;
@@ -41,5 +51,27 @@ describe('attributes: base + boosts', () => {
     expect([attr(p, 'strength'), p.base.strength]).toEqual([9, 7]);
     unboost(p, 'joint');
     expect(attr(p, 'strength')).toBe(7);
+  });
+
+  it('only the best weapon in hand adds to the damage, whatever the order', () => {
+    const p = hero();
+    set(p, 'damageMin', 2);
+    set(p, 'damageMax', 5);
+    const w = p.body.hands.weapons;
+    w.knife = true;
+    w.cleaver = true; // the original: +16 for knife, then cleaver
+    expect([attr(p, 'damageMin'), attr(p, 'damageMax')]).toEqual([2 + 9, 5 + 9]);
+    w.knife = false; // selling the spare knife changes nothing
+    w.club = true;
+    expect(attr(p, 'damageMin')).toBe(2 + 9);
+    expect([outclassed(w, 'knuckles'), outclassed(w, 'cleaver')]).toEqual([true, false]);
+  });
+
+  it('a save holds the total: the best weapon comes out of the base', () => {
+    const p = { ...hero(), stoned: 0 };
+    p.body.hands.weapons.club = true;
+    p.base.damageMin = 20; // as loaded
+    fromTotals(p);
+    expect([attr(p, 'damageMin'), p.base.damageMin]).toEqual([20, 16]);
   });
 });

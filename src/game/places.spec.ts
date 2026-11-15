@@ -1,11 +1,12 @@
 import { describe, expect, it } from '@effect/vitest';
 import { Effect } from 'effect';
 
+import { District } from '../../src/tp/brands';
 import { i16 } from '../../src/tp/num';
 import { hero, play } from '../../test/game';
 import { PRICE } from '../data/tables';
 import { attr, set } from '../state/attributes';
-import { market } from './places';
+import { dealers, market } from './places';
 
 const keys = (...lines: string[]) => lines.flatMap((l) => [...l, 'enter']);
 
@@ -82,6 +83,39 @@ describe('market (0000:B940)', () => {
       });
       expect(lines).toContain('Корявый! ты попался!');
       expect([st.world.heat.market, st.session.lastAnswer]).toEqual([5, 'w']);
+    })
+  );
+});
+
+describe('dealers: weapons (fixed: the best weapon in hand counts)', () => {
+  const armed = (s: Parameters<typeof hero>[0]) => {
+    const st = hero(s);
+    st.world.district = District(3);
+    st.world.places.dealers = true;
+    st.player.resources.money = 200;
+    return st;
+  };
+
+  it.effect('a club on its own gives +4 (the original: nothing)', () =>
+    Effect.gen(function* () {
+      const { st } = yield* play(dealers, { keys: keys('6', 'w'), setup: armed });
+      expect([attr(st.player, 'damageMin'), attr(st.player, 'damageMax')]).toEqual([6, 9]);
+    })
+  );
+
+  it.effect('no knuckles next to a club; selling the spare ones changes nothing', () =>
+    Effect.gen(function* () {
+      const { st, lines } = yield* play(dealers, {
+        keys: keys('wes', 'y', '5', 'w'),
+        setup: (s) => {
+          const st = armed(s);
+          st.player.body.hands.weapons.knuckles = true;
+          st.player.body.hands.weapons.club = true;
+        },
+      });
+      expect(lines).toContain('Нафиг тебе он нужен, когда есть более мощное оружие.');
+      expect(st.player.body.hands.weapons.knuckles).toBe(false);
+      expect([attr(st.player, 'damageMin'), attr(st.player, 'damageMax')]).toEqual([6, 9]);
     })
   );
 });

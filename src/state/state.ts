@@ -167,8 +167,8 @@ export type Attribute = StatKey | 'damageMin' | 'damageMax' | 'armor' | 'healthM
 
 export type Attributes = Record<Attribute, number>;
 
-/** where a boost comes from: things worn or carried, or a joint */
-export type BoostSource = 'rings' | 'cross' | 'clothes' | 'weapons' | 'joint';
+/** where a boost comes from: things worn, or a joint (weapons are not added up: the best counts) */
+export type BoostSource = 'rings' | 'cross' | 'clothes' | 'joint';
 
 /** what each source adds, as it was added (the original adds differences, not totals) */
 export type Boosts = { [S in BoostSource]?: Partial<Attributes> };

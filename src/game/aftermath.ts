@@ -5,9 +5,9 @@
  */
 import { Effect } from 'effect';
 
-import { attr, boost } from '../state/attributes';
+import { attr, boost, outclassed } from '../state/attributes';
 import { ENEMIES } from '../state/kinds';
-import { type Game, type Weapons } from '../state/state';
+import { type Game } from '../state/state';
 import { div, i16 } from '../tp/num';
 import type { FightOutcome } from './fight';
 import { type FightEvent, tell } from './fight-view';
@@ -125,10 +125,6 @@ function* loot(st: Game): Rule {
     yield { type: 'narkJoints' };
   }
   if (!(yield* lucky(st, st.world.district * 40))) return;
-  const weapon = (n: number) => {
-    boost(st.player, 'weapons', 'damageMin', n);
-    boost(st.player, 'weapons', 'damageMax', n);
-  };
   const w = st.player.body.hands.weapons;
   const group = ENEMIES[st.enemy.type].group;
   if (st.enemy.type === 'nefor') {
@@ -150,13 +146,11 @@ function* loot(st: Game): Rule {
     if (r === 0 && !w.knuckles) {
       w.knuckles = true;
       yield { type: 'found', item: 'knuckles' };
-      if (noneOf(w, 'knife', 'club', 'cleaver')) weapon(2);
-      else yield { type: 'betterWeaponInHand' };
+      if (outclassed(w, 'knuckles')) yield { type: 'betterWeaponInHand' };
     } else if (r === 1 && !w.club) {
       w.club = true;
       yield { type: 'found', item: 'club' };
-      if (noneOf(w, 'knife', 'cleaver')) weapon(w.knuckles ? 2 : 4);
-      else yield { type: 'betterWeaponInHand' };
+      if (outclassed(w, 'club')) yield { type: 'betterWeaponInHand' };
     }
   } else if (group === 'thug') {
     const r = yield* random(2);
@@ -172,23 +166,10 @@ function* loot(st: Game): Rule {
     if (r === 0 && !w.knife) {
       w.knife = true;
       yield { type: 'found', item: 'knife' };
-      // sic: the original's boolean arithmetic, stacking bonuses
-      if (!w.club === w.knuckles) weapon(4);
-      if (w.club) weapon(2);
-      if (noneOf(w, 'knuckles', 'club', 'cleaver')) weapon(6);
       if (w.cleaver) yield { type: 'cleaverInHand' };
     } else if (r === 1 && !w.cleaver) {
       w.cleaver = true;
       yield { type: 'found', item: 'cleaver' };
-      if ((!w.club && !w.knife) === w.knuckles) weapon(7);
-      if (w.club && !w.knife) weapon(5);
-      if (w.knife) weapon(3);
-      if (noneOf(w, 'knuckles', 'club', 'knife')) weapon(9);
     }
   }
-}
-
-/** none of these weapons in hand (a new weapon only adds the difference to the best one) */
-function noneOf(weapons: Weapons, ...names: (keyof Weapons)[]): boolean {
-  return names.every((name) => !weapons[name]);
 }

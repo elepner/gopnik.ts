@@ -2,10 +2,13 @@
 
 ## What this repo is
 
-- A 1:1 TypeScript rewrite of the DOS text RPG "ГОПНИК v1.02" (V.P., 2003, Akademgorodok /
+- A TypeScript rewrite of the DOS text RPG "ГОПНИК v1.02" (V.P., 2003, Akademgorodok /
   Novosibirsk). The sources are lost; the port is reverse-engineered from `original/g.exe`.
-- "1:1" is verified, not assumed: the original runs in our own emulator and every test compares
-  screen, game state, `Random` calls and `Print` calls with the port at every key read.
+- It was a verified 1:1 copy up to `a8f415b` (the original runs in our own emulator; the tests
+  compared screen, state, `Random` and `Print` calls at every key read). Since then bugs of the
+  original get fixed instead of reproduced (`BUGS.md` marks them): the reference is the golden
+  sessions, re-recorded on purpose for a fix. The emulator, harness, fuzzer and bots stay as
+  research tools (reproducing a bug on the original, see `BUGS.md`); they diverge where a fix is.
 - Next goal: LLM-driven NPCs/narration as a separate mode on top of the faithful core
   (see "LLM ideas" below). Display layer (terminal/CRT) will be replaced.
 - Architecture details: `PROJECT_ARCHITECTURE.md`. Quirks of the original: `BUGS.md`.
@@ -18,7 +21,8 @@
   saves), bot games up to 73 000 keys / 30 000 `Random` calls, full wins from a new game.
 - Greedy bot (new game, 10 seeds per class): Вор 9/10 wins, Пацан 2/10, Гопник 2/10,
   Отморозок 0/10 — 0 divergences from the original.
-- 47 tests (`vp test`, ~20 s): game-logic specs + regression against the emulated original.
+- Fixed so far: the weapon bugs 5, 6, 15, 16, 17 (only the best weapon counts).
+- Tests (`vp test`): game-logic specs + golden sessions; no test runs the original any more.
 
 ## Core stack
 
@@ -118,12 +122,13 @@
   knows (health left, bullets, names) from the state. Don't put state into events.
 - The hero's stats, damage, armor and maximum health are a projection (`src/state/attributes.ts`):
   `player.base` (start, levels, training, steroids, the temple) plus `player.boosts` by source
-  (`clothes`, `weapons`, `rings`, `cross`, `joint`), each holding what it actually added (the
-  original adds differences: club-then-knife gives +10, knife-then-club +6). Always read with
+  (`clothes`, `rings`, `cross`, `joint`), each holding what it actually added (the original adds
+  differences), plus the best weapon in hand (`WEAPON_DAMAGE`, derived, not stored). Read with
   `attr(p, 'strength')`, change the base with `inc`/`dec`/`set`, items with `boost`; the joint
   wears off with `unboost(p, 'joint')`. Never touch `base` directly. Values wrap like the
   original (sums mod 2¹⁶ match its step-by-step additions). Saves only know totals: they load
-  into the base, except a stoned hero's joint (`fromTotals`); the normalized form (goldens) holds
+  into the base, minus the best weapon and a stoned hero's joint (`fromTotals`); the normalized
+  form (goldens) holds
   totals.
 - Every fight is the same loop; what differs is a `FightRules` object: the crowd (a `Rule`; the
   rector's fights roll nothing), `flee`, whether the den lads bail the hero out, and the backup
@@ -165,9 +170,8 @@
   returns state, printed texts and the Random log; `hero()` sets up a level-0 Отморозок.
 - Assert on effect results with `check` from `test/check.ts`:
   `yield* eff.pipe(check((x) => x.toBe(1)))`.
-- `test/regression.spec.ts` replays `test/fixtures/*.keys` (bot logs) and random scenarios on
-  the emulated original and the port. To pin a new behaviour, copy a log from `logs/` into
-  `test/fixtures/`.
+- `test/fixtures/*.keys` (bot logs) can still be replayed on the original and the port with the
+  harness (`test/replay.ts`), for research: they diverge where a bug is fixed.
 - `test/gold.spec.ts` (e2e, no emulator): whole sessions `test/gold/*.jsonl` must play the same —
   first line the start (seed, and the normalized state for a session from the main loop), then
   per key read the key, Random count and printed `[colour, text]` segments, last line the final

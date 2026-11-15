@@ -3,7 +3,7 @@ import { Effect } from 'effect';
 
 import { readLine, writeLn } from '../crt/crt';
 import { PRICE } from '../data/tables';
-import { attr, boost, inc } from '../state/attributes';
+import { attr, boost, inc, outclassed } from '../state/attributes';
 import { typeName } from '../state/names';
 import { i16, mod, u8 } from '../tp/num';
 import { denHelpReward, settle } from './aftermath';
@@ -245,11 +245,7 @@ export const dealers = Effect.gen(function* () {
       }
     }
     if (parseCommand('dealers', st.session.lastAnswer) === CMD.dealers.knuckles) {
-      if (
-        st.player.body.hands.weapons.club &&
-        st.player.body.hands.weapons.knife &&
-        st.player.body.hands.weapons.cleaver
-      )
+      if (outclassed(st.player.body.hands.weapons, 'knuckles'))
         yield* println(PLACES.nafigTebeOnNuzhen());
       else if (st.player.body.hands.weapons.knuckles) yield* println(PLACES.uTebyaEstEta());
       else if (PRICE.knuckles > st.player.resources.money)
@@ -257,23 +253,17 @@ export const dealers = Effect.gen(function* () {
       else {
         st.player.body.hands.weapons.knuckles = true;
         st.player.resources.money = i16(st.player.resources.money - PRICE.knuckles);
-        boost(st.player, 'weapons', 'damageMin', 2);
-        boost(st.player, 'weapons', 'damageMax', 2);
         yield* println(PLACES.tyKupilKastetSmotri());
       }
     }
     if (parseCommand('dealers', st.session.lastAnswer) === CMD.dealers.club) {
-      if (st.player.body.hands.weapons.knife && st.player.body.hands.weapons.cleaver)
+      if (outclassed(st.player.body.hands.weapons, 'club'))
         yield* println(PLACES.daNafigOnaNuzhna());
       else if (st.player.body.hands.weapons.club) yield* println(PLACES.uTebyaEstDubina());
       else if (PRICE.club > st.player.resources.money) yield* println(PLACES.neHvataetNaDubinku());
       else {
         st.player.body.hands.weapons.club = true;
         st.player.resources.money = i16(st.player.resources.money - PRICE.club);
-        if (st.player.body.hands.weapons.knuckles) {
-          boost(st.player, 'weapons', 'damageMin', 2);
-          boost(st.player, 'weapons', 'damageMax', 2);
-        }
         yield* println(PLACES.tyKupilDubinkuPohozhe());
       }
     }
