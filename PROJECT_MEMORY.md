@@ -108,10 +108,13 @@
   parameters, not state: the only shared input in the state is `session.lastAnswer`. They still
   sit in the original's data segment, so `legacy.ts` lists them in `SCRATCH_FIELDS` and the
   comparison snapshots skip them (`snapshot(..., true)` keeps them for the bots).
-- The fight is split into rules and view: `fight.ts` never prints, it `tell`s typed `FightEvent`s
-  (what happened: a kick with its damage, a critical, a broken bone…) at the very spot the
-  original printed; `fight-view.ts` turns them into texts and key pauses, reading what the state
-  already knows (health left, bullets, names) from the state. Don't put state into events.
+- The fight is split into rules, loop and view. A rule (`kick`, `flee`, `callBackup`, `loot`…)
+  takes `st`, updates it and returns the events of its update; it never prints. The loop
+  (`fight`, `kickSeries`, `enemyDied`) runs the rules and publishes their events with `tell`
+  right away, before the next rule: `fight-view.ts` turns events into texts and key pauses and
+  reads what the state already knows (health left, bullets, names) from the state. Don't put
+  state into events; a rule may only return several events if none of them reads state a later
+  update of the same rule changes.
 - Every Print/PrintLn lands in `Game.transcript` (`{ text, args, newline, segments }`).
 - Never edit `original/`; never hand-edit generated files (`analysis/`, `src/data/*`).
 - When editing files from scripts, don't use `String.replace` with replacement text containing

@@ -96,7 +96,12 @@ export type FightEvent =
 /** the Мега ring text when it drops from an enemy */
 export const MEGA_RING = FIGHT.megaKoltso();
 
-export function tell(event: FightEvent) {
+/** shows the events in order */
+export function tell(...events: readonly FightEvent[]) {
+  return Effect.forEach(events, show, { discard: true });
+}
+
+function show(event: FightEvent) {
   return Effect.gen(function* () {
     const st = yield* started;
     switch (event.type) {
