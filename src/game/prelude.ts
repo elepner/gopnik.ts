@@ -5,9 +5,10 @@
 import { Context, Effect } from 'effect';
 
 import { attr } from '../state/attributes';
-import { type GameState, playing } from '../state/state';
+import type { SavedGame } from '../state/saved';
+import { type GameState, type KnownPlaces, playing } from '../state/state';
 import { begin, commit, draft, type Store } from '../state/store';
-import { CrtColor, type SaveName } from '../tp/brands';
+import { CrtColor } from '../tp/brands';
 import { CP866, encodeCp866 } from '../tp/cp866';
 import { i16, str } from '../tp/num';
 import { Rng } from '../tp/rng';
@@ -142,11 +143,18 @@ export interface IEngine {
 
 export const Engine = Context.Service<IEngine>('Engine');
 
-export interface IDisk {
-  /** Dos.FindFirst/FindNext over the game directory, in directory order */
-  readonly list: (pattern: RegExp) => Effect.Effect<readonly SaveName[]>;
-  readonly read: (name: SaveName) => Effect.Effect<Uint8Array | undefined>;
-  readonly write: (name: SaveName, data: Uint8Array) => Effect.Effect<void>;
+/**
+ * Where the saves live: files of the original's format (`src/dir-saves.ts`), JSON in a browser.
+ * A slot is the digit of SAVE_R?.SAV: `0` is Рушель Блаво's, `2`..`5` the district's.
+ */
+export interface ISaves {
+  /** the slots that hold a save, in directory order */
+  readonly slots: Effect.Effect<readonly string[]>;
+  readonly load: (slot: string) => Effect.Effect<SavedGame | undefined>;
+  readonly save: (slot: string, game: SavedGame) => Effect.Effect<void>;
+  /** the known places, saved with Рушель Блаво's slot (PLACES.SAV) */
+  readonly loadPlaces: Effect.Effect<KnownPlaces | undefined>;
+  readonly savePlaces: (places: KnownPlaces) => Effect.Effect<void>;
 }
 
-export const Disk = Context.Service<IDisk>('Disk');
+export const Saves = Context.Service<ISaves>('Saves');

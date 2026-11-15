@@ -8,7 +8,7 @@ import { Effect, Exit, Layer } from 'effect';
 import { keyCode } from '../../oracle/dos';
 import { hero, play } from '../../test/game';
 import { biosKey, type IKeyboard } from '../crt/crt';
-import { dirDisk } from '../dir-disk';
+import { dirSaves } from '../dir-saves';
 import { gameLayer } from '../runtime';
 import { attr } from '../state/attributes';
 import { encodePlaces, encodeSave } from '../state/legacy';
@@ -323,7 +323,7 @@ function playIn<A, E, R>(
     const exit = yield* Effect.exit(transaction(eff));
     return { exit, st: playing(game.state.committed) };
   }).pipe(
-    Effect.provide(gameLayer({ seed: Seed(0), disk: dirDisk(dir), keyboard, events }))
+    Effect.provide(gameLayer({ seed: Seed(0), saves: dirSaves(dir), keyboard, events }))
   ) as Effect.Effect<{
     exit: Exit.Exit<A, unknown>;
     st: Game;

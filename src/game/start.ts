@@ -3,12 +3,12 @@ import { Effect } from 'effect';
 
 import { attr, set } from '../state/attributes';
 import { CHARACTER_CLASSES, CHARACTER_TYPES, type CharacterType } from '../state/kinds';
-import { decodeSave, decodePlaces } from '../state/legacy';
+import { loadSave } from '../state/saved';
 import { type Game, type GameState, playing, startGame } from '../state/state';
-import { District, SaveName } from '../tp/brands';
+import { District } from '../tp/brands';
 import { div, i16, val } from '../tp/num';
 import { emit, reporterOn } from './events';
-import { Disk, started, state } from './prelude';
+import { Saves, started, state } from './prelude';
 import { titleScreen } from './screens';
 import type { StartEvent } from './start-view';
 import { heroName, VERSION } from './stored-texts';
@@ -19,18 +19,18 @@ const report = reporterOn(state)(apply);
 /** 0000:6A0D */
 export const newGame = Effect.gen(function* () {
   const st = yield* state;
-  const disk = yield* Disk;
+  const saves = yield* Saves;
   yield* titleScreen;
   // Randomize happens here; the Rng service is seeded when it is created
-  const saves = yield* disk.list(/^save_r.\.sav$/i);
-  if (saves.length > 0) {
-    yield* emit({ type: 'startSavesFound', districts: saves.map((name) => name.toUpperCase()[6]) });
+  const slots = yield* saves.slots;
+  if (slots.length > 0) {
+    yield* emit({ type: 'startSavesFound', districts: slots });
     // input, not a pause
     const key = String.fromCharCode(yield* readKey);
     if ('23450'.includes(key)) {
-      const rec = yield* disk.read(SaveName(`save_r${key}.sav`));
-      if (rec) {
-        decodeSave(st, rec);
+      const saved = yield* saves.load(key);
+      if (saved) {
+        loadSave(st, saved);
         yield* report({ type: 'startSaveLoaded', key });
         if (key === '0') yield* loadPlaces;
         return yield* arrive;
@@ -44,9 +44,9 @@ export const newGame = Effect.gen(function* () {
 
 const loadPlaces = Effect.gen(function* () {
   const st = yield* started;
-  const places = yield* (yield* Disk).read(SaveName('places.sav'));
+  const places = yield* (yield* Saves).loadPlaces;
   if (places) {
-    decodePlaces(st, places);
+    Object.assign(st.world.places, places);
     yield* emit({ type: 'startPlacesLoaded' });
   } else yield* report({ type: 'startPlacesLost' });
 });

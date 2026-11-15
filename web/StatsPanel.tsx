@@ -1,9 +1,21 @@
+import type { ReactNode } from 'react';
+
 /** The hero's stats beside the screen, and the enemy's while a battle is on. */
 import { hitChance } from '../src/game/hero-view';
-import { attr } from '../src/state/attributes';
-import { has, type Item } from '../src/state/items';
+import { attr, bonus } from '../src/state/attributes';
+import { gives, has, type Item } from '../src/state/items';
 import { rankName, typeName } from '../src/state/names';
-import type { Body, Enemy, Game, GameState, Injuries } from '../src/state/state';
+import type {
+  Attribute,
+  Attributes,
+  Body,
+  Enemy,
+  Game,
+  GameState,
+  Injuries,
+  Player,
+} from '../src/state/state';
+import { districtName, plain } from './labels';
 
 export function StatsPanel({ st }: { readonly st: GameState | undefined }) {
   // the enemy's column is kept free, so a battle doesn't move anything
@@ -30,13 +42,13 @@ function Hero({ st }: { readonly st: Game }) {
       {level <= 39 && <Bar label="Опыт" value={exp} max={expNext} color="var(--cyan)" />}
       <Stats
         rows={[
-          ['Сила', attr(p, 'strength')],
-          ['Ловкость', attr(p, 'agility')],
-          ['Живучесть', attr(p, 'vitality')],
-          ['Удача', attr(p, 'luck')],
-          ['Урон', `${attr(p, 'damageMin')}–${attr(p, 'damageMax')}`],
+          ['Сила', boosted(p, 'strength')],
+          ['Ловкость', boosted(p, 'agility')],
+          ['Живучесть', boosted(p, 'vitality')],
+          ['Удача', boosted(p, 'luck')],
+          ['Урон', damage(p)],
           ['Точность', accuracy(attr(p, 'agility'))],
-          ['Броня', attr(p, 'armor')],
+          ['Броня', boosted(p, 'armor')],
           ['Пиво', p.resources.beer / 2 + ' л'],
           ['Бабки', p.resources.money],
           ['Косяки', p.resources.joints],
@@ -46,7 +58,7 @@ function Hero({ st }: { readonly st: Game }) {
       />
       <Hurt injuries={p.injuries} />
       <Equipment body={p.body} />
-      <div className="sub">Район: {DISTRICTS[st.world.district] ?? st.world.district}</div>
+      <div className="sub">Район: {districtName(st.world.district)}</div>
     </section>
   );
 }
@@ -98,7 +110,7 @@ function Bar(props: {
   );
 }
 
-function Stats({ rows }: { readonly rows: readonly (readonly [string, string | number])[] }) {
+function Stats({ rows }: { readonly rows: readonly (readonly [string, ReactNode])[] }) {
   return (
     <dl>
       {rows.map(([name, value]) => (
@@ -121,24 +133,75 @@ function Hurt({ injuries }: { readonly injuries: Injuries }) {
   );
 }
 
+/** an attribute as the game uses it, and in blue what the things and a joint add */
+function boosted(p: Player, a: Attribute): ReactNode {
+  const extra = bonus(p, a);
+  return (
+    <>
+      {attr(p, a)}
+      {extra !== 0 && <span className="boost"> {signed(extra)}</span>}
+    </>
+  );
+}
+
+function damage(p: Player): ReactNode {
+  const [min, max] = [bonus(p, 'damageMin'), bonus(p, 'damageMax')];
+  return (
+    <>
+      {attr(p, 'damageMin')}–{attr(p, 'damageMax')}
+      {(min !== 0 || max !== 0) && (
+        <span className="boost"> {min === max ? signed(min) : `${signed(min)}–${max}`}</span>
+      )}
+    </>
+  );
+}
+
+function signed(n: number): string {
+  return n > 0 ? `+${n}` : String(n);
+}
+
 function Equipment({ body }: { readonly body: Body }) {
-  const things = ITEMS.filter(([item]) => has(body, item)).map(([, name]) => name);
-  if (body.skin.tattoo) things.push('Зоновская наколка');
-  if (body.mouth.guard) things.push('Капа');
+  const things: ReactNode[] = ITEMS.filter(([item]) => has(body, item)).map(([item, name]) => {
+    const what = givesText(gives(body, item));
+    return (
+      <div key={item}>
+        {name} {what ? <span className="boost">{what}</span> : <span className="spare">запас</span>}
+      </div>
+    );
+  });
+  const other: string[] = [];
+  if (body.skin.tattoo) other.push('Зоновская наколка');
+  if (body.mouth.guard) other.push('Капа');
   const pistol = body.pockets.pistol;
   if (pistol)
-    things.push(`Пистолет${pistol.silencer ? ' с глушителем' : ''}, патронов: ${pistol.bullets}`);
+    other.push(`Пистолет${pistol.silencer ? ' с глушителем' : ''}, патронов: ${pistol.bullets}`);
+  things.push(...other.map((t) => <div key={t}>{t}</div>));
   return (
     <div className="things">
       <h3>Шмотки</h3>
-      {things.length === 0 ? (
-        <div className="sub">ничего</div>
-      ) : (
-        things.map((t) => <div key={t}>{t}</div>)
-      )}
+      {things.length === 0 ? <div className="sub">ничего</div> : things}
     </div>
   );
 }
+
+/** what a thing adds, shortly: `сил +1 урон +2` */
+function givesText(g: Partial<Attributes>): string {
+  const parts = SHORT.filter(([a]) => g[a]).map(([a, name]) => `${name} +${g[a]}`);
+  if (g.damageMin || g.damageMax)
+    parts.push(
+      g.damageMin === g.damageMax ? `урон +${g.damageMin}` : `урон +${g.damageMin}–${g.damageMax}`
+    );
+  return parts.join(' ');
+}
+
+const SHORT: readonly (readonly [Attribute, string])[] = [
+  ['strength', 'сил'],
+  ['agility', 'лвк'],
+  ['vitality', 'жив'],
+  ['luck', 'уд'],
+  ['healthMax', 'здор'],
+  ['armor', 'брон'],
+];
 
 /** the things in their slots, as the shops and the stats call them */
 const ITEMS: readonly (readonly [Item, string])[] = [
@@ -161,21 +224,7 @@ const ITEMS: readonly (readonly [Item, string])[] = [
   ['pomiluyRing', 'Кольцо «Господи помилуй»'],
 ];
 
-/** where each district is, as the arrival lines tell it */
-const DISTRICTS: Record<number, string> = {
-  1: 'Универ',
-  2: 'Шлюз',
-  3: 'ОбьГЭС',
-  4: 'Ельцовка',
-  5: 'Универ, ректор',
-};
-
 function accuracy(agility: number): string {
   const { chance, hits, extra } = hitChance(agility);
   return hits === 0 ? `${chance}%` : `${chance}% +${hits} (${extra}%)`;
-}
-
-/** names keep the game's colour codes (`^0`..`^7`) */
-function plain(s: string): string {
-  return s.replace(/\^[0-7]/g, '').trim();
 }

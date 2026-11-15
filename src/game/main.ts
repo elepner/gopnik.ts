@@ -1,9 +1,8 @@
 /** The main command loop of G.EXE (0000:AB59). */
 import { Effect } from 'effect';
 
-import { encodeSave } from '../state/legacy';
+import { savedGame } from '../state/saved';
 import type { Game } from '../state/state';
-import { SaveName } from '../tp/brands';
 import { str } from '../tp/num';
 import { beatFakeRector, beatRector, killedByRector } from './aftermath';
 import { drink } from './beer';
@@ -19,7 +18,7 @@ import { girlfriend } from './places/girlfriend';
 import { gym } from './places/gym';
 import { market } from './places/market';
 import { vet } from './places/vet';
-import { Disk, halt, started, transaction } from './prelude';
+import { halt, Saves, started, transaction } from './prelude';
 import { help } from './screens';
 import { resetPlaces } from './start';
 import { heroName } from './stored-texts';
@@ -68,7 +67,7 @@ const nextDistrict = Effect.gen(function* () {
   yield* resetPlaces;
   yield* report({ type: 'mainDistrictDone' });
   if ((yield* readAnswer) === CMD.answer.yes) {
-    yield* (yield* Disk).write(SaveName(`save_r${str(st.world.district)}.sav`), encodeSave(st));
+    yield* (yield* Saves).save(str(st.world.district), savedGame(st));
     yield* emit({ type: 'mainSaved' });
   }
   yield* report({ type: 'mainDistrictEntered' });

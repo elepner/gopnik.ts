@@ -9,8 +9,19 @@ import type { ITerminal } from '../src/game/terminal';
 import { Cp866Byte } from '../src/tp/brands';
 import { encodeCp866 } from '../src/tp/cp866';
 
-/** `changed`: the screen changed or waits for a key */
-export function xtermTerminal(term: Xterm, changed: () => void = () => {}): ITerminal {
+/** what the game waits for: one key, or a typed line */
+export type Waiting = 'key' | 'line';
+
+export interface XtermHooks {
+  /** the screen changed */
+  readonly changed?: () => void;
+  /** the game waits for input */
+  readonly waiting?: (what: Waiting) => void;
+}
+
+/** the terminal, and `send` to type into it from elsewhere (the buttons of a phone) */
+export function xtermTerminal(term: Xterm, hooks: XtermHooks = {}) {
+  const changed = () => hooks.changed?.();
   const keys = keyQueue(term);
   let sgr = sgrOf(7);
   /** the scan code ReadKey returns after #0 */
@@ -19,7 +30,7 @@ export function xtermTerminal(term: Xterm, changed: () => void = () => {}): ITer
     term.write(sgr + s);
     changed();
   };
-  return {
+  const terminal: ITerminal = {
     write: (s) => Effect.sync(() => write(s)),
     textColor: (color) =>
       Effect.sync(() => {
@@ -33,6 +44,7 @@ export function xtermTerminal(term: Xterm, changed: () => void = () => {}): ITer
         pendingScan = undefined;
         return Effect.succeed(Cp866Byte(scan));
       }
+      hooks.waiting?.('key');
       return Effect.map(keys.read, (key) => {
         const scan = SCANS[key];
         if (scan === undefined) return Cp866Byte(keyByte(key));
@@ -42,6 +54,7 @@ export function xtermTerminal(term: Xterm, changed: () => void = () => {}): ITer
     }),
     readLine: Effect.gen(function* () {
       changed();
+      hooks.waiting?.('line');
       let line = '';
       for (;;) {
         const key = yield* keys.read;
@@ -63,6 +76,7 @@ export function xtermTerminal(term: Xterm, changed: () => void = () => {}): ITer
     keyPressed: Effect.sync(() => pendingScan !== undefined || keys.waiting()),
     delay: (ms) => Effect.promise(() => new Promise((r) => setTimeout(r, Math.min(ms, 300)))),
   };
+  return { terminal, send: keys.push };
 }
 
 /** CRT's input buffer holds 126 characters */
@@ -86,13 +100,14 @@ function keyByte(key: string): number {
 function keyQueue(term: Xterm) {
   const queue: string[] = [];
   let waiter: (() => void) | undefined;
-  term.onData((data) => {
+  const push = (data: string) => {
     // an escape sequence (arrows, Delete, F-keys) is one key; typed or pasted text is a key a character
     queue.push(...(data.startsWith('\x1b') && data.length > 1 ? [data] : Array.from(data)));
     const w = waiter;
     waiter = undefined;
     w?.();
-  });
+  };
+  term.onData(push);
   const read: Effect.Effect<string> = Effect.suspend(() =>
     queue.length > 0
       ? Effect.succeed(queue.shift()!)
@@ -103,7 +118,7 @@ function keyQueue(term: Xterm) {
           read
         )
   );
-  return { read, waiting: () => queue.length > 0 };
+  return { read, push, waiting: () => queue.length > 0 };
 }
 
 /** CRT colour → ANSI: the order differs (CRT 1 is blue, ANSI 1 red), bright ones are 90+ */

@@ -17,7 +17,7 @@ import { Effect } from 'effect';
 
 import { keyCode } from '../oracle/dos';
 import { biosKey, type IKeyboard, makeCrt } from '../src/crt/crt';
-import { dirDisk } from '../src/dir-disk';
+import { dirSaves } from '../src/dir-saves';
 import { mainLoop } from '../src/game/main';
 import { Engine, type PrintCall } from '../src/game/prelude';
 import { EndOfInput } from '../src/game/terminal';
@@ -85,7 +85,7 @@ export async function record(start: Start, keys: readonly string[]): Promise<Gol
         gameLayer({
           seed: Seed(start.seed),
           state: start.state && denormalize(start.state),
-          disk: dirDisk(saveDir()),
+          saves: dirSaves(saveDir()),
           keyboard,
           crt: makeCrt(),
         })

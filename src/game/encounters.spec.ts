@@ -5,10 +5,10 @@ import { hero, play } from '../../test/game';
 import { attr } from '../state/attributes';
 import { has, put } from '../state/items';
 import type { GameState } from '../state/state';
-import { District, SaveName } from '../tp/brands';
+import { District } from '../tp/brands';
 import { saveMage, temple } from './encounters';
 import type { GameEvent } from './events';
-import { Disk } from './prelude';
+import { Saves } from './prelude';
 
 const keys = (...lines: string[]) => lines.flatMap((l) => [...l.split(''), 'enter']);
 
@@ -25,21 +25,18 @@ function meet<A, E, R>(
   });
 }
 
-/** the mage, then what lies on the disk */
-const mageThenDisk = Effect.gen(function* () {
+/** the mage, then what is saved */
+const mageThenSaves = Effect.gen(function* () {
   yield* saveMage;
-  const disk = yield* Disk;
-  return {
-    save: yield* disk.read(SaveName('save_r0.sav')),
-    places: yield* disk.read(SaveName('places.sav')),
-  };
+  const saves = yield* Saves;
+  return { save: yield* saves.load('0'), places: yield* saves.loadPlaces };
 });
 
 describe('saveMage (0000:7538)', () => {
   it.effect('declined: nothing is saved', () =>
     Effect.gen(function* () {
       const { st, types, exit } = yield* meet(
-        mageThenDisk,
+        mageThenSaves,
         (s) => (hero(s).player.resources.money = 100),
         {
           keys: keys('n'),
@@ -54,7 +51,7 @@ describe('saveMage (0000:7538)', () => {
   it.effect('too poor: district*50 is the price', () =>
     Effect.gen(function* () {
       const { st, types, exit } = yield* meet(
-        mageThenDisk,
+        mageThenSaves,
         (s) => {
           const st = hero(s);
           st.world.district = District(2);
@@ -71,7 +68,7 @@ describe('saveMage (0000:7538)', () => {
   it.effect('paid: the game and the places are saved', () =>
     Effect.gen(function* () {
       const { st, types, exit } = yield* meet(
-        mageThenDisk,
+        mageThenSaves,
         (s) => {
           const st = hero(s);
           st.world.district = District(2);
@@ -82,7 +79,11 @@ describe('saveMage (0000:7538)', () => {
       expect(types).toEqual(['mageMet', 'magePaid', 'mageSaved']);
       expect(st.player.resources.money).toBe(30);
       expect(exit).toMatchObject({
-        value: { save: expect.any(Uint8Array), places: expect.any(Uint8Array) },
+        value: {
+          // the save holds the hero after paying
+          save: { player: { resources: { money: 30 } } },
+          places: { market: true, hospital: true },
+        },
       });
     })
   );

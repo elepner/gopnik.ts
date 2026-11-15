@@ -3,9 +3,9 @@ import { Effect, Layer } from 'effect';
 
 import { type ICrt, type IKeyboard, makeCrt } from './crt/crt';
 import { crtTerminal } from './crt/terminal';
-import type { IEvents } from './game/events';
+import { Events, type GameEvent, type IEvents } from './game/events';
 import { mainLoop } from './game/main';
-import { Disk, Engine, type IDisk, transaction } from './game/prelude';
+import { Engine, type ISaves, Saves, transaction } from './game/prelude';
 import { newGame } from './game/start';
 import { type ITerminal, Terminal } from './game/terminal';
 import { viewLayer } from './game/view-layer';
@@ -24,9 +24,11 @@ export interface GameSetup {
   /** the state to start from (a fresh, not started game by default) */
   readonly state?: GameState;
   /** where the saves live */
-  readonly disk: IDisk;
+  readonly saves: ISaves;
   /** who listens to the game's events: the screen by default */
   readonly events?: Layer.Layer<IEvents, never, never>;
+  /** sees every event before it is shown (a shell that follows the game) */
+  readonly watch?: (event: GameEvent) => void;
 }
 
 /** any terminal, e.g. a plain console */
@@ -48,9 +50,24 @@ export function gameLayer(opts: GameOptions) {
       'terminal' in opts ? opts.terminal : crtTerminal(opts.crt ?? makeCrt(), opts.keyboard)
     ),
     Layer.succeed(Engine, { state, printBuf: new Uint8Array(256), transcript: [] }),
-    Layer.succeed(Disk, opts.disk),
+    Layer.succeed(Saves, opts.saves),
     rngLayer(opts.seed)
   );
-  const events = opts.events ?? viewLayer;
+  const shown = opts.events ?? viewLayer;
+  const events = opts.watch ? watched(shown, opts.watch) : shown;
   return events.pipe(Layer.provideMerge(services));
+}
+
+/** the events go to `watch`, then on to whoever shows them */
+function watched<E, R>(shown: Layer.Layer<IEvents, E, R>, watch: (event: GameEvent) => void) {
+  return Layer.effect(
+    Events,
+    Effect.map(Events, (events) => ({
+      emit: (event: GameEvent) =>
+        Effect.andThen(
+          Effect.sync(() => watch(event)),
+          events.emit(event)
+        ),
+    }))
+  ).pipe(Layer.provide(shown));
 }

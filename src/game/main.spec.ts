@@ -3,10 +3,10 @@ import { Effect, Exit } from 'effect';
 
 import { hero, play } from '../../test/game';
 import type { GameState } from '../state/state';
-import { District, SaveName } from '../tp/brands';
+import { District } from '../tp/brands';
 import type { GameEvent } from './events';
 import { mainLoop } from './main';
-import { Disk } from './prelude';
+import { Saves } from './prelude';
 import { heroName } from './stored-texts';
 import { EndOfInput, Halt } from './terminal';
 
@@ -21,11 +21,11 @@ function turn(setup: (s: GameState) => void, opts: { seed?: number; keys?: strin
   });
 }
 
-/** the main loop, then the save of a district on the disk */
+/** the main loop, then the save of a district */
 function loopThenSave(district: number) {
   return Effect.gen(function* () {
     yield* Effect.exit(mainLoop);
-    return yield* (yield* Disk).read(SaveName(`save_r${district}.sav`));
+    return yield* (yield* Saves).load(String(district));
   });
 }
 
@@ -160,7 +160,7 @@ describe('mainLoop: the next district (0000:AB92)', () => {
     })
   );
 
-  it.effect('saved as save_r<new district>.sav when asked', () =>
+  it.effect('saved in the slot of the new district when asked', () =>
     Effect.gen(function* () {
       const events: GameEvent[] = [];
       const { exit } = yield* play(loopThenSave(2), { setup: done, keys: keys('y'), events });
@@ -171,7 +171,7 @@ describe('mainLoop: the next district (0000:AB92)', () => {
         'mainDistrictEntered',
         'prompt',
       ]);
-      expect(exit).toMatchObject({ value: expect.any(Uint8Array) });
+      expect(exit).toMatchObject({ value: { player: { type: 'otmorozok' } } });
     })
   );
 

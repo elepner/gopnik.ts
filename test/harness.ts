@@ -9,7 +9,7 @@ import { Cause, Effect, Exit } from 'effect';
 
 import { Dos, IMG, keyCode, LOAD_SEG, VIDEO } from '../oracle/dos';
 import { biosKey, type IKeyboard, makeCrt } from '../src/crt/crt';
-import { dirDisk } from '../src/dir-disk';
+import { dirSaves } from '../src/dir-saves';
 import { Engine } from '../src/game/prelude';
 import { EndOfInput } from '../src/game/terminal';
 import { gameLayer, program } from '../src/runtime';
@@ -115,7 +115,7 @@ export async function runPort(seed: number, keys: readonly string[], dir: string
       prints = game.transcript;
       log = yield* (yield* Rng).log;
       yield* program;
-    }).pipe(Effect.provide(gameLayer({ seed: Seed(seed), disk: dirDisk(dir), keyboard, crt })))
+    }).pipe(Effect.provide(gameLayer({ seed: Seed(seed), saves: dirSaves(dir), keyboard, crt })))
   );
   if (Exit.isFailure(exit) && !/EndOfInput|Halt/.test(Cause.pretty(exit.cause)))
     throw new Error(`port crashed: ${Cause.pretty(exit.cause)}`);

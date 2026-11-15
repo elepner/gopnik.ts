@@ -3,29 +3,28 @@ import { Effect } from 'effect';
 
 import { dec, inc, set } from '../state/attributes';
 import { nextRing } from '../state/items';
-import { encodeSave, encodePlaces } from '../state/legacy';
+import { savedGame } from '../state/saved';
 import type { Game, Player } from '../state/state';
-import { SaveName } from '../tp/brands';
 import { u8 } from '../tp/num';
 import { CMD, readAnswer } from './commands';
 import type { Blessing, EncountersEvent } from './encounters-view';
 import { emit, reporter } from './events';
 import { levelUp, strengthUp, take } from './hero';
-import { Disk, rnd, started } from './prelude';
+import { rnd, Saves, started } from './prelude';
 
 const report = reporter(apply);
 
 /** 0000:7538 — Рушель Блаво offers to save the game */
 export const saveMage = Effect.gen(function* () {
   const st = yield* started;
-  const disk = yield* Disk;
+  const saves = yield* Saves;
   yield* emit({ type: 'mageMet' });
   if ((yield* readAnswer) !== CMD.answer.yes) return yield* emit({ type: 'mageDeclined' });
   if (st.world.district * 50 > st.player.resources.money)
     return yield* emit({ type: 'mageUnpaid' });
   yield* report({ type: 'magePaid' });
-  yield* disk.write(SaveName('save_r0.sav'), encodeSave(st));
-  yield* disk.write(SaveName('places.sav'), encodePlaces(st));
+  yield* saves.save('0', savedGame(st));
+  yield* saves.savePlaces({ ...st.world.places });
   yield* emit({ type: 'mageSaved' });
 });
 

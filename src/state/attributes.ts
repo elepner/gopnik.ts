@@ -18,7 +18,7 @@ function wrap(a: Attribute, n: number): number {
 }
 
 /** what the things and a joint add to the base */
-function bonus(p: PlayerBase, a: Attribute): number {
+export function bonus(p: PlayerBase, a: Attribute): number {
   return gear(p.body, a) + (p.stoned > 0 ? (JOINT[a] ?? 0) : 0);
 }
 

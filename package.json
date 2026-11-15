@@ -7,6 +7,7 @@
     "console": "bun src/console.ts",
     "web": "vp dev web",
     "web:build": "vp build web",
+    "web:e2e": "playwright test",
     "original": "bun oracle/cli.ts",
     "compare": "bun test/compare.ts",
     "fuzz": "bun test/fuzz.ts",
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@effect/vitest": "^4.1.4",
+    "@playwright/test": "^1.65.1",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",

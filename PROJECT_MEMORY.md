@@ -47,16 +47,24 @@
   saves and comparison snapshots), `names.ts`.
 - `src/crt/` — CRT unit: `screen.ts` (80×25 B800 cells), `crt.ts` (ReadKey, CrtRead line editor,
   services `Crt`, `Keyboard`).
-- `src/game/` — the game: `prelude` (services `Engine`, `Disk`, Print/PrintLn, luck checks),
+- `src/game/` — the game: `prelude` (services `Engine`, `Saves`, Print/PrintLn, luck checks),
   `texts` (all texts), `events`/`view-layer`/`view` (events and their views), `start`, `main`
   (command loop), `walk`, `fight`, `aftermath`, `beer`, `enemy`, `hero`, `places/*` (one file
   per place, `shop.ts` the shop lines), `encounters`, `screens`; each with a `-view.ts`. Each function names its original address (`0000:3D11`).
 - `src/runtime.ts` (layers, `program`), `src/main.ts` (the 80×25 CRT screen in a terminal),
   `src/console.ts` (a plain console: text scrolls, every input is a line; piped input works).
 - `web/` — the browser shell: React + xterm.js (`xterm-terminal.ts` is the `Terminal`, 80×25,
-  single keys and a line editor), saves in localStorage (`browser-disk.ts`). `bun run web` (dev
-  server), `bun run web:build` (into `dist/web`). `gameLayer` takes a ready `disk` (`dirDisk(dir)`
-  in `src/dir-disk.ts` for the terminal runners and the tests).
+  single keys and a line editor; `send` types from buttons). The stats panel renders the frozen
+  `snapshot(store)`; `gameLayer({ watch })` lets the shell see every event (what a prompt asks).
+  On a phone (≤ 900px or touch): you | enemy, the screen, then buttons for what the game waits
+  for (`Actions.tsx`), no keyboard (`inputmode="none"`), the name in a native `<dialog>`. The
+  saves found at the start are offered in a dialog. `bun run web` (dev server), `bun run
+  web:build` (into `dist/web`), `bun run web:e2e` (Playwright, phone and desktop, `web/e2e`).
+- Saves: the `Saves` service (`prelude.ts`) saves and loads a `SavedGame` (`src/state/saved.ts`:
+  the hero, the version, the temple visits — what a SAVE_R?.SAV record holds) by slot (`0`
+  Рушель Блаво, `2`..`5` districts) and the known places. `dirSaves(dir)` (`src/dir-saves.ts`)
+  writes the original's files (terminal runners, tests); `browserSaves()` keeps JSON in
+  localStorage.
 - The game never touches the CRT: it reads and writes through the `Terminal` service
   (`src/game/terminal.ts`: write, textColor, clrScr, readKey, readLine, keyPressed, delay).
   `crtTerminal` (`src/crt/terminal.ts`) puts it on the emulated CRT — what the goldens and the
@@ -152,7 +160,7 @@
   and shows nothing. `report` applies, then shows, so the view sees the state after the event.
   The start creates the hero before the game has started: `reporterOn(state)`. Allowed outside
   `apply`: creating and dropping the battle (`spawnEnemy`, `setupRector`, `encounter`), saves
-  (`Disk`, `decodeSave`, `loadPlaces`). Example: `places/dealers.ts`.
+  (`Saves`, `loadSave`, `loadPlaces`). Example: `places/dealers.ts`.
 - The hero's stats, damage, armor and maximum health are a projection (`src/state/attributes.ts`):
   `player.base` (start, levels, training, steroids, the temple) plus what the things in the body
   slots give (`src/state/items.ts`: `GEAR`, within a slot only the best counts — suit, jacket,

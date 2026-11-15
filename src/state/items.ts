@@ -118,6 +118,13 @@ export function gear(body: Body, a: keyof Attributes): number {
   return GEAR.reduce((sum, slot) => sum + (slot.find(([item]) => has(body, item))?.[1][a] ?? 0), 0);
 }
 
+/** what a thing on the body gives: nothing while a better one of its slot is there (a spare) */
+export function gives(body: Body, item: Item): Partial<Attributes> {
+  const slot = GEAR.find((things) => things.some(([thing]) => thing === item));
+  const best = slot?.find(([thing]) => has(body, thing));
+  return best?.[0] === item ? best[1] : {};
+}
+
 /** health a ring gives the moment it is put on */
 export const RING_HEALTH: Partial<Record<Item, number>> = { pomogiRing: 6, megaRing: 24 };
 
