@@ -1,0 +1,8167 @@
+# seed 100 save 1: won: district 5 level 42 hp 261/443 money 24
+#      2003 year, June,Sept                                         by V.P.  => title
+space
+1
+# Год 2xxx от Р.Х.  => pause
+space
+# Но тут...  => pause
+space
+# Ректор: Ах ты урод, чёртов забивала. Вали из универа!  => pause
+space
+# Ты: А типа чё?  => pause
+space
+# Ректор: Ты отчислен мудак!!! Как ты был лохом так и останешься.  => pause
+space
+# Это слышали все и ты из пацана превратился в опушенного.  => pause
+space
+# Ты решил доказать свою крутизну всему миру(в твоем понимании - Городу).  => pause
+space
+# 4-Чё за батва?  => class
+3
+enter
+# А зовут тебя:  => name
+g
+r
+e
+e
+d
+y
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 1 уровня. Хочешь наехать?  => odds 0.37 (need 2.50)
+n
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет типа клёвая цыпа. Хочешь её зацепить?  => girlfriend heals for free later
+y
+enter
+# \  => walk
+w
+enter
+# Идет типа клёвая цыпа. Хочешь её зацепить?  => girlfriend heals for free later
+y
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 1 уровня. Хочешь наехать?  => odds 1.13 (need 2.50)
+n
+enter
+# \  => walk
+w
+enter
+# Идет типа клёвая цыпа. Хочешь её зацепить?  => girlfriend heals for free later
+y
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет типа клёвая цыпа. Хочешь её зацепить?  => girlfriend heals for free later
+y
+enter
+# \  => walk
+w
+enter
+# \  => beer stock
+m
+a
+r
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 0 уровня. Хочешь наехать?  => odds 2.17 (need 2.50)
+n
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Вор 3 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 0.45 (need 2.50)
+n
+enter
+# Битва\  => losing (odds 0.45): run
+r
+u
+n
+enter
+# \  => beer stock
+m
+a
+r
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => beer stock
+m
+a
+r
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нефор 0 уровня. Хочешь наехать?  => odds 7.82 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 7.82)
+k
+enter
+# Битва\  => kick (odds 7.62)
+k
+enter
+# Битва\  => kick (odds 7.41)
+k
+enter
+# Битва\  => kick (odds 7.21)
+k
+enter
+# Битва\  => kick (odds 7.21)
+k
+enter
+# Битва\  => kick (odds 7.21)
+k
+enter
+# Битва\  => kick (odds 7.21)
+k
+enter
+# Битва\  => kick (odds 9.62)
+k
+enter
+# Битва\  => kick (odds 12.83)
+k
+enter
+# Битва\  => kick (odds 12.45)
+k
+enter
+# Битва\  => kick (odds 18.68)
+k
+enter
+# Битва\  => kick (odds 18.68)
+k
+enter
+# Битва\  => kick (odds 74.73)
+k
+enter
+# Битва\  => kick (odds 74.73)
+k
+enter
+# Битва\  => kick (odds 74.73)
+k
+enter
+# \  => sell junk (5)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (5) (cont.)
+x
+enter
+# Барыги\  => sell junk (5) (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Дохляк 0 уровня. Хочешь наехать?  => odds 23.77 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 23.77)
+k
+enter
+# Битва\  => kick (odds 23.77)
+k
+enter
+# Битва\  => kick (odds 10.90)
+k
+enter
+# Битва\  => kick (odds 10.90)
+k
+enter
+# Битва\  => kick (odds 13.00)
+k
+enter
+# Битва\  => kick (odds 13.00)
+k
+enter
+# Битва\  => kick (odds 17.33)
+k
+enter
+# Битва\  => kick (odds 16.51)
+k
+enter
+# Битва\  => kick (odds 33.02)
+k
+enter
+# Битва\  => kick (odds 33.02)
+k
+enter
+# Битва\  => kick (odds 31.37)
+k
+enter
+# \  => sell junk (1)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (1) (cont.)
+x
+enter
+# Барыги\  => sell junk (1) (cont.)
+w
+enter
+# \  => fix bones
+r
+e
+p
+enter
+# Ветеренар\  => fix bones (cont.)
+r
+enter
+# \  => fix bones (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 5 уровня. Хочешь наехать?  => odds 1.76 (need 2.50)
+n
+enter
+# \  => walk
+w
+enter
+# Идет Подтсан 3 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 2.50 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 2.50)
+k
+enter
+# Битва\  => kick (odds 2.76)
+k
+enter
+# Битва\  => kick (odds 2.76)
+k
+enter
+# Битва\  => kick (odds 2.76)
+k
+enter
+# Битва\  => kick (odds 3.00)
+k
+enter
+# Битва\  => kick (odds 3.28)
+k
+enter
+# Битва\  => kick (odds 3.28)
+k
+enter
+# Битва\  => kick (odds 3.18)
+k
+enter
+# Битва\  => kick (odds 3.18)
+k
+enter
+# Битва\  => kick (odds 3.18)
+k
+enter
+# Битва\  => kick (odds 3.18)
+k
+enter
+# Битва\  => kick (odds 3.18)
+k
+enter
+# Битва\  => kick (odds 3.08)
+k
+enter
+# Битва\  => kick (odds 3.08)
+k
+enter
+# Битва\  => kick (odds 2.98)
+k
+enter
+# Битва\  => kick (odds 3.28)
+k
+enter
+# Битва\  => kick (odds 3.68)
+k
+enter
+# Битва\  => kick (odds 4.38)
+k
+enter
+# Битва\  => kick (odds 4.38)
+k
+enter
+# Битва\  => kick (odds 4.38)
+k
+enter
+# Битва\  => kick (odds 5.41)
+k
+enter
+# Битва\  => kick (odds 5.41)
+k
+enter
+# Битва\  => kick (odds 5.41)
+k
+enter
+# Битва\  => kick (odds 5.41)
+k
+enter
+# Битва\  => kick (odds 5.21)
+k
+enter
+# Битва\  => kick (odds 9.85)
+k
+enter
+# Битва\  => kick (odds 9.85)
+k
+enter
+# Битва\  => kick (odds 9.85)
+k
+enter
+# Битва\  => kick (odds 17.73)
+k
+enter
+# Битва\  => kick (odds 44.33)
+k
+enter
+# \  => sell junk (1)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (1) (cont.)
+x
+enter
+# Барыги\  => sell junk (1) (cont.)
+w
+enter
+# \  => fix bones
+r
+e
+p
+enter
+# Ветеренар\  => fix bones (cont.)
+r
+enter
+# Ветеренар\  => fix bones (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 5 уровня. Хочешь наехать?  => odds 2.92 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 2.92)
+k
+enter
+# Битва\  => kick (odds 2.92)
+k
+enter
+# Битва\  => kick (odds 3.12)
+k
+enter
+# Битва\  => kick (odds 3.12)
+k
+enter
+# Битва\  => kick (odds 3.12)
+k
+enter
+# Битва\  => kick (odds 3.58)
+k
+enter
+# Битва\  => kick (odds 4.34)
+k
+enter
+# Битва\  => kick (odds 1.66)
+k
+enter
+# Битва\  => kick (odds 1.66)
+k
+enter
+# Битва\  => kick (odds 1.66)
+k
+enter
+# Битва\  => kick (odds 1.66)
+k
+enter
+# Битва\  => kick (odds 2.25)
+k
+enter
+# Битва\  => kick (odds 2.84)
+k
+enter
+# Битва\  => kick (odds 1.58)
+k
+enter
+# Битва\  => kick (odds 1.58)
+k
+enter
+# Битва\  => kick (odds 1.11)
+k
+enter
+# Битва\  => kick (odds 2.43)
+k
+enter
+# Битва\  => kick (odds 2.43)
+k
+enter
+# \  => fix bones
+r
+e
+p
+enter
+# Ветеренар\  => fix bones (cont.)
+r
+enter
+# Ветеренар\  => fix bones (cont.)
+w
+enter
+# \  => heal with beer
+m
+h
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 6 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 0.89 (need 2.50)
+n
+enter
+# \  => walk
+w
+enter
+# Идет Подтсан 3 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 2.03 (need 2.50)
+n
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Беспредельщик 2 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 1.23 (need 2.50)
+n
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Дохляк 3 уровня. Хочешь наехать?  => odds 9.90 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 9.90)
+k
+enter
+# Битва\  => kick (odds 15.30)
+k
+enter
+# Битва\  => kick (odds 15.30)
+k
+enter
+# Битва\  => kick (odds 15.30)
+k
+enter
+# Битва\  => kick (odds 27.09)
+k
+enter
+# Битва\  => kick (odds 162.56)
+k
+enter
+# \  => sell junk (4)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (4) (cont.)
+x
+enter
+# Барыги\  => sell junk (4) (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy abibas: +1.339/rub
+m
+a
+r
+enter
+# Базар\  => buy abibas: +1.339/rub (cont.)
+4
+enter
+# Базар\  => buy abibas: +1.339/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Подтсан 12 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 0.50 (need 2.50)
+n
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 8 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 0.76 (need 2.50)
+n
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 11 уровня. Хочешь наехать?  => odds 1.56 (need 2.50)
+n
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 2 уровня. Хочешь наехать?  => odds 3.48 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 3.48)
+k
+enter
+# Битва\  => kick (odds 3.48)
+k
+enter
+# Битва\  => kick (odds 3.48)
+k
+enter
+# Битва\  => kick (odds 3.60)
+k
+enter
+# Битва\  => kick (odds 4.21)
+k
+enter
+# Битва\  => kick (odds 4.92)
+k
+enter
+# Битва\  => kick (odds 5.90)
+k
+enter
+# Битва\  => kick (odds 7.76)
+k
+enter
+# Битва\  => kick (odds 7.76)
+k
+enter
+# Битва\  => kick (odds 10.54)
+k
+enter
+# Битва\  => kick (odds 16.39)
+k
+enter
+# Битва\  => kick (odds 6.94)
+k
+enter
+# Битва\  => kick (odds 6.94)
+k
+enter
+# \  => fix bones
+r
+e
+p
+enter
+# Ветеренар\  => fix bones (cont.)
+r
+enter
+# Ветеренар\  => fix bones (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 3 уровня. Хочешь наехать?  => odds 3.32 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 3.32)
+k
+enter
+# Битва\  => kick (odds 4.07)
+k
+enter
+# Битва\  => kick (odds 4.07)
+k
+enter
+# Битва\  => kick (odds 4.59)
+k
+enter
+# Битва\  => kick (odds 4.31)
+k
+enter
+# Битва\  => kick (odds 4.16)
+k
+enter
+# Битва\  => kick (odds 6.32)
+k
+enter
+# Битва\  => kick (odds 8.85)
+k
+enter
+# Битва\  => kick (odds 14.22)
+k
+enter
+# Битва\  => kick (odds 14.22)
+k
+enter
+# Битва\  => kick (odds 14.22)
+k
+enter
+# Битва\  => kick (odds 14.22)
+k
+enter
+# Битва\  => kick (odds 31.98)
+k
+enter
+# Битва\  => kick (odds 31.98)
+k
+enter
+# \  => heal with beer
+m
+h
+enter
+# \  => sell junk (5)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (5) (cont.)
+x
+enter
+# Барыги\  => sell junk (5) (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нефор 5 уровня. Хочешь наехать?  => odds 3.53 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 3.53)
+k
+enter
+# Битва\  => kick (odds 3.53)
+k
+enter
+# Битва\  => kick (odds 4.20)
+k
+enter
+# Битва\  => kick (odds 6.00)
+k
+enter
+# Битва\  => kick (odds 9.40)
+k
+enter
+# Битва\  => kick (odds 12.39)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy boots: +1.119/rub
+m
+a
+r
+enter
+# Базар\  => buy boots: +1.119/rub (cont.)
+5
+enter
+# Базар\  => buy boots: +1.119/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Вор 6 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 2.65 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 2.65)
+k
+enter
+# Битва\  => kick (odds 1.31)
+k
+enter
+# Битва\  => kick (odds 1.31)
+k
+enter
+# Битва\  => kick (odds 1.31)
+k
+enter
+# Битва\  => kick (odds 1.11)
+k
+enter
+# Битва\  => losing (odds 0.90): run
+r
+u
+n
+enter
+# \  => fix bones
+r
+e
+p
+enter
+# Ветеренар\  => fix bones (cont.)
+r
+enter
+# Ветеренар\  => fix bones (cont.)
+w
+enter
+# \  => heal with beer
+m
+h
+enter
+# \  => beer stock
+m
+a
+r
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 6 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 1.22 (need 2.50)
+n
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Подтсан 3 уровня. Хочешь наехать?  => odds 3.84 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 3.84)
+k
+enter
+# Битва\  => kick (odds 3.84)
+k
+enter
+# Битва\  => kick (odds 3.84)
+k
+enter
+# Битва\  => kick (odds 3.84)
+k
+enter
+# Битва\  => kick (odds 3.25)
+k
+enter
+# Битва\  => kick (odds 3.75)
+k
+enter
+# Битва\  => kick (odds 4.17)
+k
+enter
+# Битва\  => kick (odds 4.84)
+k
+enter
+# Битва\  => kick (odds 4.84)
+k
+enter
+# Битва\  => kick (odds 6.29)
+k
+enter
+# Битва\  => kick (odds 9.68)
+k
+enter
+# Битва\  => kick (odds 9.23)
+k
+enter
+# Битва\  => kick (odds 16.30)
+k
+enter
+# Битва\  => kick (odds 114.10)
+k
+enter
+# Битва\  => drink: enemy does not kick back
+m
+h
+enter
+# Битва\  => kick (odds 99.47)
+k
+enter
+# \  => sell junk (2)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (2) (cont.)
+x
+enter
+# Барыги\  => sell junk (2) (cont.)
+w
+enter
+# \  => beer stock
+m
+a
+r
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 1 уровня. Хочешь наехать?  => odds 30.98 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 30.98)
+k
+enter
+# Битва\  => kick (odds 30.98)
+k
+enter
+# Битва\  => kick (odds 42.60)
+k
+enter
+# Битва\  => kick (odds 75.73)
+k
+enter
+# Битва\  => kick (odds 340.78)
+k
+enter
+# \  => sell junk (5)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (5) (cont.)
+x
+enter
+# Барыги\  => sell junk (5) (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нефор 5 уровня. Хочешь наехать?  => odds 86.31 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 86.31)
+k
+enter
+# Битва\  => kick (odds 98.64)
+k
+enter
+# Битва\  => kick (odds 98.64)
+k
+enter
+# Битва\  => kick (odds 112.40)
+k
+enter
+# Битва\  => kick (odds 112.40)
+k
+enter
+# Битва\  => kick (odds 172.62)
+k
+enter
+# Битва\  => kick (odds 241.67)
+k
+enter
+# Битва\  => kick (odds 371.79)
+k
+enter
+# Битва\  => kick (odds 371.79)
+k
+enter
+# \  => sell junk (4)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (4) (cont.)
+x
+enter
+# Барыги\  => sell junk (4) (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +0.716/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +0.716/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +0.716/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нефор 15 уровня. Хочешь наехать?  => odds 0.69 (need 2.50)
+n
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Вор 6 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 2.97 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 2.97)
+k
+enter
+# Битва\  => kick (odds 2.37)
+k
+enter
+# Битва\  => drink: enemy does not kick back
+m
+h
+enter
+# Битва\  => kick (odds 4.61)
+k
+enter
+# \  => sell junk (1)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (1) (cont.)
+x
+enter
+# Барыги\  => sell junk (1) (cont.)
+w
+enter
+# \  => beer stock
+m
+a
+r
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 5 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 2.55 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 2.55)
+k
+enter
+# Битва\  => kick (odds 3.02)
+k
+enter
+# Битва\  => kick (odds 5.22)
+k
+enter
+# Битва\  => kick (odds 4.35)
+k
+enter
+# Битва\  => kick (odds 3.77)
+k
+enter
+# Битва\  => kick (odds 3.77)
+k
+enter
+# Битва\  => drink: enemy does not kick back
+m
+h
+enter
+# Битва\  => kick (odds 7.23)
+k
+enter
+# \  => sell junk (3)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (3) (cont.)
+x
+enter
+# Барыги\  => sell junk (3) (cont.)
+w
+enter
+# \  => beer stock
+m
+a
+r
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 8 уровня. Хочешь наехать?  => odds 1.07 (need 2.50)
+n
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +0.843/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +0.843/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +0.843/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 5 уровня. Хочешь наехать?  => odds 4.49 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 4.49)
+k
+enter
+# Битва\  => kick (odds 5.35)
+k
+enter
+# Битва\  => kick (odds 5.99)
+k
+enter
+# Битва\  => kick (odds 9.87)
+k
+enter
+# Битва\  => kick (odds 23.41)
+k
+enter
+# \  => sell junk (1)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (1) (cont.)
+x
+enter
+# Барыги\  => sell junk (1) (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 12 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 0.77 (need 2.50)
+n
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Вор 4 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 6.52 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 6.52)
+k
+enter
+# Битва\  => kick (odds 6.52)
+k
+enter
+# Битва\  => kick (odds 8.38)
+k
+enter
+# Битва\  => kick (odds 7.99)
+k
+enter
+# Битва\  => kick (odds 7.99)
+k
+enter
+# Битва\  => kick (odds 7.99)
+k
+enter
+# Битва\  => kick (odds 7.99)
+k
+enter
+# Битва\  => kick (odds 11.19)
+k
+enter
+# Битва\  => kick (odds 37.29)
+k
+enter
+# Битва\  => kick (odds 37.29)
+k
+enter
+# \  => sell junk (7)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (7) (cont.)
+x
+enter
+# Барыги\  => sell junk (7) (cont.)
+w
+enter
+# \  => fix bones
+r
+e
+p
+enter
+# Ветеренар\  => fix bones (cont.)
+r
+enter
+# Ветеренар\  => fix bones (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 12 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 0.74 (need 2.50)
+n
+enter
+# Битва\  => losing (odds 0.74): run
+r
+u
+n
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 7 уровня. Хочешь наехать?  => odds 4.24 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 4.24)
+k
+enter
+# Битва\  => kick (odds 6.56)
+k
+enter
+# Битва\  => kick (odds 9.59)
+k
+enter
+# Битва\  => kick (odds 21.01)
+k
+enter
+# Битва\  => kick (odds 21.01)
+k
+enter
+# \  => walk
+w
+enter
+# Бродя по окрестностям с самыми грязными намериниями...  => pause
+space
+# Ты наткнулся на храм Божий.  => pause
+space
+# Раз такая батва...  => pause
+space
+# Надо типа помолиться Господу Богу...  => pause
+space
+# Как делают новыё русские.  => pause
+space
+# "Господи, Братан, прости грешника". - Начал было ты...  => pause
+space
+# Громовой голос: "Да пошел ты на хрен!"  => pause
+space
+#  - Эээ.. типа.. а чё?..  => pause
+space
+#  - "а чё?" блин!  greedy-Вор чёртов!  => pause
+space
+# Ну..  => pause
+space
+# Ладна насылаю на тебя, типа, "моё благославление"  => pause
+space
+# Накладываю на тебя защиту!  => pause
+space
+# \  => walk
+w
+enter
+# \  => buy agility (club): +1.310/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +1.310/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +1.310/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 4 уровня. Хочешь наехать?  => odds 3.56 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 3.56)
+k
+enter
+# Битва\  => kick (odds 3.17)
+k
+enter
+# Битва\  => drink: enemy does not kick back
+m
+h
+enter
+# Битва\  => kick (odds 3.85)
+k
+enter
+# Битва\  => kick (odds 3.75)
+k
+enter
+# Битва\  => kick (odds 4.38)
+k
+enter
+# Битва\  => kick (odds 5.47)
+k
+enter
+# Битва\  => kick (odds 4.92)
+k
+enter
+# Битва\  => kick (odds 4.92)
+k
+enter
+# Битва\  => kick (odds 4.92)
+k
+enter
+# Битва\  => kick (odds 4.92)
+k
+enter
+# Битва\  => kick (odds 7.87)
+k
+enter
+# Битва\  => kick (odds 7.87)
+k
+enter
+# Битва\  => kick (odds 7.87)
+k
+enter
+# Битва\  => kick (odds 14.75)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Беспредельщик 9 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 1.22 (need 2.50)
+n
+enter
+# Битва\  => kick (odds 1.22)
+k
+enter
+# Битва\  => kick (odds 1.38)
+k
+enter
+# Битва\  => kick (odds 1.67)
+k
+enter
+# Битва\  => kick (odds 1.50)
+k
+enter
+# Битва\  => kick (odds 1.83)
+k
+enter
+# Битва\  => kick (odds 1.97)
+k
+enter
+# Битва\  => drink: enemy does not kick back
+m
+h
+enter
+# Битва\  => kick (odds 2.32)
+k
+enter
+# Битва\  => kick (odds 1.91)
+k
+enter
+# Битва\  => kick (odds 1.91)
+k
+enter
+# Битва\  => kick (odds 4.77)
+k
+enter
+# \  => heal with beer
+m
+h
+enter
+# \  => sell junk (5)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (5) (cont.)
+x
+enter
+# Барыги\  => sell junk (5) (cont.)
+w
+enter
+# \  => beer stock
+m
+a
+r
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Маньячок 12 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 0.39 (need 2.50)
+n
+enter
+# Битва\  => losing (odds 0.39): run
+r
+u
+n
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Беспредельщик 9 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 1.11 (need 2.50)
+n
+enter
+# Битва\  => kick (odds 1.11)
+k
+enter
+# Битва\  => kick (odds 1.01)
+k
+enter
+# Битва\  => drink: enemy does not kick back
+m
+h
+enter
+# Битва\  => losing (odds 0.65): run
+r
+u
+n
+enter
+# \  => beer stock
+m
+a
+r
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Подтсан 3 уровня. Хочешь наехать?  => odds 3.09 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 3.09)
+k
+enter
+# Битва\  => kick (odds 3.42)
+k
+enter
+# Битва\  => kick (odds 4.28)
+k
+enter
+# Битва\  => kick (odds 4.28)
+k
+enter
+# Битва\  => kick (odds 4.28)
+k
+enter
+# Битва\  => kick (odds 4.89)
+k
+enter
+# Битва\  => kick (odds 6.40)
+k
+enter
+# Битва\  => kick (odds 6.40)
+k
+enter
+# \  => heal with beer
+m
+h
+enter
+# \  => beer stock
+m
+a
+r
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => beer stock
+m
+a
+r
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 2 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 5.40 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 5.40)
+k
+enter
+# Битва\  => kick (odds 6.14)
+k
+enter
+# Битва\  => kick (odds 7.00)
+k
+enter
+# Битва\  => kick (odds 13.99)
+k
+enter
+# Битва\  => kick (odds 58.48)
+k
+enter
+# \  => beer stock
+m
+a
+r
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 8 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 1.66 (need 2.50)
+n
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +1.085/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +1.085/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +1.085/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 5 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 4.70 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 4.70)
+k
+enter
+# Битва\  => kick (odds 6.06)
+k
+enter
+# Битва\  => kick (odds 9.10)
+k
+enter
+# Битва\  => kick (odds 135.69)
+k
+enter
+# \  => walk
+w
+enter
+# Битва\  => losing (odds 0.97): run
+r
+u
+n
+enter
+# \  => buy agility (club): +1.085/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +1.085/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +1.085/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Дохляк 10 уровня. Хочешь наехать?  => odds 5.97 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 5.97)
+k
+enter
+# Битва\  => kick (odds 6.90)
+k
+enter
+# Битва\  => kick (odds 8.06)
+k
+enter
+# Битва\  => kick (odds 8.06)
+k
+enter
+# Битва\  => kick (odds 10.05)
+k
+enter
+# Битва\  => kick (odds 10.05)
+k
+enter
+# Битва\  => kick (odds 9.75)
+k
+enter
+# Битва\  => kick (odds 12.02)
+k
+enter
+# Битва\  => kick (odds 5.97)
+k
+enter
+# Битва\  => kick (odds 10.97)
+k
+enter
+# Битва\  => kick (odds 9.14)
+k
+enter
+# \  => sell junk (6)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (6) (cont.)
+x
+enter
+# Барыги\  => sell junk (6) (cont.)
+w
+enter
+# \  => fix bones
+r
+e
+p
+enter
+# Ветеренар\  => fix bones (cont.)
+r
+enter
+# Ветеренар\  => fix bones (cont.)
+w
+enter
+# \  => heal with beer
+m
+h
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Вор 10 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 1.72 (need 2.50)
+n
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 1.72)
+k
+enter
+# Битва\  => kick (odds 2.30)
+k
+enter
+# Битва\  => drink: enemy does not kick back
+m
+h
+enter
+# Битва\  => kick (odds 2.73)
+k
+enter
+# Битва\  => drink: enemy does not kick back
+m
+h
+enter
+# Битва\  => kick (odds 7.35)
+k
+enter
+# Битва\  => kick (odds 5.37)
+k
+enter
+# \  => beer stock
+m
+a
+r
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+2
+enter
+# Базар\  => beer stock (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 5 уровня. Хочешь наехать?  => odds 63.15 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 63.15)
+k
+enter
+# Битва\  => kick (odds 111.27)
+k
+enter
+# Битва\  => kick (odds 111.27)
+k
+enter
+# Битва\  => kick (odds 179.74)
+k
+enter
+# Битва\  => kick (odds 333.81)
+k
+enter
+# \  => buy strength (gym): +2.420/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +2.420/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +2.420/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Дохляк 3 уровня. Хочешь наехать?  => odds 49.46 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 49.46)
+k
+enter
+# Битва\  => kick (odds 49.46)
+k
+enter
+# Битва\  => kick (odds 67.12)
+k
+enter
+# Битва\  => kick (odds 867.42)
+k
+enter
+# \  => sell junk (2)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (2) (cont.)
+x
+enter
+# Барыги\  => sell junk (2) (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 1 уровня. Хочешь наехать?  => odds 24.82 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 24.82)
+k
+enter
+# Битва\  => kick (odds 27.04)
+k
+enter
+# Битва\  => kick (odds 34.25)
+k
+enter
+# Битва\  => kick (odds 46.70)
+k
+enter
+# Битва\  => kick (odds 68.50)
+k
+enter
+# Битва\  => kick (odds 128.43)
+k
+enter
+# Битва\  => kick (odds 1027.45)
+k
+enter
+# Битва\  => kick (odds 1012.56)
+k
+enter
+# \  => buy agility (club): +2.069/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +2.069/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +2.069/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Вор 4 уровня. Хочешь наехать?  => odds 13.42 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 13.42)
+k
+enter
+# Битва\  => kick (odds 13.42)
+k
+enter
+# Битва\  => kick (odds 19.87)
+k
+enter
+# Битва\  => kick (odds 29.08)
+k
+enter
+# Битва\  => kick (odds 66.46)
+k
+enter
+# \  => sell junk (8)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (8) (cont.)
+x
+enter
+# Барыги\  => sell junk (8) (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Вор 7 уровня. Хочешь наехать?  => odds 6.27 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 6.27)
+k
+enter
+# Битва\  => kick (odds 14.42)
+k
+enter
+# \  => heal with beer
+m
+h
+enter
+# \  => sell junk (4)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (4) (cont.)
+x
+enter
+# Барыги\  => sell junk (4) (cont.)
+w
+enter
+# \  => buy strength (gym): +2.955/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +2.955/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +2.955/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 11 уровня. Хочешь наехать?  => odds 4.85 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 4.85)
+k
+enter
+# Битва\  => kick (odds 6.76)
+k
+enter
+# Битва\  => kick (odds 13.43)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +2.557/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +2.557/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +2.557/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Бродя по окрестностям с самыми грязными намериниями...  => pause
+space
+# Ты наткнулся на храм Божий.  => pause
+space
+# В прошлый раз Бог сказал чтобы ты не осквернял своей рожей святой храм  => pause
+space
+# Но надо бы типа помолиться о прощении  => pause
+space
+# "Господи, Братан, прости грешника опять".  => pause
+space
+# Бог: "Да блин, упорный чудак!"  => pause
+space
+# Ладно насылаю на тебя, типа, "моё благославление" снова  => pause
+space
+# Кольцо "Помоги Господи"  => pause
+space
+# \  => walk
+w
+enter
+# Идет Подтсан 8 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 23.79 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 23.79)
+k
+enter
+# Битва\  => kick (odds 52.98)
+k
+enter
+# Битва\  => kick (odds 233.10)
+k
+enter
+# \  => sell junk (5)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (5) (cont.)
+x
+enter
+# Барыги\  => sell junk (5) (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 8 уровня. Хочешь наехать?  => odds 9.79 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 9.79)
+k
+enter
+# Битва\  => kick (odds 4.51)
+k
+enter
+# Битва\  => kick (odds 7.99)
+k
+enter
+# Битва\  => kick (odds 23.08)
+k
+enter
+# \  => fix bones
+r
+e
+p
+enter
+# Ветеренар\  => fix bones (cont.)
+r
+enter
+# Ветеренар\  => fix bones (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Бродя по окрестностям с самыми грязными намериниями...  => pause
+space
+# Ты встретил великого мага и экстрасенса - Рушеля Блаво.  => pause
+space
+# За 25 рублей он может сделать сохранение прямо здесь.  => pause
+space
+# Ты хочешь сохраниться?  => no saves
+n
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +3.226/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +3.226/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +3.226/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Подтсан 6 уровня. Хочешь наехать?  => odds 17.35 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 17.35)
+k
+enter
+# Битва\  => kick (odds 51.42)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нефор 7 уровня. Хочешь наехать?  => odds 148.85 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 148.85)
+k
+enter
+# \  => sell junk (1)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (1) (cont.)
+x
+enter
+# Барыги\  => sell junk (1) (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +6.883/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +6.883/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +6.883/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 14 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 6.74 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 7.15)
+k
+enter
+# Битва\  => kick (odds 9.88)
+k
+enter
+# Битва\  => kick (odds 29.65)
+k
+enter
+# Битва\  => kick (odds 148.27)
+k
+enter
+# \  => buy agility (club): +6.883/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +6.883/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +6.883/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Вор 18 уровня. Хочешь наехать?  => odds 10.93 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 10.93)
+k
+enter
+# Битва\  => kick (odds 24.41)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Подтсан 9 уровня. Хочешь наехать?  => odds 31.45 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 34.51)
+k
+enter
+# Битва\  => kick (odds 40.43)
+k
+enter
+# Битва\  => kick (odds 157.23)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Подтсан 7 уровня. Хочешь наехать?  => odds 90.57 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 102.92)
+k
+enter
+# Битва\  => kick (odds 188.68)
+k
+enter
+# Битва\  => kick (odds 1509.44)
+k
+enter
+# \  => sell junk (7)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (7) (cont.)
+x
+enter
+# Барыги\  => sell junk (7) (cont.)
+w
+enter
+# \  => buy strength (gym): +10.032/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +10.032/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +10.032/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Дохляк 11 уровня. Хочешь наехать?  => odds 1867.70 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 1867.70)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy leather: +18.170/rub
+m
+a
+r
+enter
+# Базар\  => buy leather: +18.170/rub (cont.)
+6
+enter
+# Базар\  => buy leather: +18.170/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет типа клёвая цыпа. Хочешь её зацепить?  => girlfriend heals for free later
+y
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Телефон:Алё Вася?  => pause
+space
+# Нет это  greedy.  => pause
+space
+# Телефон:А Васю можно?  => pause
+space
+# Идет Нарк 10 уровня. Хочешь наехать?  => odds 60.03 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 60.03)
+k
+enter
+# Битва\  => kick (odds 408.81)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy adidas: +15.513/rub
+m
+a
+r
+enter
+# Базар\  => buy adidas: +15.513/rub (cont.)
+7
+enter
+# Базар\  => buy adidas: +15.513/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Беспредельщик 21 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 7.68 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 7.68)
+k
+enter
+# Битва\  => kick (odds 10.91)
+k
+enter
+# Битва\  => kick (odds 19.95)
+k
+enter
+# Битва\  => kick (odds 34.27)
+k
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 25 уровня. Хочешь наехать?  => odds 7.98 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 7.98)
+k
+enter
+# Битва\  => kick (odds 11.38)
+k
+enter
+# Битва\  => kick (odds 21.70)
+k
+enter
+# Битва\  => kick (odds 35.89)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Беспредельщик 27 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 4.87 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 4.87)
+k
+enter
+# Битва\  => kick (odds 6.28)
+k
+enter
+# Битва\  => kick (odds 22.44)
+k
+enter
+# Битва\  => kick (odds 45.48)
+k
+enter
+# \  => heal with beer
+m
+h
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нефор 17 уровня. Хочешь наехать?  => odds 31.19 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 31.19)
+k
+enter
+# Битва\  => kick (odds 38.23)
+k
+enter
+# Битва\  => kick (odds 84.65)
+k
+enter
+# Битва\  => kick (odds 79.38)
+k
+enter
+# \  => walk
+w
+enter
+# Идет Нефор 10 уровня. Хочешь наехать?  => odds 993.48 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 993.48)
+k
+enter
+# Битва\  => kick (odds 4064.22)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy stamina (gym): +6.434/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +6.434/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +6.434/rub (cont.)
+w
+enter
+# \  => buy stamina (gym): +6.434/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +6.434/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +6.434/rub (cont.)
+w
+enter
+# \  => buy stamina (gym): +6.434/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +6.434/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +6.434/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 26 уровня. Хочешь наехать?  => odds 13.13 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 13.13)
+k
+enter
+# Битва\  => kick (odds 34.36)
+k
+enter
+# Битва\  => kick (odds 451.51)
+k
+enter
+# \  => heal with beer
+m
+h
+enter
+# \  => ask the den about places
+p
+r
+enter
+# Притон\  => ask the den about places (cont.)
+a
+enter
+# Притон\  => ask the den about places (cont.)
+w
+enter
+# \  => buy stamina (gym): +6.582/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +6.582/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +6.582/rub (cont.)
+w
+enter
+# \  => sell junk (16)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (16) (cont.)
+x
+enter
+# Барыги\  => sell junk (16) (cont.)
+w
+enter
+# \  => buy strength (gym): +6.822/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +6.822/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +6.822/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Вор 15 уровня. Хочешь наехать?  => odds 22.79 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 26.51)
+k
+enter
+# Битва\  => kick (odds 426.73)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +9.474/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +9.474/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +9.474/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy stamina (gym): +7.215/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +7.215/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +7.215/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 15 уровня. Хочешь наехать?  => odds 55.01 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 66.01)
+k
+enter
+# Битва\  => kick (odds 304.67)
+k
+enter
+# \  => buy strength (gym): +7.308/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +7.308/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +7.308/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +10.125/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +10.125/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +10.125/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 17 уровня. Хочешь наехать?  => odds 26.39 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 30.03)
+k
+enter
+# \  => sell junk (6)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (6) (cont.)
+x
+enter
+# Барыги\  => sell junk (6) (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Подтсан 17 уровня. Хочешь наехать?  => odds 43.76 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 53.48)
+k
+enter
+# \  => buy stamina (gym): +8.429/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +8.429/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +8.429/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 24 уровня. Хочешь наехать?  => odds 7.51 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 8.35)
+k
+enter
+# Битва\  => kick (odds 9.05)
+k
+enter
+# Битва\  => kick (odds 10.32)
+k
+enter
+# Битва\  => kick (odds 10.32)
+k
+enter
+# Битва\  => kick (odds 19.08)
+k
+enter
+# Битва\  => kick (odds 26.92)
+k
+enter
+# Битва\  => kick (odds 24.67)
+k
+enter
+# Битва\  => kick (odds 24.17)
+k
+enter
+# Битва\  => kick (odds 23.17)
+k
+enter
+# Битва\  => kick (odds 22.42)
+k
+enter
+# \  => heal with beer
+m
+h
+enter
+# \  => sell junk (37)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (37) (cont.)
+x
+enter
+# Барыги\  => sell junk (37) (cont.)
+w
+enter
+# \  => buy stamina (gym): +8.429/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +8.429/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +8.429/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +8.649/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +8.649/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +8.649/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +11.979/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +11.979/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +11.979/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нефор 24 уровня. Хочешь наехать?  => odds 24.17 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 25.83)
+k
+enter
+# Битва\  => kick (odds 43.22)
+k
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +12.515/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +12.515/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +12.515/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy stamina (gym): +10.008/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +10.008/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +10.008/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Подтсан 18 уровня. Хочешь наехать?  => odds 43.93 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 43.93)
+k
+enter
+# \  => sell junk (9)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (9) (cont.)
+x
+enter
+# Барыги\  => sell junk (9) (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy stamina (gym): +10.008/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +10.008/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +10.008/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 13 уровня. Хочешь наехать?  => odds 239.35 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 289.98)
+k
+enter
+# \  => sell junk (10)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (10) (cont.)
+x
+enter
+# Барыги\  => sell junk (10) (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нефор 18 уровня. Хочешь наехать?  => odds 91.07 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 91.07)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нефор 18 уровня. Хочешь наехать?  => odds 99.40 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 113.38)
+k
+enter
+# Битва\  => kick (odds 1769.17)
+k
+enter
+# \  => buy strength (gym): +14.050/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +14.050/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +14.050/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 18 уровня. Хочешь наехать?  => odds 93.48 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 93.48)
+k
+enter
+# Битва\  => kick (odds 1385.20)
+k
+enter
+# \  => sell junk (14)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (14) (cont.)
+x
+enter
+# Барыги\  => sell junk (14) (cont.)
+w
+enter
+# \  => buy agility (club): +14.369/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +14.369/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +14.369/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +14.369/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +14.369/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +14.369/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 16 уровня. Хочешь наехать?  => odds 197.29 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 233.53)
+k
+enter
+# \  => sell junk (5)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (5) (cont.)
+x
+enter
+# Барыги\  => sell junk (5) (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +14.369/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +14.369/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +14.369/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +14.369/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +14.369/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +14.369/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нефор 10 уровня. Хочешь наехать?  => odds 59315.32 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 59315.32)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +14.369/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +14.369/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +14.369/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Ты наткнулся на храм Божий.  => pause
+space
+# Ну ладно насылаю на тебя "благославление"  => pause
+space
+# Да увеличится твоя понтовость!  => pause
+space
+# Сейчас у тебя 0 качков опыта. До слеующей прокачки надо 180  => pause
+space
+# \  => buy agility (club): +14.369/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +14.369/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +14.369/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 15 уровня. Хочешь наехать?  => odds 101.03 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 114.63)
+k
+enter
+# \  => buy agility (club): +14.369/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +14.369/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +14.369/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +14.369/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +14.369/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +14.369/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +14.369/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +14.369/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +14.369/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Беспредельщик 9 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 182.65 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 221.52)
+k
+enter
+# \  => sell junk (15)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (15) (cont.)
+x
+enter
+# Барыги\  => sell junk (15) (cont.)
+w
+enter
+# \  => buy stamina (gym): +14.762/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +14.762/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +14.762/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нефор 35 уровня. Хочешь наехать?  => odds 17.64 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 19.53)
+k
+enter
+# Битва\  => kick (odds 49.19)
+k
+enter
+# \  => buy agility (club): +14.861/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +14.861/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +14.861/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +14.861/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +14.861/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +14.861/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +14.861/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +14.861/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +14.861/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нефор 57 уровня. Хочешь наехать?  => odds 8.81 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 8.81)
+k
+enter
+# Битва\  => kick (odds 16.92)
+k
+enter
+# Битва\  => kick (odds 19.94)
+k
+enter
+# Битва\  => kick (odds 5.14)
+k
+enter
+# Битва\  => kick (odds 5.14)
+k
+enter
+# \  => fix bones
+r
+e
+p
+enter
+# Ветеренар\  => fix bones (cont.)
+r
+enter
+# Ветеренар\  => fix bones (cont.)
+w
+enter
+# \  => heal with beer
+m
+h
+enter
+# \  => buy agility (club): +16.035/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +16.035/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +16.035/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +16.035/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +16.035/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +16.035/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 8 уровня. Хочешь наехать?  => odds 331.26 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 367.39)
+k
+enter
+# \  => buy agility (club): +16.035/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +16.035/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +16.035/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нефор 20 уровня. Хочешь наехать?  => odds 115.58 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 144.48)
+k
+enter
+# \  => sell junk (3)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (3) (cont.)
+x
+enter
+# Барыги\  => sell junk (3) (cont.)
+w
+enter
+# \  => buy agility (club): +16.741/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +16.741/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +16.741/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 19 уровня. Хочешь наехать?  => odds 236.30 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 253.18)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +17.835/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +17.835/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +17.835/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +26.595/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +26.595/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +26.595/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +18.573/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +18.573/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +18.573/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 36 уровня. Хочешь наехать?  => odds 43.60 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 46.43)
+k
+enter
+# Битва\  => kick (odds 531.31)
+k
+enter
+# \  => buy stamina (gym): +21.330/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +21.330/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +21.330/rub (cont.)
+w
+enter
+# \  => sell junk (10)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (10) (cont.)
+x
+enter
+# Барыги\  => sell junk (10) (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +19.154/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +19.154/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +19.154/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Беспредельщик 26 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 37.09 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 38.95)
+k
+enter
+# Битва\  => kick (odds 90.16)
+k
+enter
+# Битва\  => kick (odds 3021.40)
+k
+enter
+# \  => sell junk (46)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (46) (cont.)
+x
+enter
+# Барыги\  => sell junk (46) (cont.)
+w
+enter
+# \  => buy stamina (gym): +21.766/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +21.766/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +21.766/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +21.991/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +21.991/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +21.991/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +29.715/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +29.715/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +29.715/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Вор 12 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 522.03 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 522.03)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +7.820/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +7.820/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +7.820/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Ты наткнулся на храм Божий.  => pause
+space
+# Ну ладно насылаю на тебя "благославление"  => pause
+space
+# Да уменьшиться твоя корявость!  => pause
+space
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +7.820/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +7.820/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +7.820/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 10 уровня. Хочешь наехать?  => odds 730.83 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 730.83)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет типа клёвая цыпа. Хочешь её зацепить?  => girlfriend heals for free later
+y
+enter
+# \  => buy agility (club): +7.820/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +7.820/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +7.820/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет типа клёвая цыпа. Хочешь её зацепить?  => girlfriend heals for free later
+y
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 24 уровня. Хочешь наехать?  => odds 68.75 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 68.75)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Подтсан 14 уровня. Хочешь наехать?  => odds 343.60 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 343.60)
+k
+enter
+# \  => buy agility (club): +7.820/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +7.820/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +7.820/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Маньячок 59 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 3.64 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 3.64)
+k
+enter
+# Битва\  => kick (odds 5.02)
+k
+enter
+# Битва\  => kick (odds 7.03)
+k
+enter
+# Битва\  => kick (odds 13.63)
+k
+enter
+# Битва\  => kick (odds 13.63)
+k
+enter
+# Битва\  => kick (odds 67.59)
+k
+enter
+# \  => buy press (gym): +53.982/rub
+t
+r
+n
+enter
+# Качалка\  => buy press (gym): +53.982/rub (cont.)
+5
+enter
+# Качалка\  => buy press (gym): +53.982/rub (cont.)
+w
+enter
+# \  => buy press (gym): +74.508/rub
+t
+r
+n
+enter
+# Качалка\  => buy press (gym): +74.508/rub (cont.)
+5
+enter
+# Качалка\  => buy press (gym): +74.508/rub (cont.)
+w
+enter
+# \  => buy press (gym): +109.488/rub
+t
+r
+n
+enter
+# Качалка\  => buy press (gym): +109.488/rub (cont.)
+5
+enter
+# Качалка\  => buy press (gym): +109.488/rub (cont.)
+w
+enter
+# \  => buy press (gym): +176.659/rub
+t
+r
+n
+enter
+# Качалка\  => buy press (gym): +176.659/rub (cont.)
+5
+enter
+# Качалка\  => buy press (gym): +176.659/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy press (gym): +332.995/rub
+t
+r
+n
+enter
+# Качалка\  => buy press (gym): +332.995/rub (cont.)
+5
+enter
+# Качалка\  => buy press (gym): +332.995/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +26.317/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +26.317/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +26.317/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy press (gym): +877.223/rub
+t
+r
+n
+enter
+# Качалка\  => buy press (gym): +877.223/rub (cont.)
+5
+enter
+# Качалка\  => buy press (gym): +877.223/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 45 уровня. Хочешь наехать?  => odds 21.96 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 21.96)
+k
+enter
+# Битва\  => kick (odds 109.81)
+k
+enter
+# \  => buy press (gym): +7625.094/rub
+t
+r
+n
+enter
+# Качалка\  => buy press (gym): +7625.094/rub (cont.)
+5
+enter
+# Качалка\  => buy press (gym): +7625.094/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 20 уровня. Хочешь наехать?  => odds 76088.51 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 76088.51)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нефор 19 уровня. Хочешь наехать?  => odds 1209.23 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 1209.23)
+k
+enter
+# \  => buy agility (club): +233.956/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +233.956/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +233.956/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Телефон:Алё Вася?  => pause
+space
+# Нет это  greedy.  => pause
+space
+# Телефон:А Васю можно?  => pause
+space
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Телефон:Алё Вася?  => pause
+space
+# Нет это  greedy.  => pause
+space
+# Телефон:А Васю можно?  => pause
+space
+# Идет Отморозок 21 уровня. Хочешь наехать?  => odds 193.23 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 193.23)
+k
+enter
+# Битва\  => kick (odds 1523.21)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy press (gym): +122124.978/rub
+t
+r
+n
+enter
+# Качалка\  => buy press (gym): +122124.978/rub (cont.)
+5
+enter
+# Качалка\  => buy press (gym): +122124.978/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 47 уровня. Хочешь наехать?  => odds 26.23 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 26.23)
+k
+enter
+# Битва\  => kick (odds 26.23)
+k
+enter
+# Битва\  => kick (odds 30.05)
+k
+enter
+# Битва\  => kick (odds 147.02)
+k
+enter
+# Битва\  => kick (odds 405.91)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +3041.427/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +3041.427/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +3041.427/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Беспредельщик 45 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 19.63 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 19.63)
+k
+enter
+# Битва\  => kick (odds 41.05)
+k
+enter
+# Битва\  => kick (odds 335.88)
+k
+enter
+# \  => heal with beer
+m
+h
+enter
+# \  => ask the den about places
+p
+r
+enter
+# Притон\  => ask the den about places (cont.)
+a
+enter
+# Притон\  => ask the den about places (cont.)
+w
+enter
+# \  => sell junk (159)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (159) (cont.)
+x
+enter
+# Барыги\  => sell junk (159) (cont.)
+w
+enter
+# \  => buy strength (gym): +5654.100/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +5654.100/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +5654.100/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +4319.700/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +4319.700/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +4319.700/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +5752.800/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +5752.800/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +5752.800/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +4403.400/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +4403.400/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +4403.400/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +5851.500/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +5851.500/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +5851.500/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +4487.100/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +4487.100/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +4487.100/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +5950.200/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +5950.200/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +5950.200/rub (cont.)
+w
+enter
+# \  => buy stamina (gym): +4661.250/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +4661.250/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +4661.250/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 77 уровня. Хочешь наехать?  => odds 7.10 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 7.41)
+k
+enter
+# Битва\  => kick (odds 12.24)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Бродя по окрестностям с самыми грязными намериниями...  => pause
+space
+# Ты встретил великого мага и экстрасенса - Рушеля Блаво.  => pause
+space
+# За 75 рублей он может сделать сохранение прямо здесь.  => pause
+space
+# Ты хочешь сохраниться?  => no saves
+n
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +4039.750/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +4039.750/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +4039.750/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Ты наткнулся на храм Божий.  => pause
+space
+# Ну ладно насылаю на тебя "благославление"  => pause
+space
+# Дарю тебе феньку!  => pause
+space
+# \  => walk
+w
+enter
+# Идет Маньячок 38 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 27.50 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 27.50)
+k
+enter
+# Битва\  => kick (odds 27.50)
+k
+enter
+# Битва\  => kick (odds 61.42)
+k
+enter
+# Битва\  => kick (odds 61.42)
+k
+enter
+# Битва\  => kick (odds 1576.48)
+k
+enter
+# \  => buy strength (gym): +4743.817/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +4743.817/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +4743.817/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +6284.677/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +6284.677/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +6284.677/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +4280.810/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +4280.810/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +4280.810/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +4280.810/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +4280.810/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +4280.810/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +4280.810/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +4280.810/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +4280.810/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Подтсан 78 уровня. Хочешь наехать?  => odds 7.57 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 7.73)
+k
+enter
+# Битва\  => kick (odds 16.62)
+k
+enter
+# Битва\  => kick (odds 59.31)
+k
+enter
+# Битва\  => kick (odds 104.49)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy stamina (gym): +5411.250/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +5411.250/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +5411.250/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Беспредельщик 51 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 21.94 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 21.94)
+k
+enter
+# Битва\  => kick (odds 61.13)
+k
+enter
+# \  => sell junk (35)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (35) (cont.)
+x
+enter
+# Барыги\  => sell junk (35) (cont.)
+w
+enter
+# \  => buy stamina (gym): +5411.250/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +5411.250/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +5411.250/rub (cont.)
+w
+enter
+# \  => buy agility (club): +4595.400/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +4595.400/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +4595.400/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +5560.500/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +5560.500/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +5560.500/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Беспредельщик 48 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 32.77 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 33.83)
+k
+enter
+# Битва\  => kick (odds 121.11)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +7582.080/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +7582.080/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +7582.080/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 47 уровня. Хочешь наехать?  => odds 29.81 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 29.81)
+k
+enter
+# Битва\  => kick (odds 79.25)
+k
+enter
+# \  => sell junk (42)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (42) (cont.)
+x
+enter
+# Барыги\  => sell junk (42) (cont.)
+w
+enter
+# \  => buy stamina (gym): +5992.800/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +5992.800/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +5992.800/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +6023.160/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +6023.160/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +6023.160/rub (cont.)
+w
+enter
+# \  => buy agility (club): +5303.333/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +5303.333/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +5303.333/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 42 уровня. Хочешь наехать?  => odds 61.76 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 67.53)
+k
+enter
+# \  => sell junk (21)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (21) (cont.)
+x
+enter
+# Барыги\  => sell junk (21) (cont.)
+w
+enter
+# \  => buy strength (gym): +8246.020/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +8246.020/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +8246.020/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy stamina (gym): +6448.100/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +6448.100/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +6448.100/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нефор 23 уровня. Хочешь наехать?  => odds 3118.52 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 3825.39)
+k
+enter
+# \  => buy agility (club): +5714.787/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +5714.787/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +5714.787/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Дохляк 59 уровня. Хочешь наехать?  => odds 97.46 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 110.17)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 32 уровня. Хочешь наехать?  => odds 366.34 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 406.16)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +6634.005/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +6634.005/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +6634.005/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +5842.980/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +5842.980/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +5842.980/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +8772.750/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +8772.750/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +8772.750/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Подтсан 58 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 37.80 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 40.10)
+k
+enter
+# Битва\  => kick (odds 85.39)
+k
+enter
+# \  => walk
+w
+enter
+# \  => buy stamina (gym): +7159.462/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +7159.462/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +7159.462/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 16 уровня. Хочешь наехать?  => odds 227927.21 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 253774.63)
+k
+enter
+# \  => sell junk (7)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (7) (cont.)
+x
+enter
+# Барыги\  => sell junk (7) (cont.)
+w
+enter
+# \  => buy strength (gym): +7205.257/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +7205.257/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +7205.257/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +9340.228/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +9340.228/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +9340.228/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy stamina (gym): +7450.563/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +7450.563/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +7450.563/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Маньячок 56 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 26.29 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 27.98)
+k
+enter
+# Битва\  => kick (odds 93.40)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Маньячок 51 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 57.16 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 60.75)
+k
+enter
+# Битва\  => kick (odds 3386.61)
+k
+enter
+# \  => buy stamina (gym): +7741.663/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +7741.663/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +7741.663/rub (cont.)
+w
+enter
+# \  => buy agility (club): +7181.937/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +7181.937/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +7181.937/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +7181.937/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +7181.937/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +7181.937/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy stamina (gym): +7959.738/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +7959.738/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +7959.738/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +7327.320/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +7327.320/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +7327.320/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +8119.650/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +8119.650/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +8119.650/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +7473.620/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +7473.620/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +7473.620/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +10662.750/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +10662.750/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +10662.750/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +7663.180/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +7663.180/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +7663.180/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +7663.180/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +7663.180/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +7663.180/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 84 уровня. Хочешь наехать?  => odds 13.94 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 14.37)
+k
+enter
+# Битва\  => kick (odds 19.59)
+k
+enter
+# Битва\  => kick (odds 35.27)
+k
+enter
+# \  => heal with beer
+m
+h
+enter
+# \  => sell junk (123)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (123) (cont.)
+x
+enter
+# Барыги\  => sell junk (123) (cont.)
+w
+enter
+# \  => buy strength (gym): +8883.490/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +8883.490/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +8883.490/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +11450.285/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +11450.285/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +11450.285/rub (cont.)
+w
+enter
+# \  => buy stamina (gym): +9203.425/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +9203.425/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +9203.425/rub (cont.)
+w
+enter
+# \  => buy stamina (gym): +9203.425/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +9203.425/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +9203.425/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +9275.805/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +9275.805/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +9275.805/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +11958.100/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +11958.100/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +11958.100/rub (cont.)
+w
+enter
+# \  => buy agility (club): +9005.360/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +9005.360/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +9005.360/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Подтсан 48 уровня. Хочешь наехать?  => odds 132.79 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 132.79)
+k
+enter
+# \  => sell junk (43)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (43) (cont.)
+x
+enter
+# Барыги\  => sell junk (43) (cont.)
+w
+enter
+# \  => buy stamina (gym): +9648.600/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +9648.600/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +9648.600/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +9655.230/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +9655.230/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +9655.230/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +12440.610/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +12440.610/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +12440.610/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 42 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 119.30 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 127.53)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy stamina (gym): +9974.250/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +9974.250/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +9974.250/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Маньячок 30 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 1475.77 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 1528.16)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 93 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 10.97 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 10.97)
+k
+enter
+# Битва\  => kick (odds 16.61)
+k
+enter
+# Битва\  => kick (odds 35.23)
+k
+enter
+# \  => buy press (gym): +900.628/rub
+t
+r
+n
+enter
+# Качалка\  => buy press (gym): +900.628/rub (cont.)
+5
+enter
+# Качалка\  => buy press (gym): +900.628/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy press (gym): +1742.336/rub
+t
+r
+n
+enter
+# Качалка\  => buy press (gym): +1742.336/rub (cont.)
+5
+enter
+# Качалка\  => buy press (gym): +1742.336/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет типа клёвая цыпа. Хочешь её зацепить?  => girlfriend heals for free later
+y
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Маньячок 44 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 176.47 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 176.47)
+k
+enter
+# \  => buy press (gym): +4960.572/rub
+t
+r
+n
+enter
+# Качалка\  => buy press (gym): +4960.572/rub (cont.)
+5
+enter
+# Качалка\  => buy press (gym): +4960.572/rub (cont.)
+w
+enter
+# \  => buy press (gym): +75825.893/rub
+t
+r
+n
+enter
+# Качалка\  => buy press (gym): +75825.893/rub (cont.)
+5
+enter
+# Качалка\  => buy press (gym): +75825.893/rub (cont.)
+w
+enter
+# \  => buy press (gym): +518649.107/rub
+t
+r
+n
+enter
+# Качалка\  => buy press (gym): +518649.107/rub (cont.)
+5
+enter
+# Качалка\  => buy press (gym): +518649.107/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Телефон:Алё Вася?  => pause
+space
+# Нет это  greedy.  => pause
+space
+# Телефон:А Васю можно?  => pause
+space
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 68 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 35.51 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 35.51)
+k
+enter
+# \  => fix bones
+r
+e
+p
+enter
+# Ветеренар\  => fix bones (cont.)
+r
+enter
+# \  => fix bones (cont.)
+w
+enter
+# Идет Гопник 66 уровня. Хочешь наехать?  => odds 37.63 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 37.63)
+k
+enter
+# Битва\  => kick (odds 167.40)
+k
+enter
+# \  => buy stamina (gym): +10615.625/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +10615.625/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +10615.625/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +10744.000/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +10744.000/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +10744.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Битва\  => kick (odds 93.52)
+k
+enter
+# \  => buy stamina (gym): +10961.250/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +10961.250/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +10961.250/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +11020.500/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +11020.500/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +11020.500/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +14032.375/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +14032.375/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +14032.375/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy stamina (gym): +11306.875/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +11306.875/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +11306.875/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy stamina (gym): +11306.875/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +11306.875/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +11306.875/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Подтсан 16 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 772019.21 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 772019.21)
+k
+enter
+# \  => buy strength (gym): +11445.125/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +11445.125/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +11445.125/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +14575.500/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +14575.500/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +14575.500/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Вор 34 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 700.43 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 700.43)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy stamina (gym): +11652.500/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +11652.500/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +11652.500/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 33 уровня. Хочешь наехать?  => odds 600.48 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 600.48)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +12429.333/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +12429.333/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +12429.333/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +12429.333/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +12429.333/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +12429.333/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +12429.333/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +12429.333/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +12429.333/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +12429.333/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +12429.333/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +12429.333/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +12429.333/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +12429.333/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +12429.333/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Подтсан 30 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 1391.16 (need 2.50)
+y
+enter
+# Битва\  => kick (odds 1391.16)
+k
+enter
+# \  => ask the den about places
+p
+r
+enter
+# Притон\  => ask the den about places (cont.)
+a
+enter
+# Притон\  => ask the den about places (cont.)
+w
+enter
+# \  => sell junk (170)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (170) (cont.)
+x
+enter
+# Барыги\  => sell junk (170) (cont.)
+w
+enter
+# \  => buy strength (gym): +12611.875/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +12611.875/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +12611.875/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +16054.375/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +16054.375/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +16054.375/rub (cont.)
+w
+enter
+# \  => buy stamina (gym): +12909.375/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +12909.375/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +12909.375/rub (cont.)
+w
+enter
+# \  => buy agility (club): +13081.500/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +13081.500/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +13081.500/rub (cont.)
+w
+enter
+# \  => buy agility (club): +13081.500/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +13081.500/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +13081.500/rub (cont.)
+w
+enter
+# \  => buy stamina (gym): +13213.125/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +13213.125/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +13213.125/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +13376.250/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +13376.250/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +13376.250/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +17030.250/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +17030.250/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +17030.250/rub (cont.)
+w
+enter
+# \  => buy agility (club): +13750.000/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +13750.000/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +13750.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +13750.000/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +13750.000/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +13750.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Вор 48 уровня. Хочешь наехать?  => odds 438.32 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 495.05)
+k
+enter
+# \  => buy stamina (gym): +13906.250/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +13906.250/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +13906.250/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 47 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 221.36 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 226.80)
+k
+enter
+# \  => sell junk (48)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (48) (cont.)
+x
+enter
+# Барыги\  => sell junk (48) (cont.)
+w
+enter
+# \  => buy strength (gym): +13995.250/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +13995.250/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +13995.250/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +17811.125/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +17811.125/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +17811.125/rub (cont.)
+w
+enter
+# \  => buy agility (club): +14434.833/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +14434.833/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +14434.833/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Бродя по окрестностям с самыми грязными намериниями...  => pause
+space
+# Ты встретил великого мага и экстрасенса - Рушеля Блаво.  => pause
+space
+# За 100 рублей он может сделать сохранение прямо здесь.  => pause
+space
+# Ты хочешь сохраниться?  => no saves
+n
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy stamina (gym): +14456.250/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +14456.250/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +14456.250/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +14649.000/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +14649.000/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +14649.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 71 уровня. Хочешь наехать?  => odds 61.57 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 61.91)
+k
+enter
+# \  => sell junk (15)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (15) (cont.)
+x
+enter
+# Барыги\  => sell junk (15) (cont.)
+w
+enter
+# \  => buy strength (gym): +18814.000/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +18814.000/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +18814.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy stamina (gym): +15180.000/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +15180.000/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +15180.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Маньячок 36 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 940.01 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 995.01)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +15356.000/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +15356.000/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +15356.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +15356.000/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +15356.000/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +15356.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy stamina (gym): +15510.000/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +15510.000/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +15510.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Вор 105 уровня. Хочешь наехать?  => odds 46.06 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 48.57)
+k
+enter
+# \  => buy agility (club): +15796.000/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +15796.000/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +15796.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +16128.000/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +16128.000/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +16128.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 22 уровня. Хочешь наехать?  => odds 28677.02 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 37334.24)
+k
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 68 уровня. Хочешь наехать?  => odds 95.67 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 100.77)
+k
+enter
+# \  => sell junk (63)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (63) (cont.)
+x
+enter
+# Барыги\  => sell junk (63) (cont.)
+w
+enter
+# \  => buy strength (gym): +20532.000/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +20532.000/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +20532.000/rub (cont.)
+w
+enter
+# \  => buy agility (club): +16305.167/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +16305.167/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +16305.167/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +16453.625/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +16453.625/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +16453.625/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +20927.750/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +20927.750/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +20927.750/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +16819.000/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +16819.000/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +16819.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нефор 42 уровня. Хочешь наехать?  => odds 1472.85 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 1518.52)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Маньячок 46 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 320.23 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 336.17)
+k
+enter
+# \  => sell junk (91)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (91) (cont.)
+x
+enter
+# Барыги\  => sell junk (91) (cont.)
+w
+enter
+# \  => buy stamina (gym): +17456.250/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +17456.250/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +17456.250/rub (cont.)
+w
+enter
+# \  => buy agility (club): +17575.000/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +17575.000/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +17575.000/rub (cont.)
+w
+enter
+# \  => buy stamina (gym): +17634.375/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +17634.375/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +17634.375/rub (cont.)
+w
+enter
+# \  => buy agility (club): +17812.500/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +17812.500/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +17812.500/rub (cont.)
+w
+enter
+# \  => buy agility (club): +17812.500/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +17812.500/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +17812.500/rub (cont.)
+w
+enter
+# \  => buy agility (club): +17812.500/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +17812.500/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +17812.500/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Подтсан 27 уровня. Хочешь наехать?  => odds 5108.74 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 6580.75)
+k
+enter
+# \  => buy stamina (gym): +18168.750/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +18168.750/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +18168.750/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +18207.000/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +18207.000/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +18207.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 34 уровня. Хочешь наехать?  => odds 902.07 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 955.77)
+k
+enter
+# \  => sell junk (21)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (21) (cont.)
+x
+enter
+# Барыги\  => sell junk (21) (cont.)
+w
+enter
+# \  => buy strength (gym): +23154.000/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +23154.000/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +23154.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 44 уровня. Хочешь наехать?  => odds 782.52 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 856.54)
+k
+enter
+# \  => sell junk (9)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (9) (cont.)
+x
+enter
+# Барыги\  => sell junk (9) (cont.)
+w
+enter
+# \  => buy stamina (gym): +18615.000/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +18615.000/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +18615.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +18834.000/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +18834.000/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +18834.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 48 уровня. Хочешь наехать?  => odds 991.02 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 1089.47)
+k
+enter
+# \  => sell junk (5)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (5) (cont.)
+x
+enter
+# Барыги\  => sell junk (5) (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +18834.000/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +18834.000/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +18834.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 21 уровня, ищущий кого отпинать. Хочешь наехать?  => odds 1219626.38 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 1451201.01)
+k
+enter
+# \  => buy stamina (gym): +18980.000/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +18980.000/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +18980.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +19077.333/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +19077.333/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +19077.333/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 39 уровня. Хочешь наехать?  => odds 563.05 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 584.82)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 25 уровня. Хочешь наехать?  => odds 701086.97 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 774657.83)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +19306.875/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +19306.875/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +19306.875/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +24556.875/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +24556.875/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +24556.875/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Подтсан 28 уровня. Хочешь наехать?  => odds 5654.10 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 6964.20)
+k
+enter
+# \  => sell junk (20)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (20) (cont.)
+x
+enter
+# Барыги\  => sell junk (20) (cont.)
+w
+enter
+# \  => buy agility (club): +19634.333/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +19634.333/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +19634.333/rub (cont.)
+w
+enter
+# \  => buy stamina (gym): +19808.750/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +19808.750/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +19808.750/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 80 уровня. Хочешь наехать?  => odds 76.67 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 78.03)
+k
+enter
+# \  => sell junk (4)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (4) (cont.)
+x
+enter
+# Барыги\  => sell junk (4) (cont.)
+w
+enter
+# \  => buy agility (club): +19883.500/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +19883.500/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +19883.500/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 85 уровня. Хочешь наехать?  => odds 140.90 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 149.07)
+k
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +20049.125/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +20049.125/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +20049.125/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +20133.333/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +20133.333/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +20133.333/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 44 уровня. Хочешь наехать?  => odds 671.74 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 741.71)
+k
+enter
+# \  => buy agility (club): +20706.000/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +20706.000/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +20706.000/rub (cont.)
+w
+enter
+# \  => sell junk (56)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (56) (cont.)
+x
+enter
+# Барыги\  => sell junk (56) (cont.)
+w
+enter
+# \  => buy stamina (gym): +20846.250/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +20846.250/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +20846.250/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +21009.750/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +21009.750/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +21009.750/rub (cont.)
+w
+enter
+# \  => buy strength (gym): +26718.625/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +26718.625/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +26718.625/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +21544.833/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +21544.833/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +21544.833/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +21544.833/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +21544.833/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +21544.833/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 30 уровня. Хочешь наехать?  => odds 1176.30 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 1328.41)
+k
+enter
+# \  => sell junk (35)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (35) (cont.)
+x
+enter
+# Барыги\  => sell junk (35) (cont.)
+w
+enter
+# \  => buy stamina (gym): +21714.375/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +21714.375/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +21714.375/rub (cont.)
+w
+enter
+# \  => buy agility (club): +21805.667/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +21805.667/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +21805.667/rub (cont.)
+w
+enter
+# \  => buy agility (club): +21805.667/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +21805.667/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +21805.667/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +21805.667/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +21805.667/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +21805.667/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +22372.500/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +22372.500/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +22372.500/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +28443.000/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +28443.000/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +28443.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +22400.000/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +22400.000/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +22400.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# Бродя по окрестностям с самыми грязными намериниями...  => pause
+space
+# Ты встретил великого мага и экстрасенса - Рушеля Блаво.  => pause
+space
+# За 100 рублей он может сделать сохранение прямо здесь.  => pause
+space
+# Ты хочешь сохраниться?  => no saves
+n
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нефор 24 уровня. Хочешь наехать?  => odds 62921.58 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 65438.45)
+k
+enter
+# \  => buy stamina (gym): +23000.000/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +23000.000/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +23000.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +22666.667/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +22666.667/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +22666.667/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +22666.667/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +22666.667/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +22666.667/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy stamina (gym): +23400.000/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +23400.000/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +23400.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Нарк 38 уровня. Хочешь наехать?  => odds 2084.39 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 2248.16)
+k
+enter
+# \  => buy strength (gym): +23590.125/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +23590.125/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +23590.125/rub (cont.)
+w
+enter
+# \  => sell junk (11)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (11) (cont.)
+x
+enter
+# Барыги\  => sell junk (11) (cont.)
+w
+enter
+# \  => buy agility (club): +23202.167/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +23202.167/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +23202.167/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Отморозок 32 уровня. Хочешь наехать?  => odds 1577.74 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 1664.79)
+k
+enter
+# \  => sell junk (41)
+b
+m
+a
+r
+enter
+# Барыги\  => sell junk (41) (cont.)
+x
+enter
+# Барыги\  => sell junk (41) (cont.)
+w
+enter
+# \  => buy strength (gym): +30252.250/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +30252.250/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +30252.250/rub (cont.)
+w
+enter
+# \  => buy stamina (gym): +24116.250/rub
+t
+r
+n
+enter
+# Качалка\  => buy stamina (gym): +24116.250/rub (cont.)
+2
+enter
+# Качалка\  => buy stamina (gym): +24116.250/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy strength (gym): +24204.750/rub
+t
+r
+n
+enter
+# Качалка\  => buy strength (gym): +24204.750/rub (cont.)
+1
+enter
+# Качалка\  => buy strength (gym): +24204.750/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => buy agility (club): +24090.000/rub
+k
+l
+enter
+# Клуб\  => buy agility (club): +24090.000/rub (cont.)
+1
+enter
+# Клуб\  => buy agility (club): +24090.000/rub (cont.)
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# \  => walk
+w
+enter
+# Идет Гопник 48 уровня. Хочешь наехать?  => odds 635.61 (need 2.50)
+y
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 674.45)
+k
+enter
+# \  => walk
+w
+enter
+# Пора наконец отомстить ректору...  => pause
+space
+# Ну вот мы и встретились мудак!  => pause
+space
+# Чё те нада козёл?!  => pause
+space
+# Урыть тебя ублюдок!  => pause
+space
+# Ну ты меня достал ща урою!  => pause
+space
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 43.73)
+k
+enter
+# Битва\  => kick (odds 183.29)
+k
+enter
+# Ты замочил самого ректора!!! о чёрт! да это ж не ректор был.  => pause
+space
+# Это был проректор СУНЦа!  => pause
+space
+# Тут заходит настоящий ректор.  => pause
+space
+# Мудак! ты тупой дебил, думал что я идиот?  => pause
+space
+# Я думаю ты сконил!  => pause
+space
+# Ну тада сдохни!  => pause
+space
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 14.75)
+k
+enter
+# Битва\  => kick (odds 22.24)
+k
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 42.62)
+k
+enter
+# Битва\  => kick (odds 1389.25)
+k
+enter
+# Ты замочил самого ректора!!! ТЫ САМЫЙ КРУТОЙ!!!  => pause
+space
+# Вновь сила торжествует над интелектом.  => pause
+space
+# После этого сразу началась анархия и полный беспредел.  => pause
+space
+# И не стыдно тебе гоп чёртов?  => pause
+space
+# Хлам 24  => pause
+space
+#                                 ТЫ СУПЕР ГОП  => pause
+space
+#                                 ТЫ СУПЕР ГОП  => pause
+space
+#                           Нажми какую-нибудь кнопку  => victory
+space

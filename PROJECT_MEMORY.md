@@ -17,7 +17,14 @@
   (`-v` screen after every key, `-r` Random log; keys: chars or `enter`, `space`, `esc`, ...)
 - Regenerate listings: `bun oracle/disasm.ts > analysis/g.asm`,
   `bun oracle/lift.ts > analysis/g.lift.txt`, `bun oracle/gen-tables.ts`
-- Check: `vp check` (format + lint + types), `vp test`
+- Check: `bun run typecheck` (also covers specs and type-level tests), `vp lint`, `vp test`
+- Tests: unit/logic specs next to the code (`src/**/*.spec.ts`, `@effect/vitest`, `check` from
+  `test/check.ts`, `play()` from `test/game.ts` to run one game procedure with prepared state,
+  seed and keys); `test/regression.spec.ts` replays `test/fixtures/*.keys` and random scenarios
+  against the emulated original. No tests for screen rendering: the display layer will change.
+- Bots: `bun run greedy -- --class 3 --tries 10` plays the original and writes `logs/*.keys`;
+  `bun run replay -- <log>` replays a log on the original and the port. Copy a log into
+  `test/fixtures/` to make it a regression test.
 
 ## Important coding constraints
 - Formatting: single quotes, semicolons, trailing commas (es5), print width 100, 2 spaces.

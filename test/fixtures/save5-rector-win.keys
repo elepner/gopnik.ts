@@ -1,0 +1,85 @@
+# seed 1 save 5: won: district 5 level 42 hp 326/326 money 29
+#      2003 year, June,Sept                                         by V.P.  => title
+space
+5
+# Ну вот мы и встретились мудак!  => pause
+space
+# Чё те нада козёл?!  => pause
+space
+# Урыть тебя ублюдок!  => pause
+space
+# Ну ты меня достал ща урою!  => pause
+space
+# Битва\  => free damage: shoot
+f
+enter
+# Битва\  => free damage: shoot
+f
+enter
+# Битва\  => free damage: shoot
+f
+enter
+# Битва\  => free damage: shoot
+f
+enter
+# Битва\  => free damage: shoot
+f
+enter
+# Битва\  => free damage: shoot
+f
+enter
+# Битва\  => free damage: shoot
+f
+enter
+# Битва\  => free damage: shoot
+f
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 55.06)
+k
+enter
+# Ты замочил самого ректора!!! о чёрт! да это ж не ректор был.  => pause
+space
+# Это был проректор СУНЦа!  => pause
+space
+# Тут заходит настоящий ректор.  => pause
+space
+# Мудак! ты тупой дебил, думал что я идиот?  => pause
+space
+# Я думаю ты сконил!  => pause
+space
+# Ну тада сдохни!  => pause
+space
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 13.99)
+k
+enter
+# Битва\  => kick (odds 21.13)
+k
+enter
+# Битва\  => free damage: call backup
+v
+enter
+# Битва\  => kick (odds 61.25)
+k
+enter
+# Ты замочил самого ректора!!! ТЫ САМЫЙ КРУТОЙ!!!  => pause
+space
+# Вновь сила торжествует над интелектом.  => pause
+space
+# После этого сразу началась анархия и полный беспредел.  => pause
+space
+# И не стыдно тебе гоп чёртов?  => pause
+space
+# Бабки 29  => pause
+space
+#                                 ТЫ СУПЕР ГОП  => pause
+space
+#                                 ТЫ СУПЕР ГОП  => pause
+space
+#                           Нажми какую-нибудь кнопку  => victory
+space

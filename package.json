@@ -13,7 +13,8 @@
     "typecheck": "tsc --noEmit",
     "bot": "bun test/bot.ts",
     "replay": "bun test/replay.ts",
-    "greedy": "bun test/greedy.ts"
+    "greedy": "bun test/greedy.ts",
+    "test": "vp test"
   },
   "devDependencies": {
     "@effect/vitest": "^4.1.4",
