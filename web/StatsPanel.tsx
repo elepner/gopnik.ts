@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 /** The hero's stats beside the screen, and the enemy's while a battle is on. */
 import { hitChance } from '../src/game/hero-view';
@@ -161,6 +161,26 @@ function signed(n: number): string {
 }
 
 function Equipment({ body }: { readonly body: Body }) {
+  const [open, setOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const container = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function closeOutside(event: PointerEvent) {
+      if (!container.current?.contains(event.target as Node)) setOpen(false);
+    }
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setOpen(false);
+        setHovered(false);
+      }
+    }
+    document.addEventListener('pointerdown', closeOutside);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOutside);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, []);
   const things: ReactNode[] = ITEMS.filter(([item]) => has(body, item)).map(([item, name]) => {
     const what = givesText(gives(body, item));
     return (
@@ -177,9 +197,26 @@ function Equipment({ body }: { readonly body: Body }) {
     other.push(`Пистолет${pistol.silencer ? ' с глушителем' : ''}, патронов: ${pistol.bullets}`);
   things.push(...other.map((t) => <div key={t}>{t}</div>));
   return (
-    <div className="things">
-      <h3>Шмотки</h3>
-      {things.length === 0 ? <div className="sub">ничего</div> : things}
+    <div
+      className="things"
+      ref={container}
+      onPointerEnter={(event) => event.pointerType === 'mouse' && setHovered(true)}
+      onPointerLeave={(event) => event.pointerType === 'mouse' && setHovered(false)}
+    >
+      <button
+        type="button"
+        aria-expanded={open || hovered}
+        aria-controls="equipment-list"
+        onClick={() => setOpen(!open)}
+      >
+        Шмотки ({things.length})
+      </button>
+      {(open || hovered) && (
+        <div className="equipment-popup" id="equipment-list" role="dialog" aria-label="Шмотки">
+          <h3>Шмотки</h3>
+          {things.length === 0 ? <div className="sub">ничего</div> : things}
+        </div>
+      )}
     </div>
   );
 }

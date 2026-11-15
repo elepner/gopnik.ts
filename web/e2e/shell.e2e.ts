@@ -5,6 +5,7 @@
 import { expect, type Page, test } from '@playwright/test';
 
 import { set } from '../../src/state/attributes';
+import { put } from '../../src/state/items';
 import { savedGame } from '../../src/state/saved';
 import { createState, startGame } from '../../src/state/state';
 
@@ -26,6 +27,7 @@ function petya(): string {
   set(st.player, 'damageMin', 4);
   set(st.player, 'damageMax', 9);
   st.player.resources.money = 77;
+  put(st.player.body, 'knife');
   return JSON.stringify(savedGame(st));
 }
 
@@ -133,6 +135,19 @@ test('the saves found at the start are offered in a dialog and load', async ({ p
   await expect(panel).toContainText('Петя');
   await expect(panel).toContainText('Гопник 12 ур.');
   await expect(panel).toContainText('Район: ОбьГЭС');
+  const equipment = panel.getByRole('button', { name: 'Шмотки (1)' });
+  const items = page.getByRole('dialog', { name: 'Шмотки' });
+  await expect(items).toHaveCount(0);
+  if (!phone(page)) {
+    await equipment.hover();
+    await expect(items).toContainText('Нож');
+    await page.mouse.move(0, 0);
+    await expect(items).toHaveCount(0);
+  }
+  await equipment.click();
+  await expect(items).toContainText('Нож');
+  await page.keyboard.press('Escape');
+  await expect(items).toHaveCount(0);
   if (phone(page)) await expect(page.locator('.actions')).toContainText('гулять');
 });
 

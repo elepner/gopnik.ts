@@ -106,6 +106,33 @@
         line-height: 1.4;
         color: #ffffff;
       }
+      .things button {
+        padding: 2px 6px;
+        font: inherit;
+        color: var(--yellow);
+        background: #111;
+        border: 1px solid var(--dim);
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      .things button:focus-visible {
+        outline: 2px solid var(--yellow);
+      }
+      .equipment-popup {
+        position: fixed;
+        z-index: 10;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-sizing: border-box;
+        width: min(300px, calc(100vw - 32px));
+        max-height: min(70vh, 500px);
+        overflow: auto;
+        padding: 12px;
+        background: #000;
+        border: 1px solid var(--gray);
+        box-shadow: 0 0 24px #000;
+      }
       .things h3 {
         margin: 0 0 2px;
         font-size: 14px;
