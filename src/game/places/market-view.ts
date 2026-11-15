@@ -22,6 +22,9 @@ export type MarketGoods =
   | 'coolBoots'
   | 'coolLeather';
 
+/** the market's goods that are put on */
+export type MarketClothes = Exclude<MarketGoods, 'hotdog' | 'beer'>;
+
 /** why the market won't sell */
 export type MarketRefusal =
   /** a broken jaw can't eat */
@@ -39,7 +42,9 @@ export type MarketEvent =
   /** the cops still watch the market */
   | { readonly type: 'marketWatched' }
   | { readonly type: 'enteredMarket' }
-  | { readonly type: 'marketBought'; readonly goods: Exclude<MarketGoods, 'beer'> }
+  /** `health`: the roll, what it gives up to the maximum */
+  | { readonly type: 'marketAteHotdog'; readonly health: number }
+  | { readonly type: 'marketBought'; readonly goods: MarketClothes }
   /** a beer; `line`: the roll that picked what is said */
   | { readonly type: 'marketBeerBought'; readonly line: number }
   | { readonly type: 'marketRefused'; readonly goods: MarketGoods; readonly because: MarketRefusal }
@@ -56,6 +61,7 @@ export const marketView: View<MarketEvent> = {
     marketUnknown: true,
     marketWatched: true,
     enteredMarket: true,
+    marketAteHotdog: true,
     marketBought: true,
     marketBeerBought: true,
     marketRefused: true,
@@ -76,6 +82,8 @@ function showMarket(event: MarketEvent) {
         return yield* println(PLACES.naBazarPokaNelzya());
       case 'enteredMarket':
         return yield* entrance;
+      case 'marketAteHotdog':
+        return yield* println(PLACES.tySozhralHotDog());
       case 'marketBought':
         return yield* println(BOUGHT[event.goods]);
       case 'marketBeerBought':
@@ -116,8 +124,7 @@ const entrance = Effect.gen(function* () {
 
 const BEER_LINES = [PLACES.glinskoeCheZaNafig(), PLACES.pivkoHolodnenkoe(), PLACES.nuChePoPivu()];
 
-const BOUGHT: Record<Exclude<MarketGoods, 'beer'>, Text> = {
-  hotdog: PLACES.tySozhralHotDog(),
+const BOUGHT: Record<MarketClothes, Text> = {
   glasses: PLACES.modnyeTakieOchkiOt(),
   abibas: PLACES.teperTyBolshePohozh(),
   boots: PLACES.zatseniKrasovki(),

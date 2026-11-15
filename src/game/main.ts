@@ -23,7 +23,7 @@ import { vet } from './places/vet';
 import { Disk, halt, started, transaction } from './prelude';
 import { help } from './screens';
 import { resetPlaces } from './start';
-import { MAIN } from './texts';
+import { heroName } from './stored-texts';
 import { walk } from './walk';
 
 const report = reporter(apply);
@@ -127,8 +127,7 @@ function apply(st: Game, event: MainEvent) {
       if (w.district === 5) w.rector = true;
       return;
     case 'mainRenamed':
-      // the default name and the prefix are data kept in texts.ts (start.ts does the same)
-      st.player.name = MAIN.namePrefix().format + (event.name || MAIN.razDolBay().format);
+      st.player.name = heroName(event.name);
       return;
   }
 }

@@ -8,12 +8,10 @@
 import { Context, Effect } from 'effect';
 
 import type { EndOfInput } from '../crt/crt';
-import type { Game } from '../state/state';
 import type { AftermathEvent } from './aftermath-view';
 import type { BeerEvent } from './beer';
 import type { Context as CommandContext } from './commands';
 import type { EncountersEvent } from './encounters-view';
-import type { EnemyEvent } from './enemy-view';
 import type { FightEvent } from './fight-view';
 import type { HeroEvent } from './hero-view';
 import type { MainEvent } from './main-view';
@@ -41,7 +39,6 @@ export type GameEvent =
   | WalkEvent
   | EncountersEvent
   | HeroEvent
-  | EnemyEvent
   | FightEvent
   | BeerEvent
   | AftermathEvent
@@ -64,11 +61,15 @@ export function emit(event: GameEvent) {
   return Effect.flatMap(Events, (events) => events.emit(event));
 }
 
-/** a part's rules report their events: `apply` puts each one into the state, then it is emitted */
-export function reporter<E extends GameEvent>(apply: (st: Game, event: E) => void) {
-  return (event: E) =>
-    Effect.gen(function* () {
-      apply(yield* started, event);
-      yield* emit(event);
-    });
+/** a part's rules report their events: `apply` puts each one into the game, then it is emitted */
+export const reporter = reporterOn(started);
+
+/** reports into the state `from` reads: the start creates the hero before the game has started */
+export function reporterOn<S, Err, R>(from: Effect.Effect<S, Err, R>) {
+  return <E extends GameEvent>(apply: (st: S, event: E) => void) =>
+    (event: E) =>
+      Effect.gen(function* () {
+        apply(yield* from, event);
+        yield* emit(event);
+      });
 }

@@ -5,7 +5,7 @@ import { readKey, writeLn } from '../crt/crt';
 import type { ChainRing } from '../state/items';
 import { rankName, typeName } from '../state/names';
 import { pausedLines } from './fight-view';
-import { ringLines } from './hero';
+import { ringLines } from './hero-view';
 import { println, started } from './prelude';
 import { ENCOUNTERS } from './texts';
 import type { View } from './view';

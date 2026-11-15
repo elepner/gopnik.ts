@@ -1,9 +1,9 @@
 /** 0000:29C4 — beer: `h` drinks one, `mh` drinks until healthy (or the beer runs out). */
 import { Effect } from 'effect';
 
-import { attr } from '../state/attributes';
-import { i16 } from '../tp/num';
-import { emit } from './events';
+import { attr, dec, inc } from '../state/attributes';
+import type { Game } from '../state/state';
+import { emit, reporter } from './events';
 import { started } from './prelude';
 
 export type BeerMode = 'one' | 'untilHealthy';
@@ -11,40 +11,55 @@ export type BeerMode = 'one' | 'untilHealthy';
 export type BeerEvent =
   | { readonly type: 'cantDrink' }
   | { readonly type: 'notThirsty' }
-  /** one beer, shown for `h` only; `full`: it healed what was missing, less than 5 */
+  /** one beer (`h`); `full`: it healed what was missing, less than 5 */
   | { readonly type: 'drank'; readonly healed: number; readonly full: boolean }
   | { readonly type: 'noBeer' }
   /** `mh`: all the beers together */
-  | { readonly type: 'drankUntilHealthy'; readonly healed: number }
+  | { readonly type: 'drankUntilHealthy'; readonly beers: number; readonly healed: number }
   | { readonly type: 'beerRanOut' };
+
+const report = reporter(apply);
 
 export function drink(mode: BeerMode) {
   return Effect.gen(function* () {
     const p = (yield* started).player;
-    const start = p.health.current;
-    const one = mode === 'one';
-    for (;;) {
-      if (p.injuries.jaw) {
-        yield* emit({ type: 'cantDrink' });
-        break;
-      }
-      if (p.health.current >= attr(p, 'healthMax')) {
-        yield* emit({ type: 'notThirsty' });
-        return;
-      }
-      if (p.resources.beer > 0) {
-        p.resources.beer = i16(p.resources.beer - 1);
-        const missing = attr(p, 'healthMax') - p.health.current;
-        const full = missing < 5;
-        p.health.current = full ? attr(p, 'healthMax') : i16(p.health.current + 5);
-        if (one) yield* emit({ type: 'drank', healed: full ? missing : 5, full });
-      } else if (one) yield* emit({ type: 'noBeer' });
-      if (one || p.health.current >= attr(p, 'healthMax') || p.resources.beer <= 0) break;
+    if (p.injuries.jaw) {
+      yield* emit({ type: 'cantDrink' });
+      if (mode === 'untilHealthy' && p.resources.beer <= 0) yield* emit({ type: 'noBeer' });
+      return;
     }
-    if (one) return;
-    const healed = p.health.current - start;
-    if (healed !== 0) yield* emit({ type: 'drankUntilHealthy', healed });
-    if (healed !== 0 && p.resources.beer <= 0) yield* emit({ type: 'beerRanOut' });
-    if (healed === 0 && p.resources.beer <= 0) yield* emit({ type: 'noBeer' });
+    const max = attr(p, 'healthMax');
+    if (p.health.current >= max) return yield* emit({ type: 'notThirsty' });
+    if (mode === 'one') {
+      if (p.resources.beer <= 0) return yield* emit({ type: 'noBeer' });
+      const healed = gulp(p.health.current, max);
+      return yield* report({ type: 'drank', healed, full: healed < 5 });
+    }
+    let beers = 0;
+    let healed = 0;
+    while (beers < p.resources.beer && p.health.current + healed < max) {
+      healed += gulp(p.health.current + healed, max);
+      beers++;
+    }
+    if (healed !== 0) yield* report({ type: 'drankUntilHealthy', beers, healed });
+    if (p.resources.beer <= 0) yield* emit({ type: healed !== 0 ? 'beerRanOut' : 'noBeer' });
   });
+}
+
+/** a beer gives 5 health, never more than is missing */
+function gulp(health: number, max: number): number {
+  return Math.min(5, max - health);
+}
+
+/** what drinking does to the hero */
+function apply(st: Game, event: BeerEvent) {
+  const p = st.player;
+  switch (event.type) {
+    case 'drank':
+      dec(p, 'beer', 1);
+      return inc(p, 'health', event.healed);
+    case 'drankUntilHealthy':
+      dec(p, 'beer', event.beers);
+      return inc(p, 'health', event.healed);
+  }
 }

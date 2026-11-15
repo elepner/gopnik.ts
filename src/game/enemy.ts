@@ -7,7 +7,6 @@ import { div, i16, round, u8 } from '../tp/num';
 import { rnd, started } from './prelude';
 
 // what the player sees of the enemy lives in the view; re-exported for the callers
-export { showEnemy } from './enemy-view';
 
 /** who spawned the enemy: walking, being caught (market/club/den help), the den job (cop) */
 export type SpawnKind = 0 | 1 | 2;

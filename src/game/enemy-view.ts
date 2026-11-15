@@ -9,12 +9,6 @@ import { accuracy } from './hero-view';
 import { println, started } from './prelude';
 import { text, type Text } from './text';
 import { ENEMY } from './texts';
-import type { View } from './view';
-
-/** nothing about an enemy happens on its own: he shows up and fights (the fight's events) */
-export type EnemyEvent = never;
-
-export const enemyView: View<EnemyEvent> = { events: {}, show: () => Effect.void };
 
 /** 0000:1348 — `sv`: inspect the enemy */
 export const showEnemy = Effect.gen(function* () {

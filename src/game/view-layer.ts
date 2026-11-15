@@ -5,7 +5,6 @@ import { aftermathView } from './aftermath-view';
 import { beerView } from './beer-view';
 import type { Context } from './commands';
 import { encountersView } from './encounters-view';
-import { enemyView } from './enemy-view';
 import { Events, type GameEvent } from './events';
 import { fightView } from './fight-view';
 import { heroView } from './hero-view';
@@ -43,7 +42,6 @@ const VIEWS: readonly View<GameEvent>[] = [
   walkView,
   encountersView,
   heroView,
-  enemyView,
   fightView,
   beerView,
   aftermathView,

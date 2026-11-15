@@ -12,7 +12,6 @@ import { rnd, started } from './prelude';
 import type { Color } from './text';
 
 // what the player sees of the hero lives in the view; re-exported for the callers
-export { accuracy, ringLines, showStats } from './hero-view';
 
 const report = reporter(apply);
 

@@ -3,7 +3,7 @@ import { Effect } from 'effect';
 
 import { readKey } from '../crt/crt';
 import { str } from '../tp/num';
-import { showStats } from './hero';
+import { showStats } from './hero-view';
 import { print, println, started } from './prelude';
 import { plain } from './text';
 import { MAIN } from './texts';

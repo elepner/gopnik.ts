@@ -8,13 +8,13 @@ import { decodeSave, decodePlaces } from '../state/legacy';
 import { type Game, type GameState, playing, startGame } from '../state/state';
 import { District, SaveName } from '../tp/brands';
 import { div, i16, val } from '../tp/num';
-import { emit, reporter } from './events';
+import { emit, reporterOn } from './events';
 import { Disk, started, state } from './prelude';
 import { titleScreen } from './screens';
 import type { StartEvent } from './start-view';
-import { START } from './texts';
+import { heroName, VERSION } from './stored-texts';
 
-const report = reporter(apply);
+const report = reporterOn(state)(apply);
 
 /** 0000:6A0D */
 export const newGame = Effect.gen(function* () {
@@ -56,14 +56,14 @@ export const resetPlaces = report({ type: 'startPlacesReset' });
 
 /** 0000:6DBE */
 const createCharacter = Effect.gen(function* () {
-  yield* create({ type: 'startStory' });
+  yield* report({ type: 'startStory' });
   let choice = yield* readType;
   if (choice === 4) {
     yield* emit({ type: 'startTypesExplained' });
     choice = yield* readType;
   }
   if (choice < 0 || choice > 3) choice = 0;
-  yield* create({ type: 'startTypeChosen', hero: CHARACTER_TYPES[choice] });
+  yield* report({ type: 'startTypeChosen', hero: CHARACTER_TYPES[choice] });
   yield* emit({ type: 'startNameAsked' });
   yield* report({ type: 'startNamed', name: yield* readLine });
 });
@@ -76,16 +76,6 @@ const readType = Effect.gen(function* () {
 
 /** 0000:7262 — district intro, starting bonuses of the character type */
 const arrive = report({ type: 'startArrived' });
-
-/** the character is created before the game has started, and `report` needs a started game */
-function create(event: StartEvent) {
-  return Effect.gen(function* () {
-    const st = yield* state;
-    if (st.phase !== 'not-started') throw new Error('the character already exists');
-    apply(st, event);
-    yield* emit(event);
-  });
-}
 
 /** what happens at the start goes into the state */
 function apply(st: GameState, event: StartEvent) {
@@ -103,14 +93,13 @@ function apply(st: GameState, event: StartEvent) {
       st.world.district = District(1);
       st.world.places.hospital = true;
       st.world.places.market = true;
-      st.version = START.gopnikVersion102().format;
+      st.version = VERSION;
       st.player.progression.expNext = 10;
       return;
     case 'startTypeChosen':
       return begin(st, event.hero);
     case 'startNamed':
-      st.player.name =
-        START.namePrefix().format + (event.name === '' ? START.razDolBay().format : event.name);
+      st.player.name = heroName(event.name);
       return;
     case 'startArrived':
       return settle(playing(st));

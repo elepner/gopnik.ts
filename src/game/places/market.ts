@@ -2,16 +2,22 @@
 import { Effect } from 'effect';
 
 import { PRICE } from '../../data/tables';
-import { attr } from '../../state/attributes';
+import { attr, dec, inc, set } from '../../state/attributes';
+import { put } from '../../state/items';
+import type { Game } from '../../state/state';
 import { i16 } from '../../tp/num';
 import { settle } from '../aftermath';
 import { CMD, promptCommand } from '../commands';
 import { encounter, spawnEnemy } from '../enemy';
-import { emit } from '../events';
+import { emit, reporter } from '../events';
 import { fight, STREET_FIGHT } from '../fight';
 import { gainExp } from '../hero';
 import { luckAtLeast, rnd, started } from '../prelude';
-import type { MarketGoods, MarketRefusal } from './market-view';
+import type { MarketClothes, MarketEvent, MarketGoods, MarketRefusal } from './market-view';
+
+const report = reporter(apply);
+
+const buy = (goods: MarketClothes) => report({ type: 'marketBought', goods });
 
 const refuse = (goods: MarketGoods, because: MarketRefusal) =>
   emit({ type: 'marketRefused', goods, because });
@@ -24,93 +30,57 @@ export const market = Effect.gen(function* () {
   yield* emit({ type: 'enteredMarket' });
   for (;;) {
     const command = yield* promptCommand('market');
+    const money = st.player.resources.money;
+    const { eyes, torso, feet } = st.player.body;
     if (command === CMD.market.hotdog) {
       if (st.player.injuries.jaw) yield* refuse('hotdog', 'jaw');
       else if (st.player.health.current < attr(st.player, 'healthMax')) {
-        if (PRICE.hotdog > st.player.resources.money) yield* refuse('hotdog', 'money');
-        else {
-          st.player.resources.money = i16(st.player.resources.money - PRICE.hotdog);
-          st.player.health.current = i16(st.player.health.current + ((yield* rnd(2)) + 3));
-          if (st.player.health.current > attr(st.player, 'healthMax'))
-            st.player.health.current = attr(st.player, 'healthMax');
-          yield* emit({ type: 'marketBought', goods: 'hotdog' });
-        }
+        if (PRICE.hotdog > money) yield* refuse('hotdog', 'money');
+        else yield* report({ type: 'marketAteHotdog', health: (yield* rnd(2)) + 3 });
       } else yield* refuse('hotdog', 'notHungry');
     }
     if (command === CMD.market.beer) {
-      if (PRICE.beer > st.player.resources.money) yield* refuse('beer', 'money');
-      else {
-        st.player.resources.money = i16(st.player.resources.money - PRICE.beer);
-        yield* emit({ type: 'marketBeerBought', line: yield* rnd(3) });
-        st.player.resources.beer = i16(st.player.resources.beer + 1);
-      }
+      if (PRICE.beer > money) yield* refuse('beer', 'money');
+      else yield* report({ type: 'marketBeerBought', line: yield* rnd(3) });
     }
     if (command === CMD.market.glasses) {
-      if (st.player.body.eyes.glasses) yield* refuse('glasses', 'owned');
-      else if (PRICE.glasses > st.player.resources.money) yield* refuse('glasses', 'money');
-      else {
-        st.player.body.eyes.glasses = true;
-        st.player.resources.money = i16(st.player.resources.money - PRICE.glasses);
-        yield* emit({ type: 'marketBought', goods: 'glasses' });
-      }
+      if (eyes.glasses) yield* refuse('glasses', 'owned');
+      else if (PRICE.glasses > money) yield* refuse('glasses', 'money');
+      else yield* buy('glasses');
     }
     if (command === CMD.market.abibas) {
-      if (st.player.body.torso.adidas) yield* refuse('abibas', 'ownedBetter');
-      else if (st.player.body.torso.abibas) yield* refuse('abibas', 'owned');
-      else if (PRICE.abibas > st.player.resources.money) yield* refuse('abibas', 'money');
-      else {
-        st.player.body.torso.abibas = true;
-        st.player.resources.money = i16(st.player.resources.money - PRICE.abibas);
-        yield* emit({ type: 'marketBought', goods: 'abibas' });
-      }
+      if (torso.adidas) yield* refuse('abibas', 'ownedBetter');
+      else if (torso.abibas) yield* refuse('abibas', 'owned');
+      else if (PRICE.abibas > money) yield* refuse('abibas', 'money');
+      else yield* buy('abibas');
     }
     if (command === CMD.market.boots) {
-      if (st.player.body.feet.coolBoots) yield* refuse('boots', 'ownedBetter');
-      else if (st.player.body.feet.boots) yield* refuse('boots', 'owned');
-      else if (PRICE.boots > st.player.resources.money) yield* refuse('boots', 'money');
-      else {
-        st.player.body.feet.boots = true;
-        st.player.resources.money = i16(st.player.resources.money - PRICE.boots);
-        yield* emit({ type: 'marketBought', goods: 'boots' });
-      }
+      if (feet.coolBoots) yield* refuse('boots', 'ownedBetter');
+      else if (feet.boots) yield* refuse('boots', 'owned');
+      else if (PRICE.boots > money) yield* refuse('boots', 'money');
+      else yield* buy('boots');
     }
     if (st.world.district > 1 && command === CMD.market.leather) {
-      if (st.player.body.torso.coolLeather) yield* refuse('leather', 'ownedBetter');
-      else if (st.player.body.torso.leather) yield* refuse('leather', 'owned');
-      else if (PRICE.leather > st.player.resources.money) yield* refuse('leather', 'money');
-      else {
-        st.player.body.torso.leather = true;
-        st.player.resources.money = i16(st.player.resources.money - PRICE.leather);
-        yield* emit({ type: 'marketBought', goods: 'leather' });
-      }
+      if (torso.coolLeather) yield* refuse('leather', 'ownedBetter');
+      else if (torso.leather) yield* refuse('leather', 'owned');
+      else if (PRICE.leather > money) yield* refuse('leather', 'money');
+      else yield* buy('leather');
     }
     // sic: no district check for the adidas suit
     if (command === CMD.market.adidas) {
-      if (st.player.body.torso.adidas) yield* refuse('adidas', 'owned');
-      else if (PRICE.adidas > st.player.resources.money) yield* refuse('adidas', 'money');
-      else {
-        st.player.body.torso.adidas = true;
-        st.player.resources.money = i16(st.player.resources.money - PRICE.adidas);
-        yield* emit({ type: 'marketBought', goods: 'adidas' });
-      }
+      if (torso.adidas) yield* refuse('adidas', 'owned');
+      else if (PRICE.adidas > money) yield* refuse('adidas', 'money');
+      else yield* buy('adidas');
     }
     if (st.world.district > 2 && command === CMD.market.coolBoots) {
-      if (st.player.body.feet.coolBoots) yield* refuse('coolBoots', 'owned');
-      else if (PRICE.boots2 > st.player.resources.money) yield* refuse('coolBoots', 'money');
-      else {
-        st.player.body.feet.coolBoots = true;
-        st.player.resources.money = i16(st.player.resources.money - PRICE.boots2);
-        yield* emit({ type: 'marketBought', goods: 'coolBoots' });
-      }
+      if (feet.coolBoots) yield* refuse('coolBoots', 'owned');
+      else if (PRICE.boots2 > money) yield* refuse('coolBoots', 'money');
+      else yield* buy('coolBoots');
     }
     if (st.world.district > 3 && command === CMD.market.coolLeather) {
-      if (st.player.body.torso.coolLeather) yield* refuse('coolLeather', 'owned');
-      else if (PRICE.leather2 > st.player.resources.money) yield* refuse('coolLeather', 'money');
-      else {
-        st.player.body.torso.coolLeather = true;
-        st.player.resources.money = i16(st.player.resources.money - PRICE.leather2);
-        yield* emit({ type: 'marketBought', goods: 'coolLeather' });
-      }
+      if (torso.coolLeather) yield* refuse('coolLeather', 'owned');
+      else if (PRICE.leather2 > money) yield* refuse('coolLeather', 'money');
+      else yield* buy('coolLeather');
     }
     // a caught thief has to run
     if (command === CMD.market.steal && (yield* pickpocket)) break;
@@ -122,9 +92,8 @@ export const market = Effect.gen(function* () {
 const pickpocket = Effect.gen(function* () {
   const st = yield* started;
   if ((yield* luckAtLeast(st.world.district * 5 + 5)) && (yield* rnd(10)) < 9) {
-    const found = i16((yield* rnd(attr(st.player, 'luck') * 2)) + 1);
-    st.player.resources.money = i16(st.player.resources.money + found);
-    yield* emit({ type: 'marketStole', money: found });
+    const money = i16((yield* rnd(attr(st.player, 'luck') * 2)) + 1);
+    yield* report({ type: 'marketStole', money });
     yield* gainExp(st.world.district * 2);
     return false;
   }
@@ -136,7 +105,40 @@ const pickpocket = Effect.gen(function* () {
       yield* settle(yield* fight(STREET_FIGHT));
     })
   );
-  yield* emit({ type: 'marketCopsAlerted' });
-  st.world.heat.market = 5;
+  yield* report({ type: 'marketCopsAlerted' });
   return true;
 });
+
+/** what happens at the market goes into the state */
+function apply(st: Game, event: MarketEvent) {
+  const p = st.player;
+  switch (event.type) {
+    case 'marketAteHotdog':
+      dec(p, 'money', PRICE.hotdog);
+      inc(p, 'health', event.health);
+      if (p.health.current > attr(p, 'healthMax')) set(p, 'health', attr(p, 'healthMax'));
+      return;
+    case 'marketBeerBought':
+      dec(p, 'money', PRICE.beer);
+      return inc(p, 'beer', 1);
+    case 'marketBought':
+      dec(p, 'money', CLOTHES_PRICE[event.goods]);
+      return put(p.body, event.goods);
+    case 'marketStole':
+      return inc(p, 'money', event.money);
+    case 'marketCopsAlerted':
+      st.world.heat.market = 5;
+      return;
+  }
+}
+
+/** what each piece of clothing costs */
+const CLOTHES_PRICE: Record<MarketClothes, number> = {
+  glasses: PRICE.glasses,
+  abibas: PRICE.abibas,
+  boots: PRICE.boots,
+  leather: PRICE.leather,
+  adidas: PRICE.adidas,
+  coolBoots: PRICE.boots2,
+  coolLeather: PRICE.leather2,
+};

@@ -48,8 +48,9 @@
 - `src/crt/` — CRT unit: `screen.ts` (80×25 B800 cells), `crt.ts` (ReadKey, CrtRead line editor,
   services `Crt`, `Keyboard`).
 - `src/game/` — the game: `prelude` (services `Engine`, `Disk`, Print/PrintLn, luck checks),
-  `texts` (all texts), `start`, `main` (command loop, walking), `fight`, `enemy`, `hero`,
-  `places`, `encounters`, `screens`. Each function names its original address (`0000:3D11`).
+  `texts` (all texts), `events`/`view-layer`/`view` (events and their views), `start`, `main`
+  (command loop), `walk`, `fight`, `aftermath`, `beer`, `enemy`, `hero`, `places/*` (one file
+  per place, `shop.ts` the shop lines), `encounters`, `screens`; each with a `-view.ts`. Each function names its original address (`0000:3D11`).
 - `src/runtime.ts` (layers, `program`), `src/main.ts` (terminal runner).
 - `test/` — harness (original vs port), fuzzer, bots, replay, fixtures, helpers.
 
@@ -101,6 +102,8 @@
   own codes), nested texts bring their arguments. A`Text` compiles to the exact Pascal string the
   original printed — keep it that way (the regression compares it byte for byte).
 - `print(text)`/`println(text)` take a `Text`; never build texts by string concatenation.
+- Texts the game keeps in the state instead of printing (the hero's name, the version) live in
+  `src/game/stored-texts.ts` (`heroName`, `VERSION`), so logic files never import `texts.ts`.
 - Everything the player types lives in `CMD` (`src/game/commands.ts`), one dictionary per prompt
   (`CMD.main.walk`, `CMD.den.borrow`, `CMD.market.beer`, …): the same letter means different
   things in different places. Each context is a schema of its literals. Every prompt reads its
@@ -114,21 +117,38 @@
   parameters, not state; so is the player's input. They still
   sit in the original's data segment, so `legacy.ts` lists them in `SCRATCH_FIELDS` and the
   comparison snapshots skip them (`snapshot(..., true)` keeps them for the bots).
-- Rules `emit` what happens (`src/game/events.ts`: the `Events` service, `GameEvent`) and don't
-  know who listens; they stay ordinary Effects with DI (`rnd`, `promptCommand`, `halt`). The
-  screen listens through `viewLayer` (`view-layer.ts`, wired by `gameLayer`): it routes events
-  to `fight-view.ts` / `aftermath-view.ts` / `beer-view.ts`, which turn them into texts and key
-  pauses and read what the state already knows (health left, bullets, names) — don't put state
-  into events, and emit what happens in the game, not what to show (`fightStarted`: the view
-  works out itself whether to say the opponent's agility takes kicks away). Tests pass `events: []` to `play`/`testGame` to keep the events instead
-  of showing them. Commands are asked with `promptCommand(context)` (`commands.ts`): it emits the
-  prompt (the view knows what each prompt looks like), reads the line and returns the parsed
-  command.
+- Every part is logic + view: `<part>.ts` decides, `<part>-view.ts` shows (`places/<place>.ts` +
+  `places/<place>-view.ts`, `walk`, `main`, `encounters`, `start`, `hero`, `fight`, `aftermath`,
+  `beer`; `enemy-view.ts` only has the look at an enemy). Logic files print nothing and import no
+  texts; they say what happens with events (`src/game/events.ts`: the `Events` service,
+  `GameEvent`, the union of every part's events) and don't know who listens; they stay ordinary
+  Effects with DI (`rnd`, `promptCommand`, `readAnswer`, `readLine`, `halt`). The screen listens
+  through `viewLayer` (`view-layer.ts`, wired by `gameLayer`): it routes each event type to the
+  one view that lists it (two views listing a type throw at start-up, so event names are unique
+  game-wide: `marketBought`, `gymTrained`…). A view turns events into texts and key pauses and
+  reads what the state already knows (health left, bullets, names, the district) — don't put
+  state into events, and emit what happens in the game, not what to show (`enteredMarket`: the
+  view works out the offers of the district). An event carries only what the state can't tell:
+  an amount, a roll's result, which thing. Tests pass `events: []` to `play`/`testGame` to keep
+  the events instead of showing them. Commands are asked with `promptCommand(context)`
+  (`commands.ts`): it emits the prompt (the view knows what each prompt looks like), reads the
+  line and returns the parsed command.
+- Logic never writes the state next to its decisions. An event that changes the state is
+  reported: `const report = reporter(apply)` at the top of a logic file, one
+  `apply(st, event)` switch at the bottom, the only place that writes — attributes and counters
+  (money, beer, joints, junk, health, respect, exp) with `inc`/`dec`/`set`, things with
+  `put`/`drop`/`take`, other fields by assignment. Rolls stay in the logic, in the original's
+  order, and go into the event; lookups that follow from it (a price from the goods) happen in
+  `apply`. Bookkeeping that shows nothing gets an event too (`walkStepped`); its view lists it
+  and shows nothing. `report` applies, then shows, so the view sees the state after the event.
+  The start creates the hero before the game has started: `reporterOn(state)`. Allowed outside
+  `apply`: creating and dropping the battle (`spawnEnemy`, `setupRector`, `encounter`), saves
+  (`Disk`, `decodeSave`, `loadPlaces`). Example: `places/dealers.ts`.
 - The hero's stats, damage, armor and maximum health are a projection (`src/state/attributes.ts`):
   `player.base` (start, levels, training, steroids, the temple) plus what the things in the body
   slots give (`src/state/items.ts`: `GEAR`, within a slot only the best counts — suit, jacket,
   boots, weapon) plus a joint while `stoned > 0`. Nothing is stored for things: taking one is
-  `put(body, item)` (`take` in `hero.ts` also heals for a ring), selling one clears its flag.
+  `put(body, item)` (`take` in `hero.ts` also heals for a ring), selling one is `drop`.
   Read with `attr(p, 'strength')`, change the base with `inc`/`dec`/`set`; never touch `base`
   directly. Values wrap like the original. Saves only know totals: they load into the base and
   `fromTotals` takes the things and the joint out. The «Помоги Господи» ring gives a fixed +1
@@ -136,9 +156,6 @@
 - Drops are data: `ENEMY_DROPS` (items, and `joints` for the нарк) per enemy kind in
   `src/state/enemy-drop.ts`; `loot`
   rolls one of them and finds it only if the hero hasn't got it.
-- `aftermath.ts` separates deciding, applying and showing: its rules only return or yield
-  `AftermathEvent`s, `report` applies each one to the state (`apply`) and then shows it
-  (`aftermath-view.ts`), so a rule goes on with the state the previous event made.
 - An enemy exists only in a battle: `Game.battle: { enemy, backup } | null`. `spawnEnemy` /
   `setupRector` create it, and every meeting runs inside `encounter(spawn, meeting)`, which
   drops the battle when the meeting (the talk, the fight, its aftermath) is over — also when the
