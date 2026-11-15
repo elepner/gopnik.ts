@@ -140,12 +140,12 @@ test('the saves found at the start are offered in a dialog and load', async ({ p
   await expect(items).toHaveCount(0);
   if (!phone(page)) {
     await equipment.hover();
-    await expect(items).toContainText('Нож');
+    await expect(items.getByRole('button', { name: 'Оружие: Нож' })).toBeVisible();
     await page.mouse.move(0, 0);
     await expect(items).toHaveCount(0);
   }
   await equipment.click();
-  await expect(items).toContainText('Нож');
+  await expect(items.getByRole('button', { name: 'Оружие: Нож' })).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(items).toHaveCount(0);
   if (phone(page)) await expect(page.locator('.actions')).toContainText('гулять');

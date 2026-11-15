@@ -1,20 +1,11 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 /** The hero's stats beside the screen, and the enemy's while a battle is on. */
 import { hitChance } from '../src/game/hero-view';
 import { attr, bonus } from '../src/state/attributes';
-import { gives, has, type Item } from '../src/state/items';
 import { rankName, typeName } from '../src/state/names';
-import type {
-  Attribute,
-  Attributes,
-  Body,
-  Enemy,
-  Game,
-  GameState,
-  Injuries,
-  Player,
-} from '../src/state/state';
+import type { Attribute, Enemy, Game, GameState, Injuries, Player } from '../src/state/state';
+import { Equipment } from './Equipment';
 import { districtName, plain } from './labels';
 
 export function StatsPanel({ st }: { readonly st: GameState | undefined }) {
@@ -57,7 +48,7 @@ function Hero({ st }: { readonly st: Game }) {
         ]}
       />
       <Hurt injuries={p.injuries} />
-      <Equipment body={p.body} />
+      <Equipment body={p.body} type={p.type} />
       <div className="sub">Район: {districtName(st.world.district)}</div>
     </section>
   );
@@ -159,107 +150,6 @@ function damage(p: Player): ReactNode {
 function signed(n: number): string {
   return n > 0 ? `+${n}` : String(n);
 }
-
-function Equipment({ body }: { readonly body: Body }) {
-  const [open, setOpen] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const container = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    function closeOutside(event: PointerEvent) {
-      if (!container.current?.contains(event.target as Node)) setOpen(false);
-    }
-    function closeOnEscape(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        setOpen(false);
-        setHovered(false);
-      }
-    }
-    document.addEventListener('pointerdown', closeOutside);
-    document.addEventListener('keydown', closeOnEscape);
-    return () => {
-      document.removeEventListener('pointerdown', closeOutside);
-      document.removeEventListener('keydown', closeOnEscape);
-    };
-  }, []);
-  const things: ReactNode[] = ITEMS.filter(([item]) => has(body, item)).map(([item, name]) => {
-    const what = givesText(gives(body, item));
-    return (
-      <div key={item}>
-        {name} {what ? <span className="boost">{what}</span> : <span className="spare">запас</span>}
-      </div>
-    );
-  });
-  const other: string[] = [];
-  if (body.skin.tattoo) other.push('Зоновская наколка');
-  if (body.mouth.guard) other.push('Капа');
-  const pistol = body.pockets.pistol;
-  if (pistol)
-    other.push(`Пистолет${pistol.silencer ? ' с глушителем' : ''}, патронов: ${pistol.bullets}`);
-  things.push(...other.map((t) => <div key={t}>{t}</div>));
-  return (
-    <div
-      className="things"
-      ref={container}
-      onPointerEnter={(event) => event.pointerType === 'mouse' && setHovered(true)}
-      onPointerLeave={(event) => event.pointerType === 'mouse' && setHovered(false)}
-    >
-      <button
-        type="button"
-        aria-expanded={open || hovered}
-        aria-controls="equipment-list"
-        onClick={() => setOpen(!open)}
-      >
-        Шмотки ({things.length})
-      </button>
-      {(open || hovered) && (
-        <div className="equipment-popup" id="equipment-list" role="dialog" aria-label="Шмотки">
-          <h3>Шмотки</h3>
-          {things.length === 0 ? <div className="sub">ничего</div> : things}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/** what a thing adds, shortly: `сил +1 урон +2` */
-function givesText(g: Partial<Attributes>): string {
-  const parts = SHORT.filter(([a]) => g[a]).map(([a, name]) => `${name} +${g[a]}`);
-  if (g.damageMin || g.damageMax)
-    parts.push(
-      g.damageMin === g.damageMax ? `урон +${g.damageMin}` : `урон +${g.damageMin}–${g.damageMax}`
-    );
-  return parts.join(' ');
-}
-
-const SHORT: readonly (readonly [Attribute, string])[] = [
-  ['strength', 'сил'],
-  ['agility', 'лвк'],
-  ['vitality', 'жив'],
-  ['luck', 'уд'],
-  ['healthMax', 'здор'],
-  ['armor', 'брон'],
-];
-
-/** the things in their slots, as the shops and the stats call them */
-const ITEMS: readonly (readonly [Item, string])[] = [
-  ['adidas', 'Костюм Adidas'],
-  ['abibas', 'Костюм Abibas'],
-  ['coolLeather', 'Крутая кожанка'],
-  ['leather', 'Кожанка'],
-  ['coolBoots', 'Крутые бутсы'],
-  ['boots', 'Бутсы'],
-  ['cleaver', 'Тесак'],
-  ['knife', 'Нож'],
-  ['club', 'Дубинка'],
-  ['knuckles', 'Кастет'],
-  ['glasses', 'Тёмные очки'],
-  ['cross', 'Крестик'],
-  ['phone', 'Мобильник'],
-  ['spasiRing', 'Кольцо «Господи спаси»'],
-  ['pomogiRing', 'Кольцо «Помоги Господи»'],
-  ['megaRing', 'Мега-кольцо'],
-  ['pomiluyRing', 'Кольцо «Господи помилуй»'],
-];
 
 function accuracy(agility: number): string {
   const { chance, hits, extra } = hitChance(agility);
