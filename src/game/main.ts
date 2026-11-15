@@ -6,12 +6,13 @@ import { attr } from '../state/attributes';
 import { ENEMIES, enemyAt } from '../state/kinds';
 import { encodeSave } from '../state/legacy';
 import { typeName } from '../state/names';
+import { battle } from '../state/state';
 import { SaveName } from '../tp/brands';
 import { i16, str, u8 } from '../tp/num';
 import { beatFakeRector, beatRector, killedByRector, settle } from './aftermath';
 import { CMD, type Command, parseCommand } from './commands';
 import { saveMage, temple } from './encounters';
-import { setupRector, spawnEnemy } from './enemy';
+import { encounter, setupRector, spawnEnemy } from './enemy';
 import { fight, RECTOR_FIGHT, smokeJoint, STREET_FIGHT } from './fight';
 import { tell } from './fight-view';
 import { drinkBeer, showStats } from './hero';
@@ -45,14 +46,22 @@ const turn = Effect.gen(function* () {
   if (st.world.rector) {
     st.world.places.den = true;
     // the rector's fights end in a victory or death
-    yield* setupRector(0);
-    yield* tell({ type: 'greeting', by: 'fakeRector' });
-    const fake = yield* fight(RECTOR_FIGHT);
-    yield* fake === 'won' ? beatFakeRector : killedByRector;
-    yield* setupRector(1);
-    yield* tell({ type: 'greeting', by: 'rector' });
-    const real = yield* fight(RECTOR_FIGHT);
-    yield* real === 'won' ? beatRector : killedByRector;
+    yield* encounter(
+      setupRector(0),
+      Effect.gen(function* () {
+        yield* tell({ type: 'greeting', by: 'fakeRector' });
+        const fake = yield* fight(RECTOR_FIGHT);
+        yield* fake === 'won' ? beatFakeRector : killedByRector;
+      })
+    );
+    yield* encounter(
+      setupRector(1),
+      Effect.gen(function* () {
+        yield* tell({ type: 'greeting', by: 'rector' });
+        const real = yield* fight(RECTOR_FIGHT);
+        yield* real === 'won' ? beatRector : killedByRector;
+      })
+    );
   }
   yield* print(plain`\\`);
   const cmd = parseCommand('main', lowerCase(yield* readLine));
@@ -239,50 +248,52 @@ const prettyGirl = Effect.gen(function* () {
   } else yield* println(MAIN.tyEschePodkatitNeuspel());
 });
 
-const meetSomeone = Effect.gen(function* () {
-  const st = yield* started;
-  yield* spawnEnemy(0);
-  let engaged = false;
-  if (st.enemy.type !== 'ment') {
-    // the tattoo halves the odds of being picked on
-    let sneak = st.world.district * 7 + 15;
-    if (st.player.body.skin.tattoo) sneak = Math.trunc(sneak / 2);
-    // weaklings never look for trouble; lads only when the hero is unlucky; thugs and maniacs always
-    const group = ENEMIES[st.enemy.type].group;
-    const calm =
-      ((yield* luckAtLeast(sneak)) || group === 'weakling') &&
-      (group === 'weakling' || group === 'lad');
-    const type = typeName(st.enemy.type);
-    if (calm) {
-      yield* println(MAIN.idetUrovnyaHocheshNaehat(type, st.enemy.level));
-      st.session.lastAnswer = lowerCase(yield* readLine);
-      if (parseCommand('answer', st.session.lastAnswer) === CMD.answer.yes) engaged = true;
+const meetSomeone = encounter(
+  spawnEnemy(0),
+  Effect.gen(function* () {
+    const st = yield* started;
+    let engaged = false;
+    if (battle(st).enemy.type !== 'ment') {
+      // the tattoo halves the odds of being picked on
+      let sneak = st.world.district * 7 + 15;
+      if (st.player.body.skin.tattoo) sneak = Math.trunc(sneak / 2);
+      // weaklings never look for trouble; lads only when the hero is unlucky; thugs and maniacs always
+      const group = ENEMIES[battle(st).enemy.type].group;
+      const calm =
+        ((yield* luckAtLeast(sneak)) || group === 'weakling') &&
+        (group === 'weakling' || group === 'lad');
+      const type = typeName(battle(st).enemy.type);
+      if (calm) {
+        yield* println(MAIN.idetUrovnyaHocheshNaehat(type, battle(st).enemy.level));
+        st.session.lastAnswer = lowerCase(yield* readLine);
+        if (parseCommand('answer', st.session.lastAnswer) === CMD.answer.yes) engaged = true;
+      } else {
+        yield* println(MAIN.idetUrovnyaIschuschiyKogo(type, battle(st).enemy.level));
+        st.session.lastAnswer = lowerCase(yield* readLine);
+        if (parseCommand('answer', st.session.lastAnswer) === CMD.answer.yes) engaged = true;
+        else if ((yield* rnd(2)) === 0) {
+          yield* println(MAIN.onTebyaZametil());
+          engaged = true;
+        } else yield* println(MAIN.tySmylsya());
+      }
     } else {
-      yield* println(MAIN.idetUrovnyaIschuschiyKogo(type, st.enemy.level));
-      st.session.lastAnswer = lowerCase(yield* readLine);
-      if (parseCommand('answer', st.session.lastAnswer) === CMD.answer.yes) engaged = true;
-      else if ((yield* rnd(2)) === 0) {
-        yield* println(MAIN.onTebyaZametil());
+      yield* println(MAIN.idetMentyaraUrovnyaGroza(battle(st).enemy.level));
+      if (yield* luckAtLeast(st.world.district * 7 + 15))
+        yield* println(MAIN.tyZatailsyaPrikinulsyaNe());
+      else if (st.player.body.eyes.glasses) {
+        yield* println(MAIN.tyNapyalilTemnyeOchki());
+        yield* println(MAIN.stendeRazyskivayutsyaZaGopnichestvo());
+      } else {
+        yield* println(MAIN.zapalil());
         engaged = true;
-      } else yield* println(MAIN.tySmylsya());
+      }
     }
-  } else {
-    yield* println(MAIN.idetMentyaraUrovnyaGroza(st.enemy.level));
-    if (yield* luckAtLeast(st.world.district * 7 + 15))
-      yield* println(MAIN.tyZatailsyaPrikinulsyaNe());
-    else if (st.player.body.eyes.glasses) {
-      yield* println(MAIN.tyNapyalilTemnyeOchki());
-      yield* println(MAIN.stendeRazyskivayutsyaZaGopnichestvo());
-    } else {
-      yield* println(MAIN.zapalil());
-      engaged = true;
+    if (engaged) {
+      yield* tell({ type: 'greeting', by: 'enemy' });
+      yield* settle(yield* fight(STREET_FIGHT));
     }
-  }
-  if (engaged) {
-    yield* tell({ type: 'greeting', by: 'enemy' });
-    yield* settle(yield* fight(STREET_FIGHT));
-  }
-});
+  })
+);
 
 const nothingHappens = Effect.gen(function* () {
   const st = yield* started;

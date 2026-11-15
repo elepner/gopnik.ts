@@ -10,7 +10,7 @@ import { readKey, writeLn } from '../crt/crt';
 import { attr } from '../state/attributes';
 import { type CharacterType, ENEMIES } from '../state/kinds';
 import { typeName } from '../state/names';
-import { type StatKey } from '../state/state';
+import { battle, type StatKey } from '../state/state';
 import { print, println, started } from './prelude';
 import type { Text } from './text';
 import { FIGHT } from './texts';
@@ -97,7 +97,7 @@ function show(event: FightEvent) {
       case 'prompt':
         return yield* print(FIGHT.bitva());
       case 'kick':
-        return yield* kick(event.by, event.hit, event.by === 'hero' ? st.enemy : st.player);
+        return yield* kick(event.by, event.hit, event.by === 'hero' ? battle(st).enemy : st.player);
       case 'anotherKick':
         return yield* println(
           event.by === 'hero' ? FIGHT.izZaBolshoyLovkosti() : FIGHT.izZaBolshoyLovkosti2()
@@ -131,7 +131,9 @@ function show(event: FightEvent) {
       case 'backupAlreadyHere':
         return yield* println(FIGHT.oniUzheZdes());
       case 'backupKicked':
-        return yield* println(FIGHT.vragaOtpinaliNaZ(event.damage, st.enemy.health.current));
+        return yield* println(
+          FIGHT.vragaOtpinaliNaZ(event.damage, battle(st).enemy.health.current)
+        );
       case 'backupBeaten':
         return yield* println(FIGHT.tvoyuPodmoguOtpinali());
       case 'backupFedUp':
@@ -146,7 +148,7 @@ function show(event: FightEvent) {
         return yield* println(
           FIGHT.tyVystrelilIRanil(
             event.damage,
-            st.enemy.health.current,
+            battle(st).enemy.health.current,
             st.player.body.pockets.pistol?.bullets ?? 0
           )
         );
@@ -192,7 +194,7 @@ function greeting(by: Greeting) {
   return Effect.gen(function* () {
     const st = yield* started;
     const hero = st.player;
-    const enemy = ENEMIES[st.enemy.type].group;
+    const enemy = ENEMIES[battle(st).enemy.type].group;
     const type = typeName(hero.type);
     if (by === 'enemy') {
       if (enemy === 'weakling') {

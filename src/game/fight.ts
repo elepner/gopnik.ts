@@ -8,7 +8,7 @@ import { Effect } from 'effect';
 
 import { readLine } from '../crt/crt';
 import { attr } from '../state/attributes';
-import { type Combat, type Game, type Injuries } from '../state/state';
+import { type Battle, battle, type Game, type Injuries } from '../state/state';
 import { div, i16, round, u8 } from '../tp/num';
 import { CMD, parseCommand } from './commands';
 import { showEnemy } from './enemy';
@@ -77,7 +77,7 @@ export type FightOutcome = 'won' | 'died' | 'fled' | 'bailedOut';
 export function fight(rules: FightRules) {
   return Effect.gen(function* () {
     const st = yield* started;
-    const enemyBudget = hitBudget(st.enemy.stats.agility);
+    const enemyBudget = hitBudget(battle(st).enemy.stats.agility);
     const playerBudget = hitBudget(attr(st.player, 'agility'));
     const enemyHits = extraHits(enemyBudget, playerBudget);
     if (losesKicks(enemyBudget, enemyHits))
@@ -111,7 +111,7 @@ export function fight(rules: FightRules) {
 
       if (input === CMD.fight.kick) {
         yield* kickSeries('hero', playerHits);
-        if (alive(st.enemy)) yield* kickSeries('enemy', enemyHits);
+        if (alive(battle(st).enemy)) yield* kickSeries('enemy', enemyHits);
       }
       if (input === CMD.fight.run) {
         const fled = rules.flee(st);
@@ -124,10 +124,10 @@ export function fight(rules: FightRules) {
       if (input === CMD.fight.stats) yield* showStats;
       if (input === CMD.fight.inspectEnemy) yield* showEnemy;
       if (input === CMD.fight.exit) return yield* halt;
-      if (input === CMD.fight.kick && backupApproaches(st.combat, rules.backup))
+      if (input === CMD.fight.kick && backupApproaches(battle(st), rules.backup))
         yield* tell({ type: 'backupArrived', by: 'kicks' });
       if (input === CMD.fight.callBackup) yield* run(callBackup(st, rules.backup), tell);
-      if (alive(st.enemy) && backupHere(st.combat, rules.backup))
+      if (alive(battle(st).enemy) && backupHere(battle(st), rules.backup))
         yield* run(backupKicks(st, rules.backup), tell);
       if (input === CMD.fight.shoot && st.player.body.pockets.pistol) yield* tell(yield* shoot(st));
 
@@ -138,9 +138,8 @@ export function fight(rules: FightRules) {
         } else return 'died';
       }
       // the enemy may go down in the very turn the hero ran or was picked up
-      if (!alive(st.enemy)) outcome = 'won';
+      if (!alive(battle(st).enemy)) outcome = 'won';
     }
-    if (outcome !== 'won') st.combat.backup = 0;
     return outcome;
   });
 }
@@ -153,7 +152,7 @@ function kickSeries(by: Side, hits: number) {
     for (;;) {
       yield* tell({ type: 'kick', by, hit: yield* kick(st, by, budget) });
       budget -= KICK;
-      if ((by === 'hero' && !alive(st.enemy)) || budget <= 0) return;
+      if ((by === 'hero' && !alive(battle(st).enemy)) || budget <= 0) return;
       yield* tell({ type: 'anotherKick', by });
       // sic: a hero at exactly 0 takes the next kick too
       if (by === 'enemy' && st.player.health.current < 0) return;
@@ -244,7 +243,7 @@ function fighter(st: Game, side: Side): Fighter {
       injuries: p.injuries,
     };
   }
-  const e = st.enemy;
+  const e = battle(st).enemy;
   return {
     luck: e.stats.luck,
     damageMin: e.damage.min,
@@ -320,7 +319,7 @@ function smoke(st: Game, turns: number): FightEvent {
 }
 
 /** every kick brings the called lads closer; true when they arrive */
-function backupApproaches(combat: Combat, backup: BackupRules): boolean {
+function backupApproaches(combat: Battle, backup: BackupRules): boolean {
   if (!backupCalled(combat)) return false;
   combat.backup = i16(combat.backup + 1);
   return combat.backup === backup.arrivesAt;
@@ -330,40 +329,40 @@ function backupApproaches(combat: Combat, backup: BackupRules): boolean {
 function* callBackup(st: Game, backup: BackupRules): Rule<FightEvent> {
   const access = backup.access(st);
   if (access === 'granted') {
-    if (!backupCalled(st.combat)) st.combat.backup = 1;
+    if (!backupCalled(battle(st))) battle(st).backup = 1;
     if (st.player.body.pockets.phone) {
-      st.combat.backup = backup.arrivesAt;
+      battle(st).backup = backup.arrivesAt;
       yield { type: 'backupArrived', by: 'phone' };
     }
   } else yield { type: 'backupRefused', because: access };
-  if (backupCalled(st.combat)) {
-    if (!backupHere(st.combat, backup))
-      yield { type: 'backupComing', turns: backup.arrivesAt - st.combat.backup };
-    else if (st.combat.backup !== backup.arrivesAt || !st.player.body.pockets.phone)
+  if (backupCalled(battle(st))) {
+    if (!backupHere(battle(st), backup))
+      yield { type: 'backupComing', turns: backup.arrivesAt - battle(st).backup };
+    else if (battle(st).backup !== backup.arrivesAt || !st.player.body.pockets.phone)
       yield { type: 'backupAlreadyHere' };
   }
 }
 
 /** the lads kick the enemy every turn, for respect, until they are beaten or fed up */
 function* backupKicks(st: Game, backup: BackupRules): Rule<FightEvent> {
-  const prev = st.enemy.health.current;
+  const prev = battle(st).enemy.health.current;
   let dmg = st.world.district * 3 + (yield* random(st.world.district * 4));
-  dmg -= div(st.enemy.armor, 3);
+  dmg -= div(battle(st).enemy.armor, 3);
   if (dmg < 0) dmg = 0;
-  st.enemy.health.current = i16(st.enemy.health.current - dmg);
-  yield { type: 'backupKicked', damage: prev - st.enemy.health.current };
+  battle(st).enemy.health.current = i16(battle(st).enemy.health.current - dmg);
+  yield { type: 'backupKicked', damage: prev - battle(st).enemy.health.current };
   if ((yield* random(2)) === 0) {
-    st.combat.backup = i16(st.combat.backup + 1);
+    battle(st).backup = i16(battle(st).backup + 1);
     // sic: never true, the lads kick only once they have arrived
-    if (st.combat.backup === backup.arrivesAt) yield { type: 'backupArrived', by: 'time' };
+    if (battle(st).backup === backup.arrivesAt) yield { type: 'backupArrived', by: 'time' };
   }
-  if (st.combat.backup === backup.beatenAt) {
-    st.combat.backup = 0;
+  if (battle(st).backup === backup.beatenAt) {
+    battle(st).backup = 0;
     yield { type: 'backupBeaten' };
   }
   st.player.respect = i16(st.player.respect - st.world.district * 5);
   if (st.player.respect <= 0) {
-    st.combat.backup = 0;
+    battle(st).backup = 0;
     yield { type: 'backupFedUp' };
   }
 }
@@ -377,9 +376,11 @@ function shoot(st: Game) {
     pistol.bullets = i16(pistol.bullets - 1);
     const aim = yield* rnd(50);
     if (attr(st.player, 'agility') <= aim) return { type: 'shotMissed' } satisfies FightEvent;
-    const prev = st.enemy.health.current;
-    st.enemy.health.current = i16(st.enemy.health.current - ((yield* rnd(10)) + 20));
-    return { type: 'shotHit', damage: prev - st.enemy.health.current } satisfies FightEvent;
+    const prev = battle(st).enemy.health.current;
+    battle(st).enemy.health.current = i16(
+      battle(st).enemy.health.current - ((yield* rnd(10)) + 20)
+    );
+    return { type: 'shotHit', damage: prev - battle(st).enemy.health.current } satisfies FightEvent;
   });
 }
 
@@ -425,10 +426,10 @@ function ladsBailOut(st: Game): boolean {
   return st.world.places.den && st.player.respect >= 10;
 }
 
-function backupCalled(combat: Combat): boolean {
+function backupCalled(combat: Battle): boolean {
   return combat.backup >= 1;
 }
 
-function backupHere(combat: Combat, backup: BackupRules): boolean {
+function backupHere(combat: Battle, backup: BackupRules): boolean {
   return combat.backup >= backup.arrivesAt;
 }

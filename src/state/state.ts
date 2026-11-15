@@ -65,17 +65,6 @@ export function createState(): GameState {
         pockets: { phone: false, pistol: null },
       },
     },
-    enemy: {
-      type: 'dohlyak',
-      level: 0,
-      stats: { strength: 0, agility: 0, vitality: 0, luck: 0 },
-      health: { current: 0, max: 0 },
-      damage: { min: 0, max: 0 },
-      armor: 0,
-      injuries: { jaw: false, leg: false },
-      loot: { beer: 0, money: 0, junk: 0 },
-    },
-    combat: { backup: 0 },
     session: { lastAnswer: '' },
   };
 }
@@ -92,6 +81,8 @@ export interface NotStartedGame extends CommonState {
 export interface Game extends CommonState {
   readonly phase: 'started';
   readonly player: Player;
+  /** an enemy in front of the hero, from the moment he shows up until it is all over */
+  battle: Battle | null;
 }
 
 /** the only transition between the phases: the character got its type */
@@ -99,7 +90,14 @@ export function startGame(st: GameState, type: CharacterType): Game {
   const started = st as unknown as { phase: string; player: Player };
   started.phase = 'started';
   started.player.type = type;
+  (st as unknown as { battle: Battle | null }).battle = null;
   return st as Game;
+}
+
+/** the battle going on; the game never asks for it without an enemy */
+export function battle(st: Game): Battle {
+  if (!st.battle) throw new Error('there is no enemy here');
+  return st.battle;
 }
 
 /** the state of a running game; the game never asks for it before the start */
@@ -112,8 +110,6 @@ interface CommonState {
   /** version banner stored at the start of every save */
   version: string;
   readonly world: World;
-  readonly enemy: Enemy;
-  readonly combat: Combat;
   readonly session: Session;
 }
 
@@ -280,9 +276,25 @@ export interface Pistol {
 
 // ------------------------------------------------------------------ transient
 
-export interface Combat {
-  /** backup counter: 1..2 waiting, 3.. fighting, 7 beaten */
+/** a meeting with an enemy: what he is and how the fight with him goes */
+export interface Battle {
+  readonly enemy: Enemy;
+  /** the called lads: 0 not called, 1..2 coming, 3 and more kicking, 7 beaten up */
   backup: number;
+}
+
+/** a fresh enemy, before `spawnEnemy` or `setupRector` makes him someone */
+export function newEnemy(): Enemy {
+  return {
+    type: 'dohlyak',
+    level: 0,
+    stats: { strength: 0, agility: 0, vitality: 0, luck: 0 },
+    health: { current: 0, max: 0 },
+    damage: { min: 0, max: 0 },
+    armor: 0,
+    injuries: { jaw: false, leg: false },
+    loot: { beer: 0, money: 0, junk: 0 },
+  };
 }
 
 /** the conversation with the player */

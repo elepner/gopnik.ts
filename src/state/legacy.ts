@@ -8,7 +8,14 @@ import { District, DsOffset, type TypeId } from '../tp/brands';
 import { decodeCp866, encodeCp866 } from '../tp/cp866';
 import { attr, fromTotals } from './attributes';
 import { CHARACTER_CLASSES, CHARACTER_TYPES, ENEMIES, enemyAt } from './kinds';
-import { type Attribute, type GameState, startGame, type StatKey } from './state';
+import {
+  type Attribute,
+  type Enemy,
+  type GameState,
+  newEnemy,
+  startGame,
+  type StatKey,
+} from './state';
 
 /** SAVE_R?.SAV: the 694-byte record at DS:369C */
 export function encodeSave(st: GameState): Uint8Array {
@@ -185,28 +192,28 @@ const BINDINGS: Record<StateField, Binding> = {
     },
   ],
   templeVisits: num((s) => s.world, 'templeVisits'),
-  eType: [(s) => ENEMIES[s.enemy.type].tier, (s, v) => (s.enemy.type = enemyAt(Number(v)))],
-  eStr: num((s) => s.enemy.stats, 'strength'),
-  eAgi: num((s) => s.enemy.stats, 'agility'),
-  eVit: num((s) => s.enemy.stats, 'vitality'),
-  eLuck: num((s) => s.enemy.stats, 'luck'),
-  eLevel: num((s) => s.enemy, 'level'),
-  eDmgMin: num((s) => s.enemy.damage, 'min'),
-  eDmgMax: num((s) => s.enemy.damage, 'max'),
-  eHp: num((s) => s.enemy.health, 'current'),
-  eHpMax: num((s) => s.enemy.health, 'max'),
-  eJawBroken: flag((s) => s.enemy.injuries, 'jaw'),
-  eLegBroken: flag((s) => s.enemy.injuries, 'leg'),
-  eArmor: num((s) => s.enemy, 'armor'),
-  eBeer: num((s) => s.enemy.loot, 'beer'),
-  eMoney: num((s) => s.enemy.loot, 'money'),
-  eJunk: num((s) => s.enemy.loot, 'junk'),
+  eType: [(s) => ENEMIES[foe(s).type].tier, (s, v) => (foe(s).type = enemyAt(Number(v)))],
+  eStr: num((s) => foe(s).stats, 'strength'),
+  eAgi: num((s) => foe(s).stats, 'agility'),
+  eVit: num((s) => foe(s).stats, 'vitality'),
+  eLuck: num((s) => foe(s).stats, 'luck'),
+  eLevel: num((s) => foe(s), 'level'),
+  eDmgMin: num((s) => foe(s).damage, 'min'),
+  eDmgMax: num((s) => foe(s).damage, 'max'),
+  eHp: num((s) => foe(s).health, 'current'),
+  eHpMax: num((s) => foe(s).health, 'max'),
+  eJawBroken: flag((s) => foe(s).injuries, 'jaw'),
+  eLegBroken: flag((s) => foe(s).injuries, 'leg'),
+  eArmor: num((s) => foe(s), 'armor'),
+  eBeer: num((s) => foe(s).loot, 'beer'),
+  eMoney: num((s) => foe(s).loot, 'money'),
+  eJunk: num((s) => foe(s).loot, 'junk'),
   input: text((s) => s.session, 'lastAnswer'),
   marketHeat: num((s) => s.world.heat, 'market'),
   clubHeat: num((s) => s.world.heat, 'club'),
   denQuestHelp: flag((s) => s.world.den, 'helpQuest'),
   denQuestJob: flag((s) => s.world.den, 'jobQuest'),
-  backup: num((s) => s.combat, 'backup'),
+  backup: num((s) => (s.phase === 'started' && s.battle) || { backup: 0 }, 'backup'),
   rector: flag((s) => s.world, 'rector'),
   phoneCalls: num((s) => s.world, 'dealerCalls'),
   loans: num((s) => s.world.den, 'loans'),
@@ -218,6 +225,10 @@ type Holder = (s: GameState) => object;
 /** the hero's attribute as the game uses it; a total read back goes into the base as it is, `fromTotals` splits it once everything is loaded */
 function attribute(a: Attribute): Binding {
   return [(s) => attr(s.player, a), (s, v) => (s.player.base[a] = Number(v))];
+}
+/** the enemy of the battle; without one the original's memory holds whatever was there: zeros here */
+function foe(s: GameState): Enemy {
+  return (s.phase === 'started' && s.battle?.enemy) || newEnemy();
 }
 function num(obj: Holder, key: string): Binding {
   return [

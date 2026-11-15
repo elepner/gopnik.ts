@@ -4,22 +4,26 @@ import { Effect } from 'effect';
 import { i16 } from '../../src/tp/num';
 import { hero, play } from '../../test/game';
 import { attr, set } from '../state/attributes';
-import type { GameState as State } from '../state/state';
+import { type GameState as State, newEnemy, playing } from '../state/state';
 import { claimVictory } from './aftermath';
 import { fight, RECTOR_FIGHT, STREET_FIGHT } from './fight';
 
 /** a sturdy Гопник of level 5 in front of the hero */
-function enemy(st: State) {
-  st.enemy.type = 'gopnik';
-  st.enemy.level = 5;
-  st.enemy.stats.strength = 6;
-  st.enemy.stats.agility = 4;
-  st.enemy.stats.vitality = 6;
-  st.enemy.stats.luck = 2;
-  st.enemy.damage.min = 3;
-  st.enemy.damage.max = 6;
-  st.enemy.health.max = 46;
-  st.enemy.health.current = 46;
+function enemy(state: State) {
+  const st = playing(state);
+  st.battle = { enemy: newEnemy(), backup: 0 };
+  const e = st.battle.enemy;
+  e.type = 'gopnik';
+  e.level = 5;
+  e.stats.strength = 6;
+  e.stats.agility = 4;
+  e.stats.vitality = 6;
+  e.stats.luck = 2;
+  e.damage.min = 3;
+  e.damage.max = 6;
+  e.health.max = 46;
+  e.health.current = 46;
+  return e;
 }
 
 const keys = (line: string) => [...line, 'enter'];
@@ -122,11 +126,11 @@ describe('fight (0000:3D11)', () => {
         keys: [...keys('k'), ...keys('k'), ...keys('k'), ...keys('k'), ...keys('k')],
         setup: (s) => {
           hero(s);
-          enemy(s);
-          s.enemy.health.current = 1;
-          s.enemy.loot.money = 7;
-          s.enemy.loot.junk = 3;
-          s.enemy.loot.beer = 1;
+          const e = enemy(s);
+          e.health.current = 1;
+          e.loot.money = 7;
+          e.loot.junk = 3;
+          e.loot.beer = 1;
           set(s.player, 'agility', 30);
           s.player.health.current = 20;
           s.player.progression.expNext = 100; // no level-up in between

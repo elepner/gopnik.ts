@@ -135,6 +135,11 @@
 - `aftermath.ts` separates deciding, applying and showing: its rules only return or yield
   `AftermathEvent`s, `report` applies each one to the state (`apply`) and then shows it
   (`aftermath-view.ts`), so a rule goes on with the state the previous event made.
+- An enemy exists only in a battle: `Game.battle: { enemy, backup } | null`. `spawnEnemy` /
+  `setupRector` create it, and every meeting runs inside `encounter(spawn, meeting)`, which
+  drops the battle when the meeting (the talk, the fight, its aftermath) is over — also when the
+  game ends in it. Read it with `battle(st)` (throws without an enemy). The original's layout
+  (`legacy.ts`) shows zeros for the enemy outside a battle; enemy and backup are not in saves.
 - Every fight is the same loop; what differs is a `FightRules` object: the crowd (a `Rule`; the
   rector's fights roll nothing), `flee`, whether the den lads bail the hero out, and the backup
   (`DEN_LADS`: access, arrival and beaten counts). `STREET_FIGHT` and `RECTOR_FIGHT`; the fight

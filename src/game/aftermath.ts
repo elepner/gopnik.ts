@@ -11,7 +11,7 @@ import { attr } from '../state/attributes';
 import { ENEMY_DROPS } from '../state/enemy-drop';
 import { has, nextRing } from '../state/items';
 import { ENEMIES } from '../state/kinds';
-import { type Game } from '../state/state';
+import { battle, type Game } from '../state/state';
 import { div, i16 } from '../tp/num';
 import { type AftermathEvent, tell } from './aftermath-view';
 import type { FightOutcome } from './fight';
@@ -75,7 +75,6 @@ const spoils = Effect.gen(function* () {
     if (ring) yield* report({ type: 'ringDropped', ring });
   }
   yield* run(loot(st), report);
-  st.combat.backup = 0;
 });
 
 /** an event happens: into the state, then onto the screen */
@@ -127,7 +126,7 @@ function levelReached(st: Game): boolean {
 
 /** experience for an enemy: the sum of its stats */
 function enemyExp(st: Game): AftermathEvent {
-  const { strength, agility, vitality, luck } = st.enemy.stats;
+  const { strength, agility, vitality, luck } = battle(st).enemy.stats;
   return { type: 'exp', exp: strength + agility + vitality + luck };
 }
 
@@ -135,9 +134,9 @@ function enemyExp(st: Game): AftermathEvent {
 function spoilsOf(st: Game): AftermathEvent {
   return {
     type: 'spoils',
-    ...st.enemy.loot,
+    ...battle(st).enemy.loot,
     health: 5,
-    respect: ENEMIES[st.enemy.type].tier + 1 + div(st.enemy.level, 3),
+    respect: ENEMIES[battle(st).enemy.type].tier + 1 + div(battle(st).enemy.level, 3),
   };
 }
 
@@ -155,7 +154,7 @@ function denHelp(st: Game): AftermathEvent {
  * (`enemy-drop.ts`), picked by Random — nothing when the hero has that one already.
  */
 function* loot(st: Game): Rule<AftermathEvent> {
-  const drop = ENEMY_DROPS[st.enemy.type];
+  const drop = ENEMY_DROPS[battle(st).enemy.type];
   if ((yield* lucky(st, st.world.district * 25)) && drop.joints)
     yield { type: 'joints', joints: yield* random(3) };
   if (!(yield* lucky(st, st.world.district * 40)) || drop.items.length === 0) return;
