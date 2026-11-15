@@ -3,7 +3,7 @@ import { Effect } from 'effect';
 
 import { i16 } from '../../src/tp/num';
 import { hero, play } from '../../test/game';
-import { beerMode, drinkBeer, levelUp } from './hero';
+import { drinkBeer, levelUp } from './hero';
 
 describe('levelUp (0000:2526)', () => {
   it.effect('spends experience, raises two stats per level and records them', () =>
@@ -100,12 +100,4 @@ describe('drinkBeer (0000:29C4)', () => {
       expect(lines[0]).toBe('Ты не можешь пить пиво из-за сломаной челюсти.');
     })
   );
-
-  it('only the beer commands drink', () => {
-    expect([beerMode('h'), beerMode('mh'), beerMode('w')]).toEqual([
-      'one',
-      'untilHealthy',
-      undefined,
-    ]);
-  });
 });

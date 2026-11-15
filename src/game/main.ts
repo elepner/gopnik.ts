@@ -11,7 +11,7 @@ import { CMD } from './commands';
 import { saveMage, temple } from './encounters';
 import { setupRector, spawnEnemy } from './enemy';
 import { fight, smokeJoint } from './fight';
-import { beerMode, drinkBeer, showStats } from './hero';
+import { drinkBeer, showStats } from './hero';
 import { club, dealers, den, girlfriend, gym, market, prompt, vet } from './places';
 import {
   Disk,
@@ -57,8 +57,8 @@ const turn = Effect.gen(function* () {
   if (cmd === CMD.main.den) yield* den;
   if (cmd === CMD.main.club) yield* club;
   if (cmd === CMD.main.gym) yield* gym;
-  const beer = beerMode(cmd);
-  if (beer) yield* drinkBeer(beer);
+  if (cmd === CMD.beer.one) yield* drinkBeer('one');
+  if (cmd === CMD.beer.untilHealthy) yield* drinkBeer('untilHealthy');
   if (cmd === CMD.main.joint) yield* smokeJoint(10);
   if (cmd === CMD.main.commands) yield* commands;
   if (cmd === CMD.main.stats) yield* showStats;

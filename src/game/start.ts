@@ -6,7 +6,7 @@ import { CHARACTER_CLASSES, CHARACTER_TYPES } from '../state/kinds';
 import { decodeSave, decodePlaces } from '../state/legacy';
 import { startGame } from '../state/state';
 import { District, SaveName } from '../tp/brands';
-import { div, i16, u8, val } from '../tp/num';
+import { div, i16, val } from '../tp/num';
 import { Disk, println, print, started, state } from './prelude';
 import { titleScreen } from './screens';
 import { START } from './texts';

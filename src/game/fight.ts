@@ -8,7 +8,7 @@ import { type StatKey } from '../state/state';
 import { div, i16, mod, round, u8 } from '../tp/num';
 import { CMD } from './commands';
 import { showEnemy } from './enemy';
-import { beerMode, drinkBeer, gainRing, levelUp, showStats } from './hero';
+import { drinkBeer, gainRing, levelUp, showStats } from './hero';
 import { halt, lowerCase, luckAtLeast, print, println, rnd, started } from './prelude';
 import { gameOver, victoryAnimation } from './screens';
 import type { Text } from './text';
@@ -92,8 +92,8 @@ export function fight(kind: FightKind) {
         }
       }
 
-      const beer = beerMode(input);
-      if (beer) yield* drinkBeer(beer);
+      if (input === CMD.beer.one) yield* drinkBeer('one');
+      if (input === CMD.beer.untilHealthy) yield* drinkBeer('untilHealthy');
       if (input === CMD.fight.joint) yield* smokeJoint(3);
       if (input === CMD.fight.stats) yield* showStats;
       if (input === CMD.fight.inspectEnemy) yield* showEnemy;

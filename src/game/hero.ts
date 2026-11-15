@@ -6,7 +6,6 @@ import { CHARACTER_CLASSES } from '../state/kinds';
 import { typeName, rankName } from '../state/names';
 import type { StatKey } from '../state/state';
 import { div, i16, mod } from '../tp/num';
-import { CMD } from './commands';
 import { print, println, rnd, started } from './prelude';
 import { type Color, text, type Text } from './text';
 import { HERO } from './texts';
@@ -265,13 +264,6 @@ export function levelUp(rector: boolean) {
 
 /** `h` drinks one beer, `mh` drinks until healthy (or the beer runs out) */
 export type BeerMode = 'one' | 'untilHealthy';
-
-/** the beer mode of a typed command, if it is one */
-export function beerMode(command: string): BeerMode | undefined {
-  if (command === CMD.beer.one) return 'one';
-  if (command === CMD.beer.untilHealthy) return 'untilHealthy';
-  return undefined;
-}
 
 /** 0000:29C4 — only reached for the beer commands */
 export function drinkBeer(mode: BeerMode) {
