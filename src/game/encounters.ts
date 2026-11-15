@@ -7,7 +7,7 @@ import { encodeSave, encodePlaces } from '../state/legacy';
 import { typeName, rankName } from '../state/names';
 import { SaveName } from '../tp/brands';
 import { CMD, parseCommand } from './commands';
-import { gainRing, levelUp, strengthUp } from './hero';
+import { levelUp, nextRing, ringLines, strengthUp } from './hero';
 import { Disk, lowerCase, println, rnd, started } from './prelude';
 import type { Text } from './text';
 import { ENCOUNTERS } from './texts';
@@ -112,7 +112,11 @@ export const temple = Effect.gen(function* () {
       break;
     case 2:
       yield* println(ENCOUNTERS.daryuTebeFenku());
-      yield* gainRing(ENCOUNTERS.megaKoltsoSoSvoego());
+      {
+        const ring = nextRing(st);
+        if (ring)
+          for (const line of ringLines(ring, ENCOUNTERS.megaKoltsoSoSvoego())) yield* println(line);
+      }
       break;
     case 3:
       yield* println(ENCOUNTERS.nakladyvayuNaTebyaZaschitu());

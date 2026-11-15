@@ -11,7 +11,7 @@ import { type CharacterType, ENEMIES } from '../state/kinds';
 import { typeName } from '../state/names';
 import { type Health, type StatKey } from '../state/state';
 import type { FightKind } from './fight';
-import { showStats } from './hero';
+import { type ChainRing, ringLines, showStats } from './hero';
 import { print, println, started } from './prelude';
 import type { Text } from './text';
 import { FIGHT } from './texts';
@@ -78,7 +78,8 @@ export type FightEvent =
   | { readonly type: 'tooWeak' }
   | { readonly type: 'victoryBeer' }
   | { readonly type: 'denOpened' }
-  | { readonly type: 'ringDropped' }
+  /** a ring of the chain drops from the enemy */
+  | { readonly type: 'ringDropped'; readonly ring: ChainRing }
   | { readonly type: 'denHelped'; readonly respect: number; readonly exp: number }
   | { readonly type: 'narkJoints' }
   | { readonly type: 'found'; readonly item: LootItem }
@@ -92,9 +93,6 @@ export type FightEvent =
       readonly full: boolean;
       readonly inFight: boolean;
     };
-
-/** the Мега ring text when it drops from an enemy */
-export const MEGA_RING = FIGHT.megaKoltso();
 
 /** shows the events in order */
 export function tell(...events: readonly FightEvent[]) {
@@ -205,7 +203,9 @@ function show(event: FightEvent) {
       case 'denOpened':
         return yield* println(FIGHT.ponovostUlutshilasNaStolko());
       case 'ringDropped':
-        return yield* println(FIGHT.obaNaKolechkoVot());
+        yield* println(FIGHT.obaNaKolechkoVot());
+        for (const line of ringLines(event.ring, FIGHT.megaKoltso())) yield* println(line);
+        return;
       case 'denHelped':
         yield* println(FIGHT.tyOtpinalEtogoMudaka(event.respect));
         return yield* println(FIGHT.tyPoluchaeshKachkovOpyta(event.exp));

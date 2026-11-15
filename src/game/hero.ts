@@ -4,7 +4,7 @@ import { Effect } from 'effect';
 import { writeLn } from '../crt/crt';
 import { CHARACTER_CLASSES } from '../state/kinds';
 import { typeName, rankName } from '../state/names';
-import type { StatKey } from '../state/state';
+import type { StartedGame, StatKey } from '../state/state';
 import { div, i16, mod } from '../tp/num';
 import { print, println, rnd, started } from './prelude';
 import { type Color, text, type Text } from './text';
@@ -338,36 +338,46 @@ export const strengthUp = Effect.gen(function* () {
   st.player.damage.min = i16(st.player.damage.min + (1 - mod(st.player.stats.strength, 2)));
 });
 
-/** next ring of the Пг → Мега → Гп chain; the Мега message differs between callers */
-export function gainRing(megaText: Text) {
-  return Effect.gen(function* () {
-    const st = yield* started;
-    if (!st.player.body.hands.rings.pomogi) {
-      yield* println(HERO.koltsoPomogiGospodi());
-      st.player.stats.strength = i16(st.player.stats.strength + 1);
-      st.player.stats.agility = i16(st.player.stats.agility + 1);
-      st.player.stats.vitality = i16(st.player.stats.vitality + 1);
-      st.player.stats.luck = i16(st.player.stats.luck + 1);
-      st.player.health.max = i16(st.player.health.max + 6);
-      st.player.health.current = i16(st.player.health.current + 6);
-      st.player.damage.max = i16(st.player.damage.max + 1);
-      st.player.damage.min = i16(st.player.damage.min + (1 - mod(st.player.stats.strength, 2)));
-      st.player.body.hands.rings.pomogi = true;
-    } else if (!st.player.body.hands.rings.mega) {
-      yield* println(megaText);
-      st.player.stats.strength = i16(st.player.stats.strength + 4);
-      st.player.stats.agility = i16(st.player.stats.agility + 4);
-      st.player.stats.vitality = i16(st.player.stats.vitality + 4);
-      st.player.stats.luck = i16(st.player.stats.luck + 4);
-      st.player.health.max = i16(st.player.health.max + 24);
-      st.player.health.current = i16(st.player.health.current + 24);
-      st.player.damage.max = i16(st.player.damage.max + 4);
-      st.player.damage.min = i16(st.player.damage.min + 2);
-      st.player.body.hands.rings.mega = true;
-    } else if (!st.player.body.hands.rings.pomiluy) {
-      yield* println(HERO.vaschePoleznoeKoltsoGospodi());
-      yield* println(HERO.vosstZhizni35());
-      st.player.body.hands.rings.pomiluy = true;
-    }
-  });
+/** a ring of the Пг → Мега → Гп chain */
+export type ChainRing = 'pomogi' | 'mega' | 'pomiluy';
+
+/** puts on the next ring of the chain; nothing when the chain is complete */
+export function nextRing(st: StartedGame): ChainRing | undefined {
+  const rings = st.player.body.hands.rings;
+  if (!rings.pomogi) {
+    st.player.stats.strength = i16(st.player.stats.strength + 1);
+    st.player.stats.agility = i16(st.player.stats.agility + 1);
+    st.player.stats.vitality = i16(st.player.stats.vitality + 1);
+    st.player.stats.luck = i16(st.player.stats.luck + 1);
+    st.player.health.max = i16(st.player.health.max + 6);
+    st.player.health.current = i16(st.player.health.current + 6);
+    st.player.damage.max = i16(st.player.damage.max + 1);
+    st.player.damage.min = i16(st.player.damage.min + (1 - mod(st.player.stats.strength, 2)));
+    rings.pomogi = true;
+    return 'pomogi';
+  }
+  if (!rings.mega) {
+    st.player.stats.strength = i16(st.player.stats.strength + 4);
+    st.player.stats.agility = i16(st.player.stats.agility + 4);
+    st.player.stats.vitality = i16(st.player.stats.vitality + 4);
+    st.player.stats.luck = i16(st.player.stats.luck + 4);
+    st.player.health.max = i16(st.player.health.max + 24);
+    st.player.health.current = i16(st.player.health.current + 24);
+    st.player.damage.max = i16(st.player.damage.max + 4);
+    st.player.damage.min = i16(st.player.damage.min + 2);
+    rings.mega = true;
+    return 'mega';
+  }
+  if (!rings.pomiluy) {
+    rings.pomiluy = true;
+    return 'pomiluy';
+  }
+  return undefined;
+}
+
+/** the lines of a new ring; the Мега message differs between the places it comes from */
+export function ringLines(ring: ChainRing, megaText: Text): Text[] {
+  if (ring === 'pomogi') return [HERO.koltsoPomogiGospodi()];
+  if (ring === 'mega') return [megaText];
+  return [HERO.vaschePoleznoeKoltsoGospodi(), HERO.vosstZhizni35()];
 }

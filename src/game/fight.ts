@@ -13,7 +13,6 @@ import {
   type Enemy,
   type Health,
   type Injuries,
-  type Rings,
   type StartedGame,
   type StatKey,
   type Weapons,
@@ -21,8 +20,8 @@ import {
 import { div, i16, mod, round, u8 } from '../tp/num';
 import { CMD, parseCommand } from './commands';
 import { showEnemy } from './enemy';
-import { type FightEvent, type Hit, MEGA_RING, type Side, tell } from './fight-view';
-import { drinkBeer, gainRing, levelUp, showStats } from './hero';
+import { type FightEvent, type Hit, type Side, tell } from './fight-view';
+import { drinkBeer, levelUp, nextRing, showStats } from './hero';
 import { halt, lowerCase, luckAtLeast, rnd, started } from './prelude';
 import { gameOver, victoryAnimation } from './screens';
 
@@ -154,8 +153,8 @@ function enemyDied(kind: FightKind) {
     yield* tell(takeSpoils(st));
     if (openDen(st)) yield* tell({ type: 'denOpened' });
     if ((yield* rnd(30)) === 0) {
-      if (!ringChainComplete(st.player.body.hands.rings)) yield* tell({ type: 'ringDropped' });
-      yield* gainRing(MEGA_RING);
+      const ring = nextRing(st);
+      if (ring) yield* tell({ type: 'ringDropped', ring });
     }
     yield* tell(...(yield* loot(st)));
     if (kind === 'denHelp') {
@@ -560,11 +559,6 @@ function backupCalled(combat: Combat): boolean {
 
 function backupHere(combat: Combat): boolean {
   return combat.backup >= BACKUP_ARRIVED;
-}
-
-/** the Пг → Мега → Гп chain is complete: another Мега ring only adds stats */
-function ringChainComplete(rings: Rings): boolean {
-  return rings.pomogi && rings.mega && rings.pomiluy;
 }
 
 /** none of these weapons in hand (a new weapon only adds the difference to the best one) */
