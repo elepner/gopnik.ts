@@ -99,9 +99,10 @@
 - `print(text)`/`println(text)` take a `Text`; never build texts by string concatenation.
 - Everything the player types lives in `CMD` (`src/game/commands.ts`), one dictionary per prompt
   (`CMD.main.walk`, `CMD.den.borrow`, `CMD.market.beer`, …): the same letter means different
-  things in different places. Compare the raw input from the state with these constants on every
-  check (`st.session.lastAnswer === CMD.den.borrow`) — don't parse it once into a local: the
-  original re-reads it, and a fight inside a place overwrites it.
+  things in different places. Each context is a schema of its literals: parse the input with it
+  and compare (`parseCommand('den', st.session.lastAnswer) === CMD.den.borrow`), so a command
+  of another context doesn't type-check. Places parse the last answer again on every check, not
+  once into a local: the original re-reads it, and a fight inside a place overwrites it.
 - Working variables (the rolled event, a bet, sale flags, the save number…) are locals and
   parameters, not state: the only shared input in the state is `session.lastAnswer`. They still
   sit in the original's data segment, so `legacy.ts` lists them in `SCRATCH_FIELDS` and the

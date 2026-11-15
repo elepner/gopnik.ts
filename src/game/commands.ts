@@ -1,9 +1,12 @@
 /**
  * Everything the player types, by context. The same letter means different things in different
  * places (`h` drinks a beer in the street but patches you up at the vet), so every prompt has
- * its own dictionary. Game code compares the raw input with these constants: the original keeps
- * the typed string and re-checks it after every action (a fight inside a place overwrites it).
+ * its own set of literals, and the input is parsed with the schema of its context. The original
+ * keeps the typed string and re-checks it after every action (a fight inside a place overwrites
+ * it), so places parse the last answer again on every check.
  */
+import { Option, Schema } from 'effect';
+
 export const CMD = {
   /** the main prompt `\` */
   main: {
@@ -19,6 +22,8 @@ export const CMD = {
     den: 'pr',
     club: 'kl',
     gym: 'trn',
+    beer: 'h',
+    beerUntilHealthy: 'mh',
     joint: 'kos',
     commands: 'i',
     stats: 's',
@@ -30,15 +35,12 @@ export const CMD = {
     exit: 'exit',
     exitShort: 'e',
   },
-  /** beer, in the street and in a fight */
-  beer: {
-    one: 'h',
-    untilHealthy: 'mh',
-  },
   /** the fight prompt `Битва\` */
   fight: {
     kick: 'k',
     run: 'run',
+    beer: 'h',
+    beerUntilHealthy: 'mh',
     joint: 'kos',
     stats: 's',
     inspectEnemy: 'sv',
@@ -49,12 +51,6 @@ export const CMD = {
   /** answers to yes/no questions */
   answer: {
     yes: 'y',
-  },
-  /** every place loop */
-  place: {
-    leave: 'w',
-    /** what the dealers leave in the input after selling spare things */
-    nothing: ' ',
   },
   market: {
     hotdog: '1',
@@ -67,6 +63,7 @@ export const CMD = {
     coolBoots: '8',
     coolLeather: '9',
     steal: 't',
+    leave: 'w',
   },
   dealers: {
     joint: '1',
@@ -80,10 +77,12 @@ export const CMD = {
     silencer: '9',
     sellJunk: 'x',
     sellSpareThings: 'wes',
+    leave: 'w',
   },
   vet: {
     patchUp: 'h',
     fixBones: 'r',
+    leave: 'w',
     exit: 'e',
   },
   den: {
@@ -93,11 +92,13 @@ export const CMD = {
     respect: 's',
     ask: 'a',
     job: 'd',
+    leave: 'w',
   },
   club: {
     playCards: 'p',
     disco: '1',
     cheatTricks: '2',
+    leave: 'w',
   },
   gym: {
     weights: '1',
@@ -105,10 +106,27 @@ export const CMD = {
     exp: '3',
     mouthGuard: '4',
     press: '5',
+    leave: 'w',
   },
 } as const;
+
+/** what the dealers leave in the input after selling spare things: no command at all */
+export const NO_ANSWER = ' ';
 
 export type Context = keyof typeof CMD;
 
 /** the raw input of a command of a context */
 export type Command<C extends Context> = (typeof CMD)[C][keyof (typeof CMD)[C]];
+
+/** a schema per context: the literals of its commands */
+const SCHEMAS = Object.fromEntries(
+  Object.entries(CMD).map(([context, commands]) => [
+    context,
+    Schema.decodeUnknownOption(Schema.Literals(Object.values(commands))),
+  ])
+) as { [C in Context]: (input: unknown) => Option.Option<Command<C>> };
+
+/** the command of a context the typed text is, if any */
+export function parseCommand<C extends Context>(context: C, input: string): Command<C> | undefined {
+  return Option.getOrUndefined(SCHEMAS[context](input));
+}

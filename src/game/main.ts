@@ -7,7 +7,7 @@ import { encodeSave } from '../state/legacy';
 import { typeName } from '../state/names';
 import { SaveName } from '../tp/brands';
 import { i16, str, u8 } from '../tp/num';
-import { CMD } from './commands';
+import { CMD, type Command, parseCommand } from './commands';
 import { saveMage, temple } from './encounters';
 import { setupRector, spawnEnemy } from './enemy';
 import { fight, smokeJoint } from './fight';
@@ -47,7 +47,7 @@ const turn = Effect.gen(function* () {
     yield* fight(4);
   }
   yield* print(plain`\\`);
-  const cmd = lowerCase(yield* readLine);
+  const cmd = parseCommand('main', lowerCase(yield* readLine));
   if (cmd === CMD.main.walk || cmd === CMD.main.run) yield* walk(cmd);
   if (cmd === CMD.main.market) yield* market;
   if (cmd === CMD.main.dealers) yield* dealers;
@@ -57,8 +57,8 @@ const turn = Effect.gen(function* () {
   if (cmd === CMD.main.den) yield* den;
   if (cmd === CMD.main.club) yield* club;
   if (cmd === CMD.main.gym) yield* gym;
-  if (cmd === CMD.beer.one) yield* drinkBeer('one');
-  if (cmd === CMD.beer.untilHealthy) yield* drinkBeer('untilHealthy');
+  if (cmd === CMD.main.beer) yield* drinkBeer('one');
+  if (cmd === CMD.main.beerUntilHealthy) yield* drinkBeer('untilHealthy');
   if (cmd === CMD.main.joint) yield* smokeJoint(10);
   if (cmd === CMD.main.commands) yield* commands;
   if (cmd === CMD.main.stats) yield* showStats;
@@ -86,7 +86,7 @@ const nextDistrict = Effect.gen(function* () {
   st.world.heat.club = 0;
   yield* println(MAIN.tyDokazalChtoTy());
   yield* println(MAIN.hocheshSohranitSvoiDostizheniya());
-  if ((yield* prompt(plain`\\`)) === CMD.answer.yes) {
+  if (parseCommand('answer', yield* prompt(plain`\\`)) === CMD.answer.yes) {
     const slot = str(st.world.district);
     yield* (yield* Disk).write(SaveName(`save_r${slot}.sav`), encodeSave(st));
     yield* println(MAIN.sohranenoVSaveR(slot));
@@ -115,7 +115,7 @@ const nextDistrict = Effect.gen(function* () {
 });
 
 /** 0000:AEA1 — `w`/`run`: wander around looking for trouble */
-function walk(cmd: string) {
+function walk(cmd: Command<'main'>) {
   return Effect.gen(function* () {
     const st = yield* started;
     if (st.player.stoned > 0) {
@@ -253,7 +253,7 @@ const prettyGirl = Effect.gen(function* () {
   if (st.world.places.girlfriend) return yield* println(MAIN.sovsemNicheNeProishodit());
   yield* println(MAIN.idetTipaKlevayaTsypa());
   st.session.lastAnswer = lowerCase(yield* readLine);
-  if (st.session.lastAnswer !== CMD.answer.yes) return;
+  if (parseCommand('answer', st.session.lastAnswer) !== CMD.answer.yes) return;
   if ((yield* rnd(2)) === 0) {
     yield* println(MAIN.tyTakoyPodkatyvaeshA());
     st.world.places.girlfriend = true;
@@ -277,11 +277,11 @@ const meetSomeone = Effect.gen(function* () {
     if (calm) {
       yield* println(MAIN.idetUrovnyaHocheshNaehat(type, st.enemy.level));
       st.session.lastAnswer = lowerCase(yield* readLine);
-      if (st.session.lastAnswer === CMD.answer.yes) engaged = true;
+      if (parseCommand('answer', st.session.lastAnswer) === CMD.answer.yes) engaged = true;
     } else {
       yield* println(MAIN.idetUrovnyaIschuschiyKogo(type, st.enemy.level));
       st.session.lastAnswer = lowerCase(yield* readLine);
-      if (st.session.lastAnswer === CMD.answer.yes) engaged = true;
+      if (parseCommand('answer', st.session.lastAnswer) === CMD.answer.yes) engaged = true;
       else if ((yield* rnd(2)) === 0) {
         yield* println(MAIN.onTebyaZametil());
         engaged = true;

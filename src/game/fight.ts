@@ -6,7 +6,7 @@ import { ENEMIES } from '../state/kinds';
 import { typeName } from '../state/names';
 import { type StatKey } from '../state/state';
 import { div, i16, mod, round, u8 } from '../tp/num';
-import { CMD } from './commands';
+import { CMD, parseCommand } from './commands';
 import { showEnemy } from './enemy';
 import { drinkBeer, gainRing, levelUp, showStats } from './hero';
 import { halt, lowerCase, luckAtLeast, print, println, rnd, started } from './prelude';
@@ -58,7 +58,7 @@ export function fight(kind: FightKind) {
 
       yield* print(FIGHT.bitva());
       st.session.lastAnswer = lowerCase(yield* readLine);
-      const input = st.session.lastAnswer;
+      const input = parseCommand('fight', st.session.lastAnswer);
 
       if (input === CMD.fight.kick) {
         yield* playerKicks(playerHits);
@@ -92,8 +92,8 @@ export function fight(kind: FightKind) {
         }
       }
 
-      if (input === CMD.beer.one) yield* drinkBeer('one');
-      if (input === CMD.beer.untilHealthy) yield* drinkBeer('untilHealthy');
+      if (input === CMD.fight.beer) yield* drinkBeer('one');
+      if (input === CMD.fight.beerUntilHealthy) yield* drinkBeer('untilHealthy');
       if (input === CMD.fight.joint) yield* smokeJoint(3);
       if (input === CMD.fight.stats) yield* showStats;
       if (input === CMD.fight.inspectEnemy) yield* showEnemy;
