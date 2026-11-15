@@ -2,10 +2,13 @@
  * What happens in the game, as events: the rules `emit` them and don't know who listens. The
  * game's views listen (`view-layer.ts`, wired in `runtime.ts`); a test can listen instead and
  * keep them. Events are shown the moment they are emitted, so a view may read the state.
+ * An event that changes the state is reported: the part's `apply` puts it into the state
+ * first, then it is emitted.
  */
 import { Context, Effect } from 'effect';
 
 import type { EndOfInput } from '../crt/crt';
+import type { Game } from '../state/state';
 import type { AftermathEvent } from './aftermath-view';
 import type { BeerEvent } from './beer';
 import type { Context as CommandContext } from './commands';
@@ -21,6 +24,7 @@ import type { GirlfriendEvent } from './places/girlfriend-view';
 import type { GymEvent } from './places/gym-view';
 import type { MarketEvent } from './places/market-view';
 import type { VetEvent } from './places/vet-view';
+import { started } from './prelude';
 import type { StartEvent } from './start-view';
 import type { WalkEvent } from './walk-view';
 
@@ -58,4 +62,13 @@ export const Events = Context.Service<IEvents>('Events');
 
 export function emit(event: GameEvent) {
   return Effect.flatMap(Events, (events) => events.emit(event));
+}
+
+/** a part's rules report their events: `apply` puts each one into the state, then it is emitted */
+export function reporter<E extends GameEvent>(apply: (st: Game, event: E) => void) {
+  return (event: E) =>
+    Effect.gen(function* () {
+      apply(yield* started, event);
+      yield* emit(event);
+    });
 }

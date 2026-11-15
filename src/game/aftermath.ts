@@ -14,11 +14,14 @@ import { ENEMIES } from '../state/kinds';
 import { battle, type Game } from '../state/state';
 import { div, i16 } from '../tp/num';
 import { type AftermathEvent } from './aftermath-view';
-import { emit } from './events';
+import { reporter } from './events';
 import type { FightOutcome } from './fight';
 import { DEN_LEVEL, levelInDistrict, levelUp, take } from './hero';
 import { luckAtLeast, rnd, started } from './prelude';
 import { gameOver, victoryAnimation } from './screens';
+
+/** an event happens: into the state, then out to whoever listens */
+const report = reporter(apply);
 
 /** the usual aftermath: a victory is claimed, a death ends the game */
 export function settle(outcome: FightOutcome) {
@@ -76,14 +79,6 @@ const spoils = Effect.gen(function* () {
   }
   yield* loot(st);
 });
-
-/** an event happens: into the state, then out to whoever listens */
-function report(event: AftermathEvent) {
-  return Effect.gen(function* () {
-    apply(yield* started, event);
-    yield* emit(event);
-  });
-}
 
 function apply(st: Game, event: AftermathEvent) {
   const p = st.player;

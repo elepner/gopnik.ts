@@ -61,6 +61,12 @@ export function put(body: Body, item: Item) {
   (slot as Record<string, unknown>)[key] = true;
 }
 
+/** takes a thing out of its slot (sold) */
+export function drop(body: Body, item: Item) {
+  const [slot, key] = SLOTS[item](body);
+  (slot as Record<string, unknown>)[key] = false;
+}
+
 /** the next ring of the chain, nothing when it is complete */
 export function nextRing(body: Body): ChainRing | undefined {
   return (['pomogiRing', 'megaRing', 'pomiluyRing'] as const).find((r) => !has(body, r));
