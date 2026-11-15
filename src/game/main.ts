@@ -2,9 +2,10 @@
 import { Effect } from 'effect';
 
 import { readKey, readLine } from '../crt/crt';
+import { ENEMIES, enemyAt } from '../state/kinds';
 import { encodeSave } from '../state/legacy';
 import { typeName } from '../state/names';
-import { SaveName, TypeId } from '../tp/brands';
+import { SaveName } from '../tp/brands';
 import { i16, str, u8 } from '../tp/num';
 import { saveMage, temple } from './encounters';
 import { setupRector, spawnEnemy } from './enemy';
@@ -243,10 +244,14 @@ const meetSomeone = Effect.gen(function* () {
   const st = yield* started;
   yield* spawnEnemy(0);
   st.scratch.engaged = false;
-  if (st.enemy.type !== 8) {
+  if (st.enemy.type !== 'ment') {
     st.scratch.sneak = i16(st.world.district * 7 + 15);
     if (st.player.body.skin.tattoo) st.scratch.sneak = i16(Math.trunc(st.scratch.sneak / 2));
-    const calm = ((yield* luckAtLeast(st.scratch.sneak)) || st.enemy.type < 3) && st.enemy.type < 7;
+    // weaklings never look for trouble; lads only when the hero is unlucky; thugs and maniacs always
+    const group = ENEMIES[st.enemy.type].group;
+    const calm =
+      ((yield* luckAtLeast(st.scratch.sneak)) || group === 'weakling') &&
+      (group === 'weakling' || group === 'lad');
     const type = typeName(st.enemy.type);
     if (calm) {
       yield* println(MAIN.idetUrovnyaHocheshNaehat, type, st.enemy.level);
@@ -280,7 +285,7 @@ const nothingHappens = Effect.gen(function* () {
   const st = yield* started;
   if (st.player.stoned > 0 && (yield* rnd(7)) === 0) yield* println(MAIN.vseKudaToPlyvet);
   if (st.player.stoned > 0 && (yield* rnd(7)) === 0) {
-    const type = typeName(TypeId(yield* rnd(7)));
+    const type = typeName(enemyAt(yield* rnd(7)));
     yield* println(MAIN.idetUrovnyaHocheshNaehat, type, yield* rnd(st.world.district * 10 + 1));
     st.scratch.input = yield* readLine;
     yield* println(MAIN.cheZaBotvaNi);

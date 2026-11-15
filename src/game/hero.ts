@@ -2,9 +2,9 @@
 import { Effect } from 'effect';
 
 import { writeLn } from '../crt/crt';
-import { STAT_WEIGHTS } from '../data/tables';
+import { CHARACTER_CLASSES } from '../state/kinds';
 import { typeName, rankName } from '../state/names';
-import { TYPE_ID, type StatKey } from '../state/state';
+import type { StatKey } from '../state/state';
 import { div, i16, mod } from '../tp/num';
 import { print, println, rnd, started } from './prelude';
 import { HERO } from './texts';
@@ -211,7 +211,12 @@ export function levelUp(rector: boolean) {
       if (!rector && st.player.progression.level === 40) break;
       st.player.progression.level = i16(st.player.progression.level + 1);
       yield* print(HERO.pontovostUvelichivaetsya);
-      const [w0, w1, w2, w3] = STAT_WEIGHTS[TYPE_ID[st.player.type]];
+      const {
+        strength: w0,
+        agility: w1,
+        vitality: w2,
+        luck: w3,
+      } = CHARACTER_CLASSES[st.player.type].weights;
       const total = w0 + w1 + w2 + w3;
       // the original keeps a string[2] per level for levels 1..40
       const history = (stat: StatKey) => {

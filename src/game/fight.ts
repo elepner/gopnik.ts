@@ -2,6 +2,7 @@
 import { Effect } from 'effect';
 
 import { readKey, readLine, writeLn } from '../crt/crt';
+import { ENEMIES } from '../state/kinds';
 import { typeName } from '../state/names';
 import { type StatKey } from '../state/state';
 import { div, i16, mod, round, u8 } from '../tp/num';
@@ -143,15 +144,16 @@ function greeting(kind: FightKind) {
     const st = yield* started;
     const type = typeName(st.player.type);
     if (kind === 0 || kind === 6) {
-      if (st.enemy.type <= 2) {
+      const group = ENEMIES[st.enemy.type].group;
+      if (group === 'weakling') {
         yield* println(FIGHT.slyshVas);
         yield* println(FIGHT.aCheVasche);
-      } else if (st.enemy.type <= 6) {
+      } else if (group === 'lad') {
         yield* println(FIGHT.patsanTyIzKakogo);
         yield* println(FIGHT.aTyPoPinkam);
-      } else if (st.enemy.type === 7) yield* println(FIGHT.eyMudak);
-      else if (st.enemy.type === 8) yield* println(FIGHT.blinEtoZheIzvestnyy, st.player.name, type);
-      else if (st.enemy.type === 9) {
+      } else if (group === 'thug') yield* println(FIGHT.eyMudak);
+      else if (group === 'cop') yield* println(FIGHT.blinEtoZheIzvestnyy, st.player.name, type);
+      else if (group === 'maniac') {
         yield* println(FIGHT.yaManyak);
         yield* println(FIGHT.radPoznakomitsya, type);
       }
@@ -492,7 +494,9 @@ function enemyDied(kind: FightKind) {
     st.player.health.current = i16(st.player.health.current + 5);
     if (st.player.health.current > st.player.health.max)
       st.player.health.current = st.player.health.max;
-    st.player.respect = i16(st.player.respect + (st.enemy.type + 1 + div(st.enemy.level, 3)));
+    st.player.respect = i16(
+      st.player.respect + (ENEMIES[st.enemy.type].tier + 1 + div(st.enemy.level, 3))
+    );
     if (!st.world.places.den && st.player.progression.level - (st.world.district - 1) * 10 >= 3) {
       st.world.places.den = true;
       yield* println(FIGHT.ponovostUlutshilasNaStolko);
@@ -521,7 +525,7 @@ function enemyDied(kind: FightKind) {
 
 const loot = Effect.gen(function* () {
   const st = yield* started;
-  if ((yield* luckAtLeast(st.world.district * 25)) && st.enemy.type === 2) {
+  if ((yield* luckAtLeast(st.world.district * 25)) && st.enemy.type === 'nark') {
     st.player.resources.joints = i16(st.player.resources.joints + (yield* rnd(3)));
     yield* println(FIGHT.aUNarkaByl);
   }
@@ -530,7 +534,8 @@ const loot = Effect.gen(function* () {
     st.player.damage.min = i16(st.player.damage.min + n);
     st.player.damage.max = i16(st.player.damage.max + n);
   };
-  if (st.enemy.type === 1) {
+  const group = ENEMIES[st.enemy.type].group;
+  if (st.enemy.type === 'nefor') {
     const r = yield* rnd(3);
     if (r === 0 && !st.player.body.neck.cross) {
       st.player.stats.luck = i16(st.player.stats.luck + 2);
@@ -544,7 +549,7 @@ const loot = Effect.gen(function* () {
       yield* println(FIGHT.tyNashelMobilu);
       st.player.body.pockets.phone = true;
     }
-  } else if (st.enemy.type >= 3 && st.enemy.type <= 6) {
+  } else if (group === 'lad') {
     const r = yield* rnd(2);
     if (r === 0 && !st.player.body.hands.weapons.knuckles) {
       st.player.body.hands.weapons.knuckles = true;
@@ -563,7 +568,7 @@ const loot = Effect.gen(function* () {
         weapon(st.player.body.hands.weapons.knuckles ? 2 : 4);
       else yield* println(FIGHT.noUTebyaEst);
     }
-  } else if (st.enemy.type === 7) {
+  } else if (group === 'thug') {
     const r = yield* rnd(2);
     if (r === 0 && !st.player.body.eyes.glasses) {
       st.player.body.eyes.glasses = true;
@@ -572,7 +577,7 @@ const loot = Effect.gen(function* () {
       yield* println(FIGHT.tyNashelMobilu);
       st.player.body.pockets.phone = true;
     }
-  } else if (st.enemy.type === 9) {
+  } else if (group === 'maniac') {
     const r = yield* rnd(2);
     if (r === 0 && !st.player.body.hands.weapons.knife) {
       st.player.body.hands.weapons.knife = true;

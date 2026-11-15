@@ -2,7 +2,7 @@ import { describe, expect, it } from '@effect/vitest';
 import { Effect } from 'effect';
 
 import { hero, play } from '../../test/game';
-import { STAT_WEIGHTS } from '../data/tables';
+import { ENEMIES } from '../state/kinds';
 import { District } from '../tp/brands';
 import { div, i16 } from '../tp/num';
 import { setupRector, spawnEnemy } from './enemy';
@@ -19,9 +19,9 @@ describe('spawnEnemy (0000:0D14)', () => {
             s.player.progression.level = i16(seed % 40);
           },
         });
-        const [w0, w1, w2, w3] = STAT_WEIGHTS[st.enemy.type];
-        expect(st.enemy.type).toBeGreaterThanOrEqual(0);
-        expect(st.enemy.type).toBeLessThanOrEqual(9);
+        const { tier, weights } = ENEMIES[st.enemy.type];
+        const { strength: w0, agility: w1, vitality: w2, luck: w3 } = weights;
+        expect(tier).toBeLessThanOrEqual(9); // the rector never walks the streets
         expect(
           st.enemy.stats.strength +
             st.enemy.stats.agility +
@@ -51,9 +51,11 @@ describe('spawnEnemy (0000:0D14)', () => {
             seed,
             setup: (s) => (hero(s), (s.world.district = District(4)), (s.world.trail = true)),
           });
-          expect(caught.st.enemy.type).toBeLessThanOrEqual(7);
+          expect(ENEMIES[caught.st.enemy.type].tier).toBeLessThanOrEqual(
+            ENEMIES.bespredelshchik.tier
+          );
           const job = yield* play(spawnEnemy(2), { seed, setup: hero });
-          expect(job.st.enemy.type).toBe(8);
+          expect(job.st.enemy.type).toBe('ment');
         }
       })
   );
@@ -78,7 +80,7 @@ describe('setupRector (0000:11C2)', () => {
         fake.st.enemy.level,
         fake.st.enemy.health.max,
         fake.st.enemy.armor,
-      ]).toEqual([10, 125, 41 + 123 * 5 + 10, 60]);
+      ]).toEqual(['rector', 125, 41 + 123 * 5 + 10, 60]);
       const real = yield* play(setupRector(1), { setup: hero });
       expect([
         real.st.enemy.level,

@@ -5,7 +5,10 @@
  * comparison with the emulated original). Numbers are Turbo Pascal Integers/Bytes: game code
  * wraps them explicitly (`i16`, `u8`) when it writes them.
  */
-import type { District, TypeId } from '../tp/brands';
+import type { District } from '../tp/brands';
+import type { CharacterType, EnemyKind } from './kinds';
+
+export type { CharacterType, EnemyKind } from './kinds';
 
 /** a fresh game: title screen, save selection and character creation still ahead */
 export function createState(): GameState {
@@ -57,7 +60,7 @@ export function createState(): GameState {
       },
     },
     enemy: {
-      type: 0 as TypeId,
+      type: 'dohlyak',
       level: 0,
       stats: { strength: 0, agility: 0, vitality: 0, luck: 0 },
       health: { current: 0, max: 0 },
@@ -170,8 +173,6 @@ export interface Den {
 
 // ------------------------------------------------------------------ fighters
 
-export type CharacterType = 'patsan' | 'otmorozok' | 'gopnik' | 'vor';
-
 export type StatKey = 'strength' | 'agility' | 'vitality' | 'luck';
 
 export interface Stats {
@@ -235,8 +236,7 @@ export interface Resources {
 }
 
 export interface Enemy {
-  /** index into the type table (0 Дохляк .. 9 Маньячок, 10 Ректор) */
-  type: TypeId;
+  type: EnemyKind;
   level: number;
   readonly stats: Stats;
   readonly health: Health;
@@ -318,13 +318,3 @@ export interface Scratch {
   saveCount: number;
   saveKey: number;
 }
-
-/** the type table index of a character type */
-export const TYPE_ID: Record<CharacterType, number> = {
-  patsan: 3,
-  otmorozok: 4,
-  gopnik: 5,
-  vor: 6,
-};
-
-export const CHARACTER_TYPES: readonly CharacterType[] = ['patsan', 'otmorozok', 'gopnik', 'vor'];

@@ -4,12 +4,11 @@ import { Effect } from 'effect';
 import { i16 } from '../../src/tp/num';
 import { hero, play } from '../../test/game';
 import type { GameState as State } from '../state/state';
-import { TypeId } from '../tp/brands';
 import { fight } from './fight';
 
 /** a sturdy Гопник of level 5 in front of the hero */
 function enemy(st: State) {
-  st.enemy.type = TypeId(5);
+  st.enemy.type = 'gopnik';
   st.enemy.level = 5;
   st.enemy.stats.strength = 6;
   st.enemy.stats.agility = 4;

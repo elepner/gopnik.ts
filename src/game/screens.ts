@@ -12,9 +12,8 @@ import {
   writeLn,
   WHITE,
 } from '../crt/crt';
-import { STAT_WEIGHTS } from '../data/tables';
+import { CHARACTER_CLASSES } from '../state/kinds';
 import { typeName } from '../state/names';
-import { TYPE_ID } from '../state/state';
 import { halt, println, started } from './prelude';
 import { SCREENS } from './texts';
 
@@ -97,7 +96,7 @@ export const help = Effect.gen(function* () {
   yield* println(SCREENS.nuSlushayVChem, type, st.player.name);
   yield* println(SCREENS.vnachaleTyDolzhenVybrat);
   yield* println(SCREENS.naprimer, type);
-  const w = STAT_WEIGHTS[TYPE_ID[st.player.type]][0];
+  const w = CHARACTER_CLASSES[st.player.type].weights.strength;
   yield* println(SCREENS.vsegoNavykiVSumme, w);
   yield* println(SCREENS.novogoUrovnyaPontovostiIz, w);
   for (const line of HELP_1) yield* println(line);

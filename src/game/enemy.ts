@@ -1,9 +1,8 @@
 /** Enemies: generation, the rector bosses, `sv` (inspect the enemy). */
 import { Effect } from 'effect';
 
-import { STAT_WEIGHTS } from '../data/tables';
+import { ENEMIES, enemyAt } from '../state/kinds';
 import { typeName, rankName } from '../state/names';
-import { TypeId } from '../tp/brands';
 import { div, i16, round, u8 } from '../tp/num';
 import { accuracy, healthColor } from './hero';
 import { println, rnd, started } from './prelude';
@@ -30,7 +29,7 @@ export function spawnEnemy(kind: SpawnKind) {
     if (type > 9) type = 9;
     if (kind === 1 && type > 7) type = 7;
     if (kind === 2) type = 8;
-    st.enemy.type = TypeId(type);
+    st.enemy.type = enemyAt(type);
 
     const bonus = (yield* rnd(st.world.district)) * 4;
     const r5 = yield* rnd(5);
@@ -43,7 +42,7 @@ export function spawnEnemy(kind: SpawnKind) {
     st.enemy.stats.strength = i16(
       (st.enemy.stats.agility = st.enemy.stats.vitality = st.enemy.stats.luck = 0)
     );
-    const [w0, w1, w2, w3] = STAT_WEIGHTS[st.enemy.type];
+    const { strength: w0, agility: w1, vitality: w2, luck: w3 } = ENEMIES[st.enemy.type].weights;
     const total = (w0 + w1 + w2 + w3) & 0xff;
     const points = (total + st.enemy.level * 2) & 0xff;
     for (let l = 1; l <= points; l++) {
@@ -55,7 +54,8 @@ export function spawnEnemy(kind: SpawnKind) {
     }
     yield* deriveEnemy;
 
-    const loot = () => round(i16(st.enemy.type * st.enemy.level) / 5) + div(st.enemy.level, 2);
+    const loot = () =>
+      round(i16(ENEMIES[st.enemy.type].tier * st.enemy.level) / 5) + div(st.enemy.level, 2);
     const junkBase = yield* rnd(6);
     st.enemy.loot.junk = i16((yield* rnd(loot())) * 2 - loot() + junkBase);
     if (st.enemy.loot.junk < 0) st.enemy.loot.junk = 0;
@@ -72,7 +72,7 @@ export function spawnEnemy(kind: SpawnKind) {
 export function setupRector(which: 0 | 1) {
   return Effect.gen(function* () {
     const st = yield* started;
-    st.enemy.type = TypeId(10);
+    st.enemy.type = 'rector';
     const [level, str, agi, vit, luck, armor] = RECTORS[which];
     st.enemy.level = i16(level);
     st.enemy.stats.strength = i16(str);
@@ -107,7 +107,8 @@ export const showEnemy = Effect.gen(function* () {
   const st = yield* started;
   let title = st.enemy.level > 40 ? ENEMY.neVEtoyZhizni : rankName(st.enemy.level);
   title = ' - ' + title;
-  if (st.enemy.type >= 8) title = '';
+  // cops, maniacs and the rector have no rank title
+  if (ENEMIES[st.enemy.type].tier >= ENEMIES.ment.tier) title = '';
   yield* println(ENEMY.etoUrovnya, typeName(st.enemy.type), st.enemy.level, title);
   yield* println(
     ENEMY.slLvZhvUd,

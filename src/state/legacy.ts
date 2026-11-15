@@ -4,9 +4,10 @@
  * emulated original. Game code never touches bytes; it works on `GameState`.
  */
 import { DS_INIT } from '../data/ds-init';
-import { District, DsOffset, TypeId } from '../tp/brands';
+import { District, DsOffset, type TypeId } from '../tp/brands';
 import { decodeCp866, encodeCp866 } from '../tp/cp866';
-import { CHARACTER_TYPES, type GameState, startGame, type StatKey, TYPE_ID } from './state';
+import { CHARACTER_CLASSES, CHARACTER_TYPES, ENEMIES, enemyAt } from './kinds';
+import { type GameState, startGame, type StatKey } from './state';
 
 /** SAVE_R?.SAV: the 694-byte record at DS:369C */
 export function encodeSave(st: GameState): Uint8Array {
@@ -93,9 +94,9 @@ const BINDINGS: Record<FieldName, Binding> = {
   version: [(s) => s.version, (s, v) => (s.version = String(v))],
   name: [(s) => s.player.name, (s, v) => (s.player.name = String(v))],
   charType: [
-    (s) => (s.phase === 'started' ? TYPE_ID[s.player.type] : s.typeChoice),
+    (s) => (s.phase === 'started' ? CHARACTER_CLASSES[s.player.type].tier : s.typeChoice),
     (s, v) => {
-      const type = CHARACTER_TYPES.find((t) => TYPE_ID[t] === v);
+      const type = CHARACTER_TYPES.find((t) => CHARACTER_CLASSES[t].tier === v);
       if (!type) throw new Error(`save holds an unknown character type ${v}`);
       startGame(s, type);
     },
@@ -157,7 +158,7 @@ const BINDINGS: Record<FieldName, Binding> = {
     },
   ],
   templeVisits: num((s) => s.world, 'templeVisits'),
-  eType: [(s) => s.enemy.type, (s, v) => (s.enemy.type = TypeId(Number(v)))],
+  eType: [(s) => ENEMIES[s.enemy.type].tier, (s, v) => (s.enemy.type = enemyAt(Number(v)))],
   eStr: num((s) => s.enemy.stats, 'strength'),
   eAgi: num((s) => s.enemy.stats, 'agility'),
   eVit: num((s) => s.enemy.stats, 'vitality'),

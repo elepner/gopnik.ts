@@ -2,8 +2,9 @@
 import { Effect } from 'effect';
 
 import { clrScr, readKey, readLine, writeLn } from '../crt/crt';
+import { CHARACTER_CLASSES, CHARACTER_TYPES } from '../state/kinds';
 import { decodeSave, decodePlaces } from '../state/legacy';
-import { CHARACTER_TYPES, startGame } from '../state/state';
+import { startGame } from '../state/state';
 import { District, SaveName } from '../tp/brands';
 import { div, i16, u8, val } from '../tp/num';
 import { Disk, Game, println, print, started } from './prelude';
@@ -117,7 +118,12 @@ const createCharacter = Effect.gen(function* () {
     yield* readType;
   }
   if (st.typeChoice < 0 || st.typeChoice > 3) st.typeChoice = 0;
-  const [str, agi, vit, luck] = START_STATS[st.typeChoice];
+  const {
+    strength: str,
+    agility: agi,
+    vitality: vit,
+    luck,
+  } = CHARACTER_CLASSES[CHARACTER_TYPES[st.typeChoice]].start;
   st.player.stats.strength = i16(str);
   st.player.stats.agility = i16(agi);
   st.player.stats.vitality = i16(vit);
@@ -134,14 +140,6 @@ const createCharacter = Effect.gen(function* () {
 });
 
 const TYPE_MENU = [START.n0Patsan, START.n1Otmorozok, START.n2Gopnik, START.n3Vor];
-
-/** [str, agi, vit, luck] by the chosen number */
-const START_STATS = [
-  [3, 3, 3, 3],
-  [5, 2, 4, 1],
-  [4, 3, 3, 2],
-  [3, 3, 2, 4],
-] as const;
 
 const readType = Effect.gen(function* () {
   const st = yield* creating;
