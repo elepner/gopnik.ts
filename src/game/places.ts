@@ -11,8 +11,8 @@ import { i16, mod, u8 } from '../tp/num';
 import { denHelpReward, settle } from './aftermath';
 import { CMD, NO_ANSWER, parseCommand } from './commands';
 import { encounter, spawnEnemy } from './enemy';
+import { emit } from './events';
 import { fight, STREET_FIGHT } from './fight';
-import { tell } from './fight-view';
 import { levelUp } from './hero';
 import { lowerCase, luckAtLeast, print, println, rnd, started } from './prelude';
 import { type Color, type Text } from './text';
@@ -158,7 +158,7 @@ const pickpocket = Effect.gen(function* () {
     Effect.gen(function* () {
       yield* println(PLACES.koryavyyTyPopalsya());
       yield* println(PLACES.etoUrovnya(typeName(battle(st).enemy.type), battle(st).enemy.level));
-      yield* tell({ type: 'greeting', by: 'caughtStealing' });
+      yield* emit({ type: 'greeting', by: 'caughtStealing' });
       yield* settle(yield* fight(STREET_FIGHT));
     })
   );
@@ -493,7 +493,7 @@ export const den = Effect.gen(function* () {
           yield* println(
             PLACES.etoUrovnya(typeName(battle(st).enemy.type), battle(st).enemy.level)
           );
-          yield* tell({ type: 'greeting', by: 'enemy' });
+          yield* emit({ type: 'greeting', by: 'enemy' });
           const outcome = yield* fight(STREET_FIGHT);
           yield* settle(outcome);
           return outcome;
@@ -542,7 +542,12 @@ const job = Effect.gen(function* () {
     yield* println(PLACES.shuherMenty());
     if (yield* luckAtLeast(st.world.district * 15)) yield* println(PLACES.tySmylsyaOtMentov());
     else {
-      yield* encounter(spawnEnemy(2), Effect.andThen(fight(STREET_FIGHT), settle));
+      yield* encounter(
+        spawnEnemy(2),
+        Effect.gen(function* () {
+          yield* settle(yield* fight(STREET_FIGHT));
+        })
+      );
       yield* println(PLACES.poraValit());
     }
   }

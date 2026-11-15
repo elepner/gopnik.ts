@@ -1,5 +1,5 @@
 /**
- * What the player sees of a fight. The fight logic (`fight.ts`) only reports what happened as
+ * What the player sees of a fight. The fight logic (`fight.ts`) only emits what happened as
  * typed events; this module turns them into the original's lines, colours and key pauses. What
  * the state already knows (health left, bullets, names) is read from it, not carried by events:
  * an event is told right where the original printed, so the state is the one it printed.
@@ -11,6 +11,12 @@ import { attr } from '../state/attributes';
 import { type CharacterType, ENEMIES } from '../state/kinds';
 import { typeName } from '../state/names';
 import { battle, type StatKey } from '../state/state';
+import { div } from '../tp/num';
+import { type BeerEvent } from './beer';
+import { showBeer } from './beer-view';
+import { showEnemy } from './enemy';
+import { extraHits, hitBudget, KICK } from './fight';
+import { showStats } from './hero';
 import { print, println, started } from './prelude';
 import type { Text } from './text';
 import { FIGHT } from './texts';
@@ -32,16 +38,10 @@ export interface Hit {
 export type FightEvent =
   /** what the enemy says first; a fight may also start without a word */
   | { readonly type: 'greeting'; readonly by: Greeting }
-  /** the opponent's agility takes kicks away */
-  | {
-      readonly type: 'slowedDown';
-      readonly side: Side;
-      readonly kicks: number;
-      readonly of: number;
-    }
+  /** the hit budgets of a fight: what each side has against the other's agility, of its own */
+  | { readonly type: 'fightStarted' }
   | { readonly type: 'crowdGathered' }
   | { readonly type: 'crowdShout'; readonly line: number }
-  | { readonly type: 'prompt' }
   /** a kick; no hit means a miss */
   | { readonly type: 'kick'; readonly by: Side; readonly hit?: Hit }
   /** agility gives another kick this turn */
@@ -64,6 +64,12 @@ export type FightEvent =
   | { readonly type: 'shotHit'; readonly damage: number }
   | { readonly type: 'bailedOut' }
   | { readonly type: 'jointRefused'; readonly because: 'jaw' | 'stoned' | 'none' }
+  /** `s`: the hero's stats */
+  | { readonly type: 'stats' }
+  /** `sv`: a look at the enemy */
+  | { readonly type: 'enemyInfo' }
+  /** `h`/`mh` in a fight */
+  | BeerEvent
   | {
       readonly type: 'smoked';
       /** healed to full by less than 10, or by 10 */
@@ -72,30 +78,30 @@ export type FightEvent =
       readonly inFight: boolean;
     };
 
-/** shows the events in order */
-export function tell(...events: readonly FightEvent[]) {
-  return Effect.forEach(events, show, { discard: true });
-}
-
-function show(event: FightEvent) {
+/** shows a fight's event (wired to `Events` by `view-layer.ts`) */
+export function showFight(event: FightEvent) {
   return Effect.gen(function* () {
     const st = yield* started;
     switch (event.type) {
       case 'greeting':
         return yield* greeting(event.by);
-      case 'slowedDown':
-        return yield* println(
-          event.side === 'enemy'
-            ? FIGHT.izZaTvoeyHoroshey(event.kicks, event.of)
-            : FIGHT.izZaHorosheyLovkosti(event.kicks, event.of)
-        );
+      case 'fightStarted': {
+        // says when the opponent's agility takes kicks away
+        const enemy = hitBudget(battle(st).enemy.stats.agility);
+        const hero = hitBudget(attr(st.player, 'agility'));
+        const enemyHits = extraHits(enemy, hero);
+        if (losesKicks(enemyHits, enemy))
+          yield* println(FIGHT.izZaTvoeyHoroshey(kicks(enemyHits), kicks(enemy)));
+        const heroHits = extraHits(hero, enemy);
+        if (losesKicks(heroHits, hero))
+          yield* println(FIGHT.izZaHorosheyLovkosti(kicks(heroHits), kicks(hero)));
+        return;
+      }
       case 'crowdGathered':
         return yield* println(FIGHT.nachinayutSobiratsyaZriteli());
       case 'crowdShout':
         for (const line of crowdShout(event.line, st.player)) yield* println(line);
         return;
-      case 'prompt':
-        return yield* print(FIGHT.bitva());
       case 'kick':
         return yield* kick(event.by, event.hit, event.by === 'hero' ? battle(st).enemy : st.player);
       case 'anotherKick':
@@ -154,6 +160,17 @@ function show(event: FightEvent) {
         );
       case 'bailedOut':
         return yield* println(FIGHT.tebePovezloZnakomyePatsany());
+      case 'stats':
+        return yield* showStats;
+      case 'enemyInfo':
+        return yield* showEnemy;
+      case 'cantDrink':
+      case 'notThirsty':
+      case 'drank':
+      case 'noBeer':
+      case 'drankUntilHealthy':
+      case 'beerRanOut':
+        return yield* showBeer(event);
       case 'jointRefused':
         return yield* println(
           event.because === 'jaw'
@@ -304,3 +321,13 @@ const CROWD: Record<number, Text> = {
   15: FIGHT.zriteliGospodaDelayteVashi(),
   16: FIGHT.zriteliNuCheTam(),
 };
+
+/** kicks per turn of a hit budget */
+function kicks(budget: number): number {
+  return div(budget - 1, KICK) + 1;
+}
+
+/** the opponent's agility took kicks away from a budget worth more than one */
+function losesKicks(hits: number, full: number): boolean {
+  return full > KICK && div(hits, KICK) < div(full, KICK);
+}

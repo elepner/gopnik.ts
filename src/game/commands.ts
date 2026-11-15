@@ -5,7 +5,11 @@
  * keeps the typed string and re-checks it after every action (a fight inside a place overwrites
  * it), so places parse the last answer again on every check.
  */
-import { Option, Schema } from 'effect';
+import { Effect, Option, Schema } from 'effect';
+
+import { readLine } from '../crt/crt';
+import { emit } from './events';
+import { lowerCase, started } from './prelude';
 
 export const CMD = {
   /** the main prompt `\` */
@@ -129,4 +133,18 @@ const SCHEMAS = Object.fromEntries(
 /** the command of a context the typed text is, if any */
 export function parseCommand<C extends Context>(context: C, input: string): Command<C> | undefined {
   return Option.getOrUndefined(SCHEMAS[context](input));
+}
+
+/**
+ * Asks the player for a command of a context: shows the context's prompt, reads the line and
+ * parses it. The line is also kept as the last answer, shared by every prompt like the
+ * original's input string (places check it again after a fight, BUGS.md #2).
+ */
+export function promptCommand<C extends Context>(context: C) {
+  return Effect.gen(function* () {
+    yield* emit({ type: 'prompt', context });
+    const line = lowerCase(yield* readLine);
+    (yield* started).session.lastAnswer = line;
+    return parseCommand(context, line);
+  });
 }

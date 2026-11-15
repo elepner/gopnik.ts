@@ -1,6 +1,7 @@
 /** Run one piece of game logic with prepared state, a seed and scripted keys. */
 import { Effect, Exit } from 'effect';
 
+import type { GameEvent } from '../src/game/events';
 import { Engine, state, transaction } from '../src/game/prelude';
 import { set } from '../src/state/attributes';
 import { type GameState, playing, type Game, startGame } from '../src/state/state';
@@ -21,6 +22,8 @@ export interface PlayOptions {
   readonly keys?: readonly string[];
   /** prepares the state; most game procedures expect a started game (see `hero`) */
   readonly setup?: (st: GameState) => void;
+  /** keep the game's events here instead of showing them */
+  readonly events?: GameEvent[];
 }
 
 /** runs `eff` to completion (or until the key script runs out) and reports what happened */
@@ -38,9 +41,9 @@ export function play<A, E, R>(eff: Effect.Effect<A, E, R>, opts: PlayOptions = {
     );
     const lines = game.transcript.map((p) => p.segments.map((s) => s.text).join(''));
     return { exit, st: playing(game.state.committed), lines, rand: yield* rng.log } as Played<A>;
-  }).pipe(Effect.provide(testGame({ seed: opts.seed, keys: opts.keys }).layer)) as Effect.Effect<
-    Played<A>
-  >;
+  }).pipe(
+    Effect.provide(testGame({ seed: opts.seed, keys: opts.keys, events: opts.events }).layer)
+  ) as Effect.Effect<Played<A>>;
 }
 
 /** starts the game with a level-0 Отморозок standing in district 1 with known places */

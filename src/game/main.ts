@@ -10,12 +10,13 @@ import { battle } from '../state/state';
 import { SaveName } from '../tp/brands';
 import { i16, str, u8 } from '../tp/num';
 import { beatFakeRector, beatRector, killedByRector, settle } from './aftermath';
+import { drink } from './beer';
 import { CMD, type Command, parseCommand } from './commands';
 import { saveMage, temple } from './encounters';
 import { encounter, setupRector, spawnEnemy } from './enemy';
+import { emit } from './events';
 import { fight, RECTOR_FIGHT, smokeJoint, STREET_FIGHT } from './fight';
-import { tell } from './fight-view';
-import { drinkBeer, showStats } from './hero';
+import { showStats } from './hero';
 import { club, dealers, den, girlfriend, gym, market, prompt, vet } from './places';
 import {
   Disk,
@@ -49,7 +50,7 @@ const turn = Effect.gen(function* () {
     yield* encounter(
       setupRector(0),
       Effect.gen(function* () {
-        yield* tell({ type: 'greeting', by: 'fakeRector' });
+        yield* emit({ type: 'greeting', by: 'fakeRector' });
         const fake = yield* fight(RECTOR_FIGHT);
         yield* fake === 'won' ? beatFakeRector : killedByRector;
       })
@@ -57,7 +58,7 @@ const turn = Effect.gen(function* () {
     yield* encounter(
       setupRector(1),
       Effect.gen(function* () {
-        yield* tell({ type: 'greeting', by: 'rector' });
+        yield* emit({ type: 'greeting', by: 'rector' });
         const real = yield* fight(RECTOR_FIGHT);
         yield* real === 'won' ? beatRector : killedByRector;
       })
@@ -289,7 +290,7 @@ const meetSomeone = encounter(
       }
     }
     if (engaged) {
-      yield* tell({ type: 'greeting', by: 'enemy' });
+      yield* emit({ type: 'greeting', by: 'enemy' });
       yield* settle(yield* fight(STREET_FIGHT));
     }
   })
@@ -363,8 +364,8 @@ const MAIN_COMMANDS = {
   [CMD.main.den]: den,
   [CMD.main.club]: club,
   [CMD.main.gym]: gym,
-  [CMD.main.beer]: drinkBeer('one'),
-  [CMD.main.beerUntilHealthy]: drinkBeer('untilHealthy'),
+  [CMD.main.beer]: drink('one'),
+  [CMD.main.beerUntilHealthy]: drink('untilHealthy'),
   [CMD.main.joint]: smokeJoint(10),
   [CMD.main.commands]: commands,
   [CMD.main.stats]: showStats,

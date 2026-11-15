@@ -5,9 +5,11 @@ import { join } from 'node:path';
 import { Effect, Layer } from 'effect';
 
 import { Crt, type ICrt, type IKeyboard, Keyboard, makeCrt } from './crt/crt';
+import type { IEvents } from './game/events';
 import { mainLoop } from './game/main';
 import { Disk, Engine, transaction } from './game/prelude';
 import { newGame } from './game/start';
+import { viewLayer } from './game/view-layer';
 import { createState, type GameState } from './state/state';
 import { createStore } from './state/store';
 import { SaveName, type Seed } from './tp/brands';
@@ -23,17 +25,21 @@ export interface GameOptions {
   readonly dir: string;
   readonly keyboard: IKeyboard;
   readonly crt?: ICrt;
+  /** who listens to the game's events: the screen by default */
+  readonly events?: Layer.Layer<IEvents, never, never>;
 }
 
 export function gameLayer(opts: GameOptions) {
   const state = createStore(opts.state ?? createState());
-  return Layer.mergeAll(
+  const services = Layer.mergeAll(
     Layer.succeed(Crt, opts.crt ?? makeCrt()),
     Layer.succeed(Keyboard, opts.keyboard),
     Layer.succeed(Engine, { state, printBuf: new Uint8Array(256), transcript: [] }),
     Layer.succeed(Disk, dirDisk(opts.dir)),
     rngLayer(opts.seed)
   );
+  const events = opts.events ?? viewLayer;
+  return events.pipe(Layer.provideMerge(services));
 }
 
 /** saves live as plain files in one directory, matched case-insensitively like DOS */

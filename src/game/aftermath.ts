@@ -13,11 +13,11 @@ import { has, nextRing } from '../state/items';
 import { ENEMIES } from '../state/kinds';
 import { battle, type Game } from '../state/state';
 import { div, i16 } from '../tp/num';
-import { type AftermathEvent, tell } from './aftermath-view';
+import { type AftermathEvent } from './aftermath-view';
+import { emit } from './events';
 import type { FightOutcome } from './fight';
 import { DEN_LEVEL, levelInDistrict, levelUp, take } from './hero';
-import { rnd, started } from './prelude';
-import { lucky, random, type Rule, run } from './rule';
+import { luckAtLeast, rnd, started } from './prelude';
 import { gameOver, victoryAnimation } from './screens';
 
 /** the usual aftermath: a victory is claimed, a death ends the game */
@@ -74,14 +74,14 @@ const spoils = Effect.gen(function* () {
     const ring = nextRing(st.player.body);
     if (ring) yield* report({ type: 'ringDropped', ring });
   }
-  yield* run(loot(st), report);
+  yield* loot(st);
 });
 
-/** an event happens: into the state, then onto the screen */
+/** an event happens: into the state, then out to whoever listens */
 function report(event: AftermathEvent) {
   return Effect.gen(function* () {
     apply(yield* started, event);
-    yield* tell(event);
+    yield* emit(event);
   });
 }
 
@@ -153,11 +153,13 @@ function denHelp(st: Game): AftermathEvent {
  * What a lucky hero finds on the enemy: a нарк's joints, then one of the things its kind drops
  * (`enemy-drop.ts`), picked by Random — nothing when the hero has that one already.
  */
-function* loot(st: Game): Rule<AftermathEvent> {
-  const drop = ENEMY_DROPS[battle(st).enemy.type];
-  if ((yield* lucky(st, st.world.district * 25)) && drop.joints)
-    yield { type: 'joints', joints: yield* random(3) };
-  if (!(yield* lucky(st, st.world.district * 40)) || drop.items.length === 0) return;
-  const item = drop.items[yield* random(drop.items.length)]!;
-  if (!has(st.player.body, item)) yield { type: 'found', item };
+function loot(st: Game) {
+  return Effect.gen(function* () {
+    const drop = ENEMY_DROPS[battle(st).enemy.type];
+    if ((yield* luckAtLeast(st.world.district * 25)) && drop.joints)
+      yield* report({ type: 'joints', joints: yield* rnd(3) });
+    if (!(yield* luckAtLeast(st.world.district * 40)) || drop.items.length === 0) return;
+    const item = drop.items[yield* rnd(drop.items.length)]!;
+    if (!has(st.player.body, item)) yield* report({ type: 'found', item });
+  });
 }

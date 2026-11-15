@@ -41,7 +41,25 @@ export type AftermathEvent =
   | { readonly type: 'found'; readonly item: Item }
   | { readonly type: 'denHelped'; readonly respect: number; readonly exp: number };
 
-export function tell(event: AftermathEvent) {
+/** the aftermath's own events, to tell them from the others */
+export const AFTERMATH_EVENTS: Record<AftermathEvent['type'], true> = {
+  heroDied: true,
+  killedByRector: true,
+  rectorKilled: true,
+  fakeRectorKilled: true,
+  enemyDied: true,
+  levelEarned: true,
+  exp: true,
+  tooWeak: true,
+  spoils: true,
+  denOpened: true,
+  ringDropped: true,
+  joints: true,
+  found: true,
+  denHelped: true,
+};
+
+export function showAftermath(event: AftermathEvent) {
   return Effect.gen(function* () {
     const st = yield* started;
     switch (event.type) {

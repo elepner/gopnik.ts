@@ -3,10 +3,11 @@ import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { Effect } from 'effect';
+import { Effect, Layer } from 'effect';
 
 import { keyCode } from '../oracle/dos';
 import { biosKey, EndOfInput, type IKeyboard, makeCrt } from '../src/crt/crt';
+import { Events, type GameEvent } from '../src/game/events';
 import { gameLayer } from '../src/runtime';
 import { Seed } from '../src/tp/brands';
 
@@ -14,6 +15,8 @@ export interface TestGameOptions {
   /** key names as in the oracle CLI: chars, `enter`, `space`, `esc`, `bs`, ... */
   readonly keys?: readonly string[];
   readonly seed?: number;
+  /** keep the game's events here instead of showing them */
+  readonly events?: GameEvent[];
 }
 
 /** all game services; Keyboard.read fails with EndOfInput when the script runs out */
@@ -29,5 +32,9 @@ export function testGame(opts: TestGameOptions = {}) {
     delay: () => Effect.void,
   };
   const dir = mkdtempSync(join(tmpdir(), 'gopnik-test-'));
-  return { crt, layer: gameLayer({ seed: Seed(opts.seed ?? 0), dir, keyboard, crt }) };
+  const kept = opts.events;
+  const events = kept
+    ? Layer.succeed(Events, { emit: (event) => Effect.sync(() => void kept.push(event)) })
+    : undefined;
+  return { crt, layer: gameLayer({ seed: Seed(opts.seed ?? 0), dir, keyboard, crt, events }) };
 }

@@ -1,11 +1,12 @@
 import { describe, expect, it } from '@effect/vitest';
-import { Effect } from 'effect';
+import { Effect, Exit } from 'effect';
 
 import { i16 } from '../../src/tp/num';
 import { hero, play } from '../../test/game';
 import { attr, set } from '../state/attributes';
-import { type GameState as State, newEnemy, playing } from '../state/state';
+import { battle, type GameState as State, newEnemy, playing } from '../state/state';
 import { claimVictory } from './aftermath';
+import type { GameEvent } from './events';
 import { fight, RECTOR_FIGHT, STREET_FIGHT } from './fight';
 
 /** a sturdy Гопник of level 5 in front of the hero */
@@ -144,6 +145,35 @@ describe('fight (0000:3D11)', () => {
         st.player.resources.beer,
       ]).toEqual([7, 3, 1]);
       expect(st.player.health.current).toBe(25);
+    })
+  );
+});
+
+describe('the fight emits events and does not know who listens', () => {
+  it.effect('one kick finishes an enemy on his last legs', () =>
+    Effect.gen(function* () {
+      const events: GameEvent[] = [];
+      const { st, exit } = yield* play(fight(STREET_FIGHT), {
+        keys: keys('k'),
+        events,
+        setup: (s) => (hero(s), (enemy(s).health.current = 1)),
+      });
+      expect(exit).toStrictEqual(Exit.succeed('won'));
+      expect(events.map((e) => e.type)).toEqual(['fightStarted', 'prompt', 'kick']);
+      expect(battle(st).enemy.health.current).toBeLessThanOrEqual(0);
+    })
+  );
+
+  it.effect('the kicks of both sides come up from the nested rules', () =>
+    Effect.gen(function* () {
+      const events: GameEvent[] = [];
+      yield* play(fight(STREET_FIGHT), {
+        keys: keys('k'),
+        events,
+        setup: (s) => (hero(s), enemy(s)),
+      });
+      const kicks = events.flatMap((e) => (e.type === 'kick' ? [e.by] : []));
+      expect(kicks).toEqual(['hero', 'enemy']);
     })
   );
 });

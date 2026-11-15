@@ -112,14 +112,15 @@
   parameters, not state: the only shared input in the state is `session.lastAnswer`. They still
   sit in the original's data segment, so `legacy.ts` lists them in `SCRATCH_FIELDS` and the
   comparison snapshots skip them (`snapshot(..., true)` keeps them for the bots).
-- The fight is split into rules, loop and view. A rule takes `st`, updates it and reports what
-  happened; it never prints. A rule with one outcome returns its event (`flee`, `smoke`); a rule
-  with several is a `Rule` generator (`rule.ts`: `callBackup`, `backupKicks`, `loot`) that
-  `yield`s events and asks for Random with `yield* random(n)` / `lucky(st, n)`; `run(rule)`
-  answers with the game's Rng and shows each event the moment it is yielded. No arrays built
-  with `push`. The loop (`fight`, `kickSeries`) runs the rules and `tell`s returned events right
-  away: `fight-view.ts` turns events into texts and key pauses and reads what the state already
-  knows (health left, bullets, names) from the state. Don't put state into events.
+- Rules `emit` what happens (`src/game/events.ts`: the `Events` service, `GameEvent`) and don't
+  know who listens; they stay ordinary Effects with DI (`rnd`, `promptCommand`, `halt`). The
+  screen listens through `viewLayer` (`view-layer.ts`, wired by `gameLayer`): it routes events
+  to `fight-view.ts` / `aftermath-view.ts` / `beer-view.ts`, which turn them into texts and key
+  pauses and read what the state already knows (health left, bullets, names) — don't put state
+  into events, and emit what happens in the game, not what to show (`fightStarted`: the view
+  works out itself whether to say the opponent's agility takes kicks away). Tests pass `events: []` to `play`/`testGame` to keep the events instead
+  of showing them. Commands are asked with `promptCommand(context)` (`commands.ts`): it emits the
+  prompt, reads the line, keeps it as `session.lastAnswer` and returns the parsed command.
 - The hero's stats, damage, armor and maximum health are a projection (`src/state/attributes.ts`):
   `player.base` (start, levels, training, steroids, the temple) plus what the things in the body
   slots give (`src/state/items.ts`: `GEAR`, within a slot only the best counts — suit, jacket,

@@ -4,7 +4,8 @@ import { Effect } from 'effect';
 import { i16 } from '../../src/tp/num';
 import { hero, play } from '../../test/game';
 import { attr } from '../state/attributes';
-import { drinkBeer, levelUp } from './hero';
+import { drink } from './beer';
+import { levelUp } from './hero';
 
 describe('levelUp (0000:2526)', () => {
   it.effect('spends experience, raises two stats per level and records them', () =>
@@ -69,7 +70,7 @@ describe('levelUp (0000:2526)', () => {
 describe('drinkBeer (0000:29C4)', () => {
   it.effect('one drinks one beer for up to 5 health', () =>
     Effect.gen(function* () {
-      const { st, lines } = yield* play(drinkBeer('one'), {
+      const { st, lines } = yield* play(drink('one'), {
         setup: (s) => (hero(s), (s.player.health.current = 20), (s.player.resources.beer = 3)),
       });
       expect([st.player.health.current, st.player.resources.beer]).toEqual([25, 2]);
@@ -79,7 +80,7 @@ describe('drinkBeer (0000:29C4)', () => {
 
   it.effect('untilHealthy drinks until healthy and reports once', () =>
     Effect.gen(function* () {
-      const { st, lines } = yield* play(drinkBeer('untilHealthy'), {
+      const { st, lines } = yield* play(drink('untilHealthy'), {
         setup: (s) => (hero(s), (s.player.health.current = 22), (s.player.resources.beer = 5)),
       });
       expect([st.player.health.current, st.player.resources.beer]).toEqual([35, 2]);
@@ -89,7 +90,7 @@ describe('drinkBeer (0000:29C4)', () => {
 
   it.effect('a broken jaw stops drinking', () =>
     Effect.gen(function* () {
-      const { st, lines } = yield* play(drinkBeer('untilHealthy'), {
+      const { st, lines } = yield* play(drink('untilHealthy'), {
         setup: (s) => (
           hero(s),
           (s.player.health.current = 10),
