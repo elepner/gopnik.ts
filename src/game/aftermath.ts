@@ -1,17 +1,21 @@
 /**
  * What follows a fight, decided by whoever started it, right after it: a victory brings
- * experience, spoils, the den, maybe a ring and loot; a death ends the game. The rules return
- * events like the fight's, the view shows them.
+ * experience, spoils, the den, maybe a ring and loot; a death ends the game. The rules only
+ * decide what happens and say it as events; `apply` puts an event into the state (a found
+ * thing into its slot: the hero's attributes follow from the slots), `aftermath-view.ts` shows
+ * it.
  */
 import { Effect } from 'effect';
 
-import { attr, boost, outclassed } from '../state/attributes';
+import { attr } from '../state/attributes';
+import { ENEMY_DROPS } from '../state/enemy-drop';
+import { has, nextRing } from '../state/items';
 import { ENEMIES } from '../state/kinds';
 import { type Game } from '../state/state';
 import { div, i16 } from '../tp/num';
+import { type AftermathEvent, tell } from './aftermath-view';
 import type { FightOutcome } from './fight';
-import { type FightEvent, tell } from './fight-view';
-import { DEN_LEVEL, levelInDistrict, levelUp, nextRing } from './hero';
+import { DEN_LEVEL, levelInDistrict, levelUp, take } from './hero';
 import { rnd, started } from './prelude';
 import { lucky, random, type Rule, run } from './rule';
 import { gameOver, victoryAnimation } from './screens';
@@ -23,57 +27,97 @@ export function settle(outcome: FightOutcome) {
   return Effect.void;
 }
 
-export const diedInFight = Effect.andThen(tell({ type: 'heroDied' }), gameOver(false));
+export const diedInFight = Effect.andThen(report({ type: 'heroDied' }), gameOver(false));
 
-export const killedByRector = Effect.andThen(tell({ type: 'killedByRector' }), gameOver(false));
+export const killedByRector = Effect.andThen(report({ type: 'killedByRector' }), gameOver(false));
 
 /** an ordinary enemy is down */
 export const claimVictory = Effect.gen(function* () {
   const st = yield* started;
-  yield* tell({ type: 'enemyDied' });
-  yield* tell(gainEnemyExp(st));
+  yield* report({ type: 'enemyDied' });
+  yield* report(enemyExp(st));
   if (levelReached(st)) yield* levelUp(false);
-  else yield* tell({ type: 'tooWeak' });
+  else yield* report({ type: 'tooWeak' });
   yield* spoils;
 });
 
 /** the fake rector is down: a level for him, no experience for his stats */
 export const beatFakeRector = Effect.gen(function* () {
   const st = yield* started;
-  st.player.progression.exp = st.player.progression.expNext;
+  yield* report({ type: 'levelEarned' });
   yield* levelUp(true);
-  yield* tell({ type: 'fakeRectorKilled' });
+  yield* report({ type: 'fakeRectorKilled' });
   if (levelReached(st)) yield* levelUp(false);
   yield* spoils;
 });
 
 /** the real rector is down: the end of the game */
 export const beatRector = Effect.gen(function* () {
-  const st = yield* started;
-  st.player.progression.exp = st.player.progression.expNext;
+  yield* report({ type: 'levelEarned' });
   yield* levelUp(true);
-  yield* tell({ type: 'rectorKilled' });
+  yield* report({ type: 'rectorKilled' });
   return yield* victoryAnimation;
 });
 
 /** the lad of the den is helped: respect and experience on top of the victory */
 export const denHelpReward = Effect.gen(function* () {
-  yield* tell(rewardDenHelp(yield* started));
+  yield* report(denHelp(yield* started));
   yield* levelUp(false);
 });
 
 /** what every victory brings; then the called lads go home */
 const spoils = Effect.gen(function* () {
   const st = yield* started;
-  yield* tell(takeSpoils(st));
-  if (openDen(st)) yield* tell({ type: 'denOpened' });
+  yield* report(spoilsOf(st));
+  if (opensDen(st)) yield* report({ type: 'denOpened' });
   if ((yield* rnd(30)) === 0) {
-    const ring = nextRing(st);
-    if (ring) yield* tell({ type: 'ringDropped', ring });
+    const ring = nextRing(st.player.body);
+    if (ring) yield* report({ type: 'ringDropped', ring });
   }
-  yield* run(loot(st));
+  yield* run(loot(st), report);
   st.combat.backup = 0;
 });
+
+/** an event happens: into the state, then onto the screen */
+function report(event: AftermathEvent) {
+  return Effect.gen(function* () {
+    apply(yield* started, event);
+    yield* tell(event);
+  });
+}
+
+function apply(st: Game, event: AftermathEvent) {
+  const p = st.player;
+  switch (event.type) {
+    case 'levelEarned':
+      p.progression.exp = p.progression.expNext;
+      return;
+    case 'exp':
+      p.progression.exp = i16(p.progression.exp + event.exp);
+      return;
+    case 'spoils':
+      p.resources.beer = i16(p.resources.beer + event.beer);
+      p.resources.money = i16(p.resources.money + event.money);
+      p.resources.junk = i16(p.resources.junk + event.junk);
+      p.health.current = Math.min(i16(p.health.current + event.health), attr(p, 'healthMax'));
+      p.respect = i16(p.respect + event.respect);
+      return;
+    case 'denOpened':
+      st.world.places.den = true;
+      return;
+    case 'ringDropped':
+      return take(st, event.ring);
+    case 'found':
+      return take(st, event.item);
+    case 'joints':
+      p.resources.joints = i16(p.resources.joints + event.joints);
+      return;
+    case 'denHelped':
+      p.respect = i16(p.respect + event.respect);
+      p.progression.exp = i16(p.progression.exp + event.exp);
+      return;
+  }
+}
 
 // ------------------------------------------------------------------ rules
 
@@ -82,94 +126,39 @@ function levelReached(st: Game): boolean {
 }
 
 /** experience for an enemy: the sum of its stats */
-function gainEnemyExp(st: Game): FightEvent {
+function enemyExp(st: Game): AftermathEvent {
   const { strength, agility, vitality, luck } = st.enemy.stats;
-  const exp = strength + agility + vitality + luck;
-  st.player.progression.exp = i16(st.player.progression.exp + exp);
-  return { type: 'exp', exp };
+  return { type: 'exp', exp: strength + agility + vitality + luck };
 }
 
 /** the enemy's beer, money and junk, 5 health and respect by its tier and level */
-function takeSpoils(st: Game): FightEvent {
-  st.player.resources.beer = i16(st.player.resources.beer + st.enemy.loot.beer);
-  st.player.resources.money = i16(st.player.resources.money + st.enemy.loot.money);
-  st.player.resources.junk = i16(st.player.resources.junk + st.enemy.loot.junk);
-  st.player.health.current = i16(st.player.health.current + 5);
-  if (st.player.health.current > attr(st.player, 'healthMax'))
-    st.player.health.current = attr(st.player, 'healthMax');
-  st.player.respect = i16(
-    st.player.respect + (ENEMIES[st.enemy.type].tier + 1 + div(st.enemy.level, 3))
-  );
-  return { type: 'victoryBeer' };
+function spoilsOf(st: Game): AftermathEvent {
+  return {
+    type: 'spoils',
+    ...st.enemy.loot,
+    health: 5,
+    respect: ENEMIES[st.enemy.type].tier + 1 + div(st.enemy.level, 3),
+  };
 }
 
-/** true when the den opens now */
-function openDen(st: Game): boolean {
-  if (st.world.places.den || levelInDistrict(st) < DEN_LEVEL) return false;
-  st.world.places.den = true;
-  return true;
+/** the third level of a district opens the den */
+function opensDen(st: Game): boolean {
+  return !st.world.places.den && levelInDistrict(st) >= DEN_LEVEL;
 }
 
-function rewardDenHelp(st: Game): FightEvent {
-  const respect = st.world.district * 20;
-  const exp = st.world.district * 10;
-  st.player.respect = i16(st.player.respect + respect);
-  st.player.progression.exp = i16(st.player.progression.exp + exp);
-  return { type: 'denHelped', respect, exp };
+function denHelp(st: Game): AftermathEvent {
+  return { type: 'denHelped', respect: st.world.district * 20, exp: st.world.district * 10 };
 }
 
-/** what a lucky hero finds on the enemy, by its kind */
-function* loot(st: Game): Rule {
-  if ((yield* lucky(st, st.world.district * 25)) && st.enemy.type === 'nark') {
-    st.player.resources.joints = i16(st.player.resources.joints + (yield* random(3)));
-    yield { type: 'narkJoints' };
-  }
-  if (!(yield* lucky(st, st.world.district * 40))) return;
-  const w = st.player.body.hands.weapons;
-  const group = ENEMIES[st.enemy.type].group;
-  if (st.enemy.type === 'nefor') {
-    const r = yield* random(3);
-    if (r === 0 && !st.player.body.neck.cross) {
-      boost(st.player, 'cross', 'luck', 2);
-      st.player.body.neck.cross = true;
-      yield { type: 'found', item: 'cross' };
-    } else if (r === 1 && !st.player.body.hands.rings.spasi) {
-      boost(st.player, 'rings', 'luck', 1);
-      st.player.body.hands.rings.spasi = true;
-      yield { type: 'found', item: 'spasiRing' };
-    } else if (r === 2 && !st.player.body.pockets.phone) {
-      st.player.body.pockets.phone = true;
-      yield { type: 'found', item: 'phone' };
-    }
-  } else if (group === 'lad') {
-    const r = yield* random(2);
-    if (r === 0 && !w.knuckles) {
-      w.knuckles = true;
-      yield { type: 'found', item: 'knuckles' };
-      if (outclassed(w, 'knuckles')) yield { type: 'betterWeaponInHand' };
-    } else if (r === 1 && !w.club) {
-      w.club = true;
-      yield { type: 'found', item: 'club' };
-      if (outclassed(w, 'club')) yield { type: 'betterWeaponInHand' };
-    }
-  } else if (group === 'thug') {
-    const r = yield* random(2);
-    if (r === 0 && !st.player.body.eyes.glasses) {
-      st.player.body.eyes.glasses = true;
-      yield { type: 'found', item: 'glasses' };
-    } else if (r === 1 && !st.player.body.pockets.phone) {
-      st.player.body.pockets.phone = true;
-      yield { type: 'found', item: 'phone' };
-    }
-  } else if (group === 'maniac') {
-    const r = yield* random(2);
-    if (r === 0 && !w.knife) {
-      w.knife = true;
-      yield { type: 'found', item: 'knife' };
-      if (w.cleaver) yield { type: 'cleaverInHand' };
-    } else if (r === 1 && !w.cleaver) {
-      w.cleaver = true;
-      yield { type: 'found', item: 'cleaver' };
-    }
-  }
+/**
+ * What a lucky hero finds on the enemy: a нарк's joints, then one of the things its kind drops
+ * (`enemy-drop.ts`), picked by Random — nothing when the hero has that one already.
+ */
+function* loot(st: Game): Rule<AftermathEvent> {
+  const drop = ENEMY_DROPS[st.enemy.type];
+  if ((yield* lucky(st, st.world.district * 25)) && drop.joints)
+    yield { type: 'joints', joints: yield* random(3) };
+  if (!(yield* lucky(st, st.world.district * 40)) || drop.items.length === 0) return;
+  const item = drop.items[yield* random(drop.items.length)]!;
+  if (!has(st.player.body, item)) yield { type: 'found', item };
 }

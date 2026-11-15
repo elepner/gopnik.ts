@@ -2,7 +2,8 @@
 import { Effect } from 'effect';
 
 import { writeLn } from '../crt/crt';
-import { attr, boost, dec, inc } from '../state/attributes';
+import { attr, dec, inc } from '../state/attributes';
+import { type ChainRing, type Item, put, RING_HEALTH } from '../state/items';
 import { CHARACTER_CLASSES } from '../state/kinds';
 import { typeName, rankName } from '../state/names';
 import type { Game, StatKey } from '../state/state';
@@ -341,47 +342,16 @@ export const strengthUp = Effect.gen(function* () {
   inc(st.player, 'damageMin', 1 - mod(attr(st.player, 'strength'), 2));
 });
 
-/** a ring of the Пг → Мега → Гп chain */
-export type ChainRing = 'pomogi' | 'mega' | 'pomiluy';
-
-/** puts on the next ring of the chain; nothing when the chain is complete */
-export function nextRing(st: Game): ChainRing | undefined {
-  const rings = st.player.body.hands.rings;
-  if (!rings.pomogi) {
-    boost(st.player, 'rings', 'strength', 1);
-    boost(st.player, 'rings', 'agility', 1);
-    boost(st.player, 'rings', 'vitality', 1);
-    boost(st.player, 'rings', 'luck', 1);
-    boost(st.player, 'rings', 'healthMax', 6);
-    st.player.health.current = i16(st.player.health.current + 6);
-    boost(st.player, 'rings', 'damageMax', 1);
-    boost(st.player, 'rings', 'damageMin', 1 - mod(attr(st.player, 'strength'), 2));
-    rings.pomogi = true;
-    return 'pomogi';
-  }
-  if (!rings.mega) {
-    boost(st.player, 'rings', 'strength', 4);
-    boost(st.player, 'rings', 'agility', 4);
-    boost(st.player, 'rings', 'vitality', 4);
-    boost(st.player, 'rings', 'luck', 4);
-    boost(st.player, 'rings', 'healthMax', 24);
-    st.player.health.current = i16(st.player.health.current + 24);
-    boost(st.player, 'rings', 'damageMax', 4);
-    boost(st.player, 'rings', 'damageMin', 2);
-    rings.mega = true;
-    return 'mega';
-  }
-  if (!rings.pomiluy) {
-    rings.pomiluy = true;
-    return 'pomiluy';
-  }
-  return undefined;
+/** a found thing goes into its slot; a ring of the chain also heals what it adds to the maximum */
+export function take(st: Game, item: Item) {
+  put(st.player.body, item);
+  st.player.health.current = i16(st.player.health.current + (RING_HEALTH[item] ?? 0));
 }
 
 /** the lines of a new ring; the Мега message differs between the places it comes from */
 export function ringLines(ring: ChainRing, megaText: Text): Text[] {
-  if (ring === 'pomogi') return [HERO.koltsoPomogiGospodi()];
-  if (ring === 'mega') return [megaText];
+  if (ring === 'pomogiRing') return [HERO.koltsoPomogiGospodi()];
+  if (ring === 'megaRing') return [megaText];
   return [HERO.vaschePoleznoeKoltsoGospodi(), HERO.vosstZhizni35()];
 }
 

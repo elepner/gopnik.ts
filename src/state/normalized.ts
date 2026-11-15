@@ -22,7 +22,7 @@ interface Totals {
   readonly armor: number;
 }
 
-type Normalized<P> = Omit<P, 'base' | 'boosts' | 'health'> & Totals;
+type Normalized<P> = Omit<P, 'base' | 'health'> & Totals;
 
 export type NormalizedState =
   | (Omit<NotStartedGame, 'player'> & { readonly player: Normalized<PlayerBase> })
@@ -30,7 +30,7 @@ export type NormalizedState =
 
 /** plain JSON: what a recording holds is exactly what `normalize` returns (holes become null) */
 export function normalize(st: GameState): NormalizedState {
-  const { base: _base, boosts: _boosts, health, ...player } = st.player;
+  const { base: _base, health, ...player } = st.player;
   const totals: Totals = {
     stats: {
       strength: attr(st.player, 'strength'),
@@ -45,7 +45,7 @@ export function normalize(st: GameState): NormalizedState {
   return JSON.parse(JSON.stringify({ ...st, player: { ...player, ...totals } }));
 }
 
-/** the totals become the base; a stoned hero's joint becomes its boost again */
+/** the totals become the base, less what the things and a joint add */
 export function denormalize(n: NormalizedState): GameState {
   const { stats, health, damage, armor, ...player } = structuredClone(n.player);
   const st = {
@@ -59,7 +59,6 @@ export function denormalize(n: NormalizedState): GameState {
         armor,
         healthMax: health.max,
       },
-      boosts: {},
       health: { current: health.current },
     },
   } as GameState;

@@ -11,7 +11,6 @@ import { attr } from '../state/attributes';
 import { type CharacterType, ENEMIES } from '../state/kinds';
 import { typeName } from '../state/names';
 import { type StatKey } from '../state/state';
-import { type ChainRing, ringLines, showStats } from './hero';
 import { print, println, started } from './prelude';
 import type { Text } from './text';
 import { FIGHT } from './texts';
@@ -29,16 +28,6 @@ export interface Hit {
   /** `guardHeld`: the mouth guard saved the hero's jaw; `jawThroughGuard`: it didn't */
   readonly broke?: 'jaw' | 'jawThroughGuard' | 'guardHeld' | 'leg';
 }
-
-export type LootItem =
-  | 'cross'
-  | 'spasiRing'
-  | 'phone'
-  | 'knuckles'
-  | 'club'
-  | 'glasses'
-  | 'knife'
-  | 'cleaver';
 
 export type FightEvent =
   /** what the enemy says first; a fight may also start without a word */
@@ -73,23 +62,7 @@ export type FightEvent =
   | { readonly type: 'outOfBullets' }
   | { readonly type: 'shotMissed' }
   | { readonly type: 'shotHit'; readonly damage: number }
-  | { readonly type: 'heroDied' }
-  | { readonly type: 'killedByRector' }
   | { readonly type: 'bailedOut' }
-  | { readonly type: 'rectorKilled' }
-  | { readonly type: 'fakeRectorKilled' }
-  | { readonly type: 'enemyDied' }
-  | { readonly type: 'exp'; readonly exp: number }
-  | { readonly type: 'tooWeak' }
-  | { readonly type: 'victoryBeer' }
-  | { readonly type: 'denOpened' }
-  /** a ring of the chain drops from the enemy */
-  | { readonly type: 'ringDropped'; readonly ring: ChainRing }
-  | { readonly type: 'denHelped'; readonly respect: number; readonly exp: number }
-  | { readonly type: 'narkJoints' }
-  | { readonly type: 'found'; readonly item: LootItem }
-  | { readonly type: 'betterWeaponInHand' }
-  | { readonly type: 'cleaverInHand' }
   | { readonly type: 'jointRefused'; readonly because: 'jaw' | 'stoned' | 'none' }
   | {
       readonly type: 'smoked';
@@ -177,54 +150,8 @@ function show(event: FightEvent) {
             st.player.body.pockets.pistol?.bullets ?? 0
           )
         );
-      case 'heroDied':
-        yield* println(FIGHT.tySdoh());
-        return yield* readKey;
-      case 'killedByRector':
-        yield* println(FIGHT.tySdohRektorTebya());
-        return yield* readKey;
       case 'bailedOut':
         return yield* println(FIGHT.tebePovezloZnakomyePatsany());
-      case 'rectorKilled':
-        yield* pausedLines(
-          FIGHT.tyZamochilSamogoRektora(),
-          FIGHT.vnovSilaTorzhestvuetNad(),
-          FIGHT.posleEtogoSrazuNachalas(),
-          FIGHT.iNeStydnoTebe()
-        );
-        yield* println(FIGHT.aRezultat());
-        yield* showStats;
-        return yield* readKey;
-      case 'fakeRectorKilled':
-        return yield* pausedLines(FIGHT.tyZamochilSamogoRektora2(), FIGHT.etoBylProrektorSuntsa());
-      case 'enemyDied':
-        return yield* println(FIGHT.vragSdoh());
-      case 'exp':
-        return yield* println(FIGHT.zaOtpinVragaTy(event.exp));
-      case 'tooWeak':
-        yield* println(FIGHT.tyZapinalSlishkomSlabogo());
-        return yield* println(
-          FIGHT.seychasUTebyaKachkov(st.player.progression.exp, st.player.progression.expNext)
-        );
-      case 'victoryBeer':
-        return yield* println(FIGHT.pivoPobeditelyu());
-      case 'denOpened':
-        return yield* println(FIGHT.ponovostUlutshilasNaStolko());
-      case 'ringDropped':
-        yield* println(FIGHT.obaNaKolechkoVot());
-        for (const line of ringLines(event.ring, FIGHT.megaKoltso())) yield* println(line);
-        return;
-      case 'denHelped':
-        yield* println(FIGHT.tyOtpinalEtogoMudaka(event.respect));
-        return yield* println(FIGHT.tyPoluchaeshKachkovOpyta(event.exp));
-      case 'narkJoints':
-        return yield* println(FIGHT.aUNarkaByl());
-      case 'found':
-        return yield* println(FOUND[event.item]);
-      case 'betterWeaponInHand':
-        return yield* println(FIGHT.noUTebyaEst());
-      case 'cleaverInHand':
-        return yield* println(FIGHT.noUtebyaEstTesak());
       case 'jointRefused':
         return yield* println(
           event.because === 'jaw'
@@ -299,7 +226,7 @@ function greeting(by: Greeting) {
 }
 
 /** each line is followed by a key press */
-function pausedLines(...ls: Text[]) {
+export function pausedLines(...ls: Text[]) {
   return Effect.forEach(ls, (l) => Effect.andThen(println(l), readKey), { discard: true });
 }
 
@@ -345,17 +272,6 @@ const LOST_STAT: Record<StatKey, Text> = {
   agility: FIGHT.lovkost1(),
   vitality: FIGHT.zhivuchest1(),
   luck: FIGHT.udacha1(),
-};
-
-const FOUND: Record<LootItem, Text> = {
-  cross: FIGHT.tyNashelKrestikUdacha(),
-  spasiRing: FIGHT.tyNashelKoltsoGospodi(),
-  phone: FIGHT.tyNashelMobilu(),
-  knuckles: FIGHT.tyNadybalKastetUron(),
-  club: FIGHT.tyOtobralUVraga(),
-  glasses: FIGHT.tyNashelTemnyeOchki(),
-  knife: FIGHT.tyNashelNozhikUron(),
-  cleaver: FIGHT.tyNashelTesakUron(),
 };
 
 /** what the crowd shouts, by the Random(18) the fight rolled */

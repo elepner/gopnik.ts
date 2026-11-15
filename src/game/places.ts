@@ -3,7 +3,8 @@ import { Effect } from 'effect';
 
 import { readLine, writeLn } from '../crt/crt';
 import { PRICE } from '../data/tables';
-import { attr, boost, inc, outclassed } from '../state/attributes';
+import { attr, inc } from '../state/attributes';
+import { outclassed } from '../state/items';
 import { typeName } from '../state/names';
 import { i16, mod, u8 } from '../tp/num';
 import { denHelpReward, settle } from './aftermath';
@@ -75,7 +76,6 @@ export const market = Effect.gen(function* () {
         st.player.body.torso.abibas = true;
         st.player.resources.money = i16(st.player.resources.money - PRICE.abibas);
         yield* println(PLACES.teperTyBolshePohozh());
-        boost(st.player, 'clothes', 'armor', 1);
       }
     }
     if (parseCommand('market', st.session.lastAnswer) === CMD.market.boots) {
@@ -86,8 +86,6 @@ export const market = Effect.gen(function* () {
         st.player.body.feet.boots = true;
         st.player.resources.money = i16(st.player.resources.money - PRICE.boots);
         yield* println(PLACES.zatseniKrasovki());
-        boost(st.player, 'clothes', 'damageMin', 1);
-        boost(st.player, 'clothes', 'damageMax', 1);
       }
     }
     if (
@@ -102,7 +100,6 @@ export const market = Effect.gen(function* () {
         st.player.body.torso.leather = true;
         st.player.resources.money = i16(st.player.resources.money - PRICE.leather);
         yield* println(PLACES.nuVesNaPontah());
-        boost(st.player, 'clothes', 'armor', 2);
       }
     }
     // sic: no district check for the adidas suit
@@ -113,7 +110,6 @@ export const market = Effect.gen(function* () {
         st.player.body.torso.adidas = true;
         st.player.resources.money = i16(st.player.resources.money - PRICE.adidas);
         yield* println(PLACES.chistyyGopnik());
-        boost(st.player, 'clothes', 'armor', st.player.body.torso.abibas ? 1 : 2);
       }
     }
     if (
@@ -126,9 +122,6 @@ export const market = Effect.gen(function* () {
         st.player.body.feet.coolBoots = true;
         st.player.resources.money = i16(st.player.resources.money - PRICE.boots2);
         yield* println(PLACES.ofigennyeButtsy());
-        const bonus = st.player.body.feet.boots ? 1 : 2;
-        boost(st.player, 'clothes', 'damageMin', bonus);
-        boost(st.player, 'clothes', 'damageMax', bonus);
       }
     }
     if (
@@ -142,7 +135,6 @@ export const market = Effect.gen(function* () {
         st.player.body.torso.coolLeather = true;
         st.player.resources.money = i16(st.player.resources.money - PRICE.leather2);
         yield* println(PLACES.nuKrutoySdohnutMozhno());
-        boost(st.player, 'clothes', 'armor', st.player.body.torso.leather ? 2 : 4);
       }
     }
     if (parseCommand('market', st.session.lastAnswer) === CMD.market.steal) yield* pickpocket;

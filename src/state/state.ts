@@ -45,7 +45,6 @@ export function createState(): GameState {
         armor: 0,
         healthMax: 0,
       },
-      boosts: {},
       health: { current: 0 },
       injuries: { jaw: false, leg: false },
       progression: { level: 0, exp: 0, expNext: 0, history: [] },
@@ -167,12 +166,6 @@ export type Attribute = StatKey | 'damageMin' | 'damageMax' | 'armor' | 'healthM
 
 export type Attributes = Record<Attribute, number>;
 
-/** where a boost comes from: things worn, or a joint (weapons are not added up: the best counts) */
-export type BoostSource = 'rings' | 'cross' | 'clothes' | 'joint';
-
-/** what each source adds, as it was added (the original adds differences, not totals) */
-export type Boosts = { [S in BoostSource]?: Partial<Attributes> };
-
 export interface Stats {
   strength: number;
   agility: number;
@@ -203,11 +196,10 @@ export interface Player extends PlayerBase {
 export interface PlayerBase {
   name: string;
   /**
-   * stats, damage, armor and maximum health: what training and levels gave; items and effects
-   * add their `boosts` on top (`attributes.ts` reads and changes them)
+   * stats, damage, armor and maximum health: what the start, levels and training gave; the
+   * things in `body` and a joint add to it (`attributes.ts` reads and changes them)
    */
   readonly base: Attributes;
-  readonly boosts: Boosts;
   readonly health: { current: number };
   readonly injuries: Injuries;
   readonly progression: Progression;

@@ -77,7 +77,13 @@ const GROUPS: Readonly<Record<EnemyKind, EnemyGroup>> = {
 export const ENEMIES: Readonly<Record<EnemyKind, EnemyKindInfo>> = Object.fromEntries(
   ENEMY_KINDS.map((id, tier) => [
     id,
-    { id, tier, name: TYPE_NAMES[tier], group: GROUPS[id], weights: values(STAT_WEIGHTS[tier]) },
+    {
+      id,
+      tier,
+      name: TYPE_NAMES[tier],
+      group: GROUPS[id],
+      weights: values(STAT_WEIGHTS[tier]),
+    },
   ])
 ) as Record<EnemyKind, EnemyKindInfo>;
 

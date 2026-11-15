@@ -2,7 +2,7 @@
 import { Effect } from 'effect';
 
 import { readKey, readLine } from '../crt/crt';
-import { attr, unboost } from '../state/attributes';
+import { attr } from '../state/attributes';
 import { ENEMIES, enemyAt } from '../state/kinds';
 import { encodeSave } from '../state/legacy';
 import { typeName } from '../state/names';
@@ -103,7 +103,6 @@ function walk(running: boolean) {
     if (st.player.stoned > 0) {
       st.player.stoned = u8(st.player.stoned - 1);
       if (st.player.stoned === 0) {
-        unboost(st.player, 'joint');
         yield* println(MAIN.glyukiProshliSila2());
       }
     }

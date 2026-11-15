@@ -121,15 +121,20 @@
   away: `fight-view.ts` turns events into texts and key pauses and reads what the state already
   knows (health left, bullets, names) from the state. Don't put state into events.
 - The hero's stats, damage, armor and maximum health are a projection (`src/state/attributes.ts`):
-  `player.base` (start, levels, training, steroids, the temple) plus `player.boosts` by source
-  (`clothes`, `rings`, `cross`, `joint`), each holding what it actually added (the original adds
-  differences), plus the best weapon in hand (`WEAPON_DAMAGE`, derived, not stored). Read with
-  `attr(p, 'strength')`, change the base with `inc`/`dec`/`set`, items with `boost`; the joint
-  wears off with `unboost(p, 'joint')`. Never touch `base` directly. Values wrap like the
-  original (sums mod 2¹⁶ match its step-by-step additions). Saves only know totals: they load
-  into the base, minus the best weapon and a stoned hero's joint (`fromTotals`); the normalized
-  form (goldens) holds
-  totals.
+  `player.base` (start, levels, training, steroids, the temple) plus what the things in the body
+  slots give (`src/state/items.ts`: `GEAR`, within a slot only the best counts — suit, jacket,
+  boots, weapon) plus a joint while `stoned > 0`. Nothing is stored for things: taking one is
+  `put(body, item)` (`take` in `hero.ts` also heals for a ring), selling one clears its flag.
+  Read with `attr(p, 'strength')`, change the base with `inc`/`dec`/`set`; never touch `base`
+  directly. Values wrap like the original. Saves only know totals: they load into the base and
+  `fromTotals` takes the things and the joint out. The «Помоги Господи» ring gives a fixed +1
+  to the minimum damage (the original: 1 − strength mod 2).
+- Drops are data: `ENEMY_DROPS` (items, and `joints` for the нарк) per enemy kind in
+  `src/state/enemy-drop.ts`; `loot`
+  rolls one of them and finds it only if the hero hasn't got it.
+- `aftermath.ts` separates deciding, applying and showing: its rules only return or yield
+  `AftermathEvent`s, `report` applies each one to the state (`apply`) and then shows it
+  (`aftermath-view.ts`), so a rule goes on with the state the previous event made.
 - Every fight is the same loop; what differs is a `FightRules` object: the crowd (a `Rule`; the
   rector's fights roll nothing), `flee`, whether the den lads bail the hero out, and the backup
   (`DEN_LADS`: access, arrival and beaten counts). `STREET_FIGHT` and `RECTOR_FIGHT`; the fight

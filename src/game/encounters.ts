@@ -4,11 +4,12 @@ import { Effect } from 'effect';
 import { i16, u8 } from '../../src/tp/num';
 import { readKey, readLine, writeLn } from '../crt/crt';
 import { inc } from '../state/attributes';
+import { nextRing } from '../state/items';
 import { encodeSave, encodePlaces } from '../state/legacy';
 import { typeName, rankName } from '../state/names';
 import { SaveName } from '../tp/brands';
 import { CMD, parseCommand } from './commands';
-import { levelUp, nextRing, ringLines, strengthUp } from './hero';
+import { levelUp, ringLines, strengthUp, take } from './hero';
 import { Disk, lowerCase, println, rnd, started } from './prelude';
 import type { Text } from './text';
 import { ENCOUNTERS } from './texts';
@@ -114,9 +115,11 @@ export const temple = Effect.gen(function* () {
     case 2:
       yield* println(ENCOUNTERS.daryuTebeFenku());
       {
-        const ring = nextRing(st);
-        if (ring)
+        const ring = nextRing(st.player.body);
+        if (ring) {
+          take(st, ring);
           for (const line of ringLines(ring, ENCOUNTERS.megaKoltsoSoSvoego())) yield* println(line);
+        }
       }
       break;
     case 3:

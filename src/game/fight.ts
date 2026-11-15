@@ -7,7 +7,7 @@
 import { Effect } from 'effect';
 
 import { readLine } from '../crt/crt';
-import { attr, boostAll, JOINT } from '../state/attributes';
+import { attr } from '../state/attributes';
 import { type Combat, type Game, type Injuries } from '../state/state';
 import { div, i16, round, u8 } from '../tp/num';
 import { CMD, parseCommand } from './commands';
@@ -23,7 +23,7 @@ import { random, type Rule, run } from './rule';
  */
 export interface FightRules {
   /** every turn once the crowd has gathered: maybe a shout */
-  readonly crowd: (st: Game) => Rule;
+  readonly crowd: (st: Game) => Rule<FightEvent>;
   /** `run` */
   readonly flee: (st: Game) => FleeEvent;
   /** whether the den lads pick up a beaten hero */
@@ -103,7 +103,7 @@ export function fight(rules: FightRules) {
         spectators++;
         if (spectators === FULL_CROWD) yield* tell({ type: 'crowdGathered' });
       }
-      if (spectators === FULL_CROWD) yield* run(rules.crowd(st));
+      if (spectators === FULL_CROWD) yield* run(rules.crowd(st), tell);
 
       yield* tell({ type: 'prompt' });
       st.session.lastAnswer = lowerCase(yield* readLine);
@@ -126,9 +126,9 @@ export function fight(rules: FightRules) {
       if (input === CMD.fight.exit) return yield* halt;
       if (input === CMD.fight.kick && backupApproaches(st.combat, rules.backup))
         yield* tell({ type: 'backupArrived', by: 'kicks' });
-      if (input === CMD.fight.callBackup) yield* run(callBackup(st, rules.backup));
+      if (input === CMD.fight.callBackup) yield* run(callBackup(st, rules.backup), tell);
       if (alive(st.enemy) && backupHere(st.combat, rules.backup))
-        yield* run(backupKicks(st, rules.backup));
+        yield* run(backupKicks(st, rules.backup), tell);
       if (input === CMD.fight.shoot && st.player.body.pockets.pistol) yield* tell(yield* shoot(st));
 
       if (!alive(st.player)) {
@@ -291,7 +291,7 @@ function kick(st: Game, by: Side, budget: number) {
 }
 
 /** a gathered crowd shouts now and then */
-function* shout(): Rule {
+function* shout(): Rule<FightEvent> {
   if ((yield* random(10)) === 0) yield { type: 'crowdShout', line: yield* random(18) };
 }
 
@@ -311,7 +311,6 @@ function smoke(st: Game, turns: number): FightEvent {
   if (st.player.resources.joints <= 0) return { type: 'jointRefused', because: 'none' };
   st.player.resources.joints = i16(st.player.resources.joints - 1);
   st.player.stoned = u8(turns);
-  boostAll(st.player, 'joint', JOINT);
   const full = attr(st.player, 'healthMax') - st.player.health.current < 10;
   const healed = full ? attr(st.player, 'healthMax') - st.player.health.current : 10;
   st.player.health.current = full
@@ -328,7 +327,7 @@ function backupApproaches(combat: Combat, backup: BackupRules): boolean {
 }
 
 /** `v`: call the den lads; the phone brings them at once */
-function* callBackup(st: Game, backup: BackupRules): Rule {
+function* callBackup(st: Game, backup: BackupRules): Rule<FightEvent> {
   const access = backup.access(st);
   if (access === 'granted') {
     if (!backupCalled(st.combat)) st.combat.backup = 1;
@@ -346,7 +345,7 @@ function* callBackup(st: Game, backup: BackupRules): Rule {
 }
 
 /** the lads kick the enemy every turn, for respect, until they are beaten or fed up */
-function* backupKicks(st: Game, backup: BackupRules): Rule {
+function* backupKicks(st: Game, backup: BackupRules): Rule<FightEvent> {
   const prev = st.enemy.health.current;
   let dmg = st.world.district * 3 + (yield* random(st.world.district * 4));
   dmg -= div(st.enemy.armor, 3);
