@@ -293,22 +293,20 @@ function backupApproaches(combat: Combat): boolean {
 }
 
 /** `v`: call the den lads; the phone brings them at once */
-function callBackup(st: Game): FightEvent[] {
-  const events: FightEvent[] = [];
+function* callBackup(st: Game): Generator<FightEvent> {
   if (st.world.places.den && respected(st)) {
     if (!backupCalled(st.combat)) st.combat.backup = 1;
     if (st.player.body.pockets.phone) {
       st.combat.backup = BACKUP_ARRIVED;
-      events.push({ type: 'backupArrived', by: 'phone' });
+      yield { type: 'backupArrived', by: 'phone' };
     }
-  } else events.push({ type: 'backupRefused', because: st.world.places.den ? 'respect' : 'den' });
+  } else yield { type: 'backupRefused', because: st.world.places.den ? 'respect' : 'den' };
   if (backupCalled(st.combat)) {
     if (!backupHere(st.combat))
-      events.push({ type: 'backupComing', turns: BACKUP_ARRIVED - st.combat.backup });
+      yield { type: 'backupComing', turns: BACKUP_ARRIVED - st.combat.backup };
     else if (st.combat.backup !== BACKUP_ARRIVED || !st.player.body.pockets.phone)
-      events.push({ type: 'backupAlreadyHere' });
+      yield { type: 'backupAlreadyHere' };
   }
-  return events;
 }
 
 /** the lads kick the enemy every turn, for respect, until they are beaten or fed up */
