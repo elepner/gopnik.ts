@@ -32,8 +32,13 @@ each entry names the original code address and the place in the port.
    (cleaver) compare booleans with `=`, and several bonus branches can stack, so the resulting
    damage depends on the item combination in odd ways.
 
-7. **Selling items keeps their bonuses** — dealers `wes`, `0000:CEE2`: selling the spare suit,
-   shoes, jacket, knuckles, club or knife clears the ownership flag but leaves armour/damage as is.
+7. ~~Selling items keeps their bonuses~~ — not a bug. Dealers `wes` (`0000:CEE2`) only buy the
+   worse of two things (the suit next to the Adidas, the shoes next to the cool boots, the
+   jacket next to the cool one, the knuckles next to any better weapon, the club next to a knife
+   or a cleaver, the knife next to a cleaver). Bonuses are added as differences, so the total
+   already equals the better thing alone (jacket +2, cool jacket +2 more = 4, as the cool jacket
+   alone): keeping it after the sale is right. The market won't sell the worse clothes again
+   ("у тебя есть круче"); the trouble is the weapons that come back, see 15 and 16.
 
 8. **Gym press: menu and purchase conditions disagree** — `0000:E576` lists option 5 while
    `press < district*2`, but `0000:E87F` allows buying while `press < (district-2)*10`.
@@ -77,10 +82,16 @@ each entry names the original code address and the place in the port.
     damage, also when a better weapon is already in hand (a club, a knife or a cleaver). Found
     knuckles get it right: they add nothing then.
 
-16. **Endless damage: sell the knuckles, buy them again** — dealers `wes` (`0000:D110`) and
-    `0000:CB5B`: with a club (or a knife, a cleaver) in hand, the knuckles are "spare" and sell
-    for 13..20 roubles; selling keeps their +2 (bug 7), and buying them back for 25 adds +2 again
-    (bug 15). Every round costs 5..12 roubles and gives +2 min and max damage, with no limit.
+16. **Endless damage: sell a weapon, get it back** — dealers `wes` (`0000:D110`) buy the worse
+    weapon and keep its bonus, which is right (bug 7), but the weapon can come back and add again:
+    - knuckles (`0000:CB5B`): with a better weapon in hand they sell for 13..20 roubles and the
+      dealers sell them again for 25 with +2 (bug 15): +2 min and max damage for 5..12 roubles a
+      round, with no limit;
+    - the club (`0000:CC56`): the dealers sell it again unless a knife and a cleaver are both in
+      hand; with the knuckles kept it adds +2 again: a round with a knife costs 11..25 roubles;
+    - the knife: sold next to a cleaver, it can be found on a maniac again; with the cleaver and
+      the knuckles but no club the broken arithmetic of bug 6 adds +4 again.
+    Found knuckles and a found club next to a better weapon rightly add nothing.
 
 17. **Weapon damage depends on the order the weapons came in** — bugs 5, 6 and 15 together: the
     intended total is the best weapon in hand (knuckles 2, club 4 "replaces knuckles", knife 6,
