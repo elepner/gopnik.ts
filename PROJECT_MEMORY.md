@@ -58,7 +58,9 @@
   `snapshot(store)`; `gameLayer({ watch })` lets the shell see every event (what a prompt asks).
   On a phone (≤ 900px or touch): you | enemy, the screen, then buttons for what the game waits
   for (`Actions.tsx`), no keyboard (`inputmode="none"`), the name in a native `<dialog>`. The
-  saves found at the start are offered in a dialog. `bun run web` (dev server), `bun run
+  saves found at the start are offered in a dialog. The running game is autosaved to
+  localStorage at every main prompt (`web/autosave.ts`), a reload goes on with `mainLoop`; a death
+  (`gameEnded`, not won) forgets it. `?seed=N` fixes the random sequence (tests, sharing). `bun run web` (dev server), `bun run
   web:build` (into `dist/web`), `bun run web:e2e` (Playwright, phone and desktop, `web/e2e`).
 - Saves: the `Saves` service (`prelude.ts`) saves and loads a `SavedGame` (`src/state/saved.ts`:
   the hero, the version, the temple visits — what a SAVE_R?.SAV record holds) by slot (`0`

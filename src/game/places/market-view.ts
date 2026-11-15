@@ -34,7 +34,9 @@ export type MarketRefusal =
   | 'money'
   | 'owned'
   /** something better is in the slot */
-  | 'ownedBetter';
+  | 'ownedBetter'
+  /** goods of a higher district */
+  | 'notHere';
 
 export type MarketEvent =
   /** the market isn't known yet */
@@ -89,6 +91,7 @@ function showMarket(event: MarketEvent) {
       case 'marketBeerBought':
         return yield* println(BEER_LINES[event.line]!);
       case 'marketRefused':
+        if (event.because === 'notHere') return yield* println(PLACES.netTakogoShmota());
         return yield* println(REFUSED[event.goods][event.because]!);
       case 'marketStole':
         return yield* println(PLACES.opaBabkiRubleyNa(event.money));

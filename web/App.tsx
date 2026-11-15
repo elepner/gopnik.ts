@@ -1,7 +1,8 @@
 /**
  * The game in the browser: an 80×25 xterm running the whole program, the stats beside it (above
  * it on a phone, with buttons below instead of a keyboard). The game's saves live in
- * localStorage; the ones found at the start are offered in a dialog.
+ * localStorage; the ones found at the start are offered in a dialog. The running game is
+ * autosaved at every main prompt and goes on after a reload, until it is lost.
  */
 import '@xterm/xterm/css/xterm.css';
 import { Terminal as Xterm } from '@xterm/xterm';
@@ -9,12 +10,14 @@ import { Effect, Fiber } from 'effect';
 import { useEffect, useRef, useState } from 'react';
 
 import type { GameEvent } from '../src/game/events';
+import { mainLoop } from '../src/game/main';
 import { Engine } from '../src/game/prelude';
 import { gameLayer, program } from '../src/runtime';
 import type { GameState } from '../src/state/state';
 import { snapshot, type Store } from '../src/state/store';
 import { Seed } from '../src/tp/brands';
 import { Actions, type Input } from './Actions';
+import { autosave, autosaved, forgetAutosave } from './autosave';
 import { browserSaves } from './browser-saves';
 import { ChoiceDialog } from './ChoiceDialog';
 import { districtName } from './labels';
@@ -29,8 +32,11 @@ export function App() {
   const [game, setGame] = useState(0);
   const [st, setSt] = useState<GameState>();
   const [input, setInput] = useState<Input>();
+  const [over, setOver] = useState(false);
   const send = useRef<(keys: string) => void>(() => {});
   const newGame = () => {
+    forgetAutosave();
+    setOver(false);
     setSt(undefined);
     setInput(undefined);
     setGame((n) => n + 1);
@@ -47,6 +53,7 @@ export function App() {
           onState={setSt}
           onInput={setInput}
           onSend={(s) => (send.current = s)}
+          onOver={() => setOver(true)}
         />
         <StatsPanel st={st} />
       </div>
@@ -65,9 +72,12 @@ export function App() {
           ]}
         />
       )}
-      <button className="again" onClick={newGame}>
-        Новая игра
-      </button>
+      {/* a phone has no use for it while the game goes on */}
+      {(!phone || over) && (
+        <button className="again" onClick={newGame}>
+          Новая игра
+        </button>
+      )}
     </main>
   );
 }
@@ -77,6 +87,7 @@ function Screen(props: {
   readonly onState: (st: GameState) => void;
   readonly onInput: (input: Input | undefined) => void;
   readonly onSend: (send: (keys: string) => void) => void;
+  readonly onOver: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   // the game runs once per mount: the callbacks may change, the game doesn't restart
@@ -112,23 +123,40 @@ function Screen(props: {
     let last: GameEvent | undefined;
     const { terminal, send } = xtermTerminal(term, {
       changed,
-      waiting: (waiting) => callbacks.current.onInput({ waiting, event: last }),
+      waiting: (waiting) => {
+        callbacks.current.onInput({ waiting, event: last });
+        // between two commands the state is whole: keep it
+        if (store && waiting === 'line' && last?.type === 'prompt' && last.context === 'main') {
+          const st = snapshot(store);
+          if (st.phase === 'started') autosave(st);
+        }
+      },
     });
     callbacks.current.onSend(send);
 
+    const saved = autosaved();
+    if (saved) term.write('\x1b[90m(игра продолжается с последнего хода)\x1b[0m\r\n');
     const layer = gameLayer({
-      seed: Seed(Date.now() >>> 0),
+      seed: seed(),
+      state: saved,
       saves: browserSaves(),
       terminal,
-      watch: (event) => (last = event),
+      watch: (event) => {
+        last = event;
+        // a lost game is not to be gone on with
+        if (event.type === 'gameEnded' && !event.won) forgetAutosave();
+      },
     });
     const run = Effect.gen(function* () {
       store = (yield* Engine).state;
-      return yield* program;
+      return yield* saved ? mainLoop : program;
     });
     const fiber = Effect.runFork(run.pipe(Effect.provide(layer)));
     // the game is over: nothing to wait for
-    const stop = fiber.addObserver(() => callbacks.current.onInput(undefined));
+    const stop = fiber.addObserver(() => {
+      callbacks.current.onInput(undefined);
+      callbacks.current.onOver();
+    });
     return () => {
       window.removeEventListener('resize', onResize);
       stop();
@@ -153,4 +181,10 @@ function fit(term: Xterm) {
   const byWidth = (window.innerWidth - (narrow ? 32 : PANEL + MARGINS)) / (80 * 0.6);
   const byHeight = narrow ? Infinity : (window.innerHeight - MARGINS) / (25 * 1.2);
   term.options.fontSize = Math.max(6, Math.min(32, Math.floor(Math.min(byWidth, byHeight))));
+}
+
+/** `?seed=N` replays the same game (tests, sharing); a new one every time otherwise */
+function seed(): Seed {
+  const n = Number(new URLSearchParams(location.search).get('seed') ?? NaN);
+  return Seed(Number.isInteger(n) ? n : Date.now() >>> 0);
 }

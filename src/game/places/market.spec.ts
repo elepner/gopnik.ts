@@ -272,7 +272,10 @@ describe('market (0000:B940)', () => {
             const { happened, st } = yield* visit(shopper(100, inDistrict(c.district - 1)), [
               c.key,
             ]);
-            expect(happened).toEqual([entered]);
+            expect(happened).toEqual([
+              entered,
+              { type: 'marketRefused', goods: c.goods, because: 'notHere' },
+            ]);
             expect([has(st, c.goods), st.player.resources.money]).toEqual([false, 100]);
           })
         );

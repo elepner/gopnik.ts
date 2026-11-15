@@ -60,8 +60,10 @@ export const market = Effect.gen(function* () {
       else if (PRICE.boots > money) yield* refuse('boots', 'money');
       else yield* buy('boots');
     }
-    if (st.world.district > 1 && command === CMD.market.leather) {
-      if (torso.coolLeather) yield* refuse('leather', 'ownedBetter');
+    if (command === CMD.market.leather) {
+      // not in the original: it said nothing about goods of a higher district
+      if (st.world.district <= 1) yield* refuse('leather', 'notHere');
+      else if (torso.coolLeather) yield* refuse('leather', 'ownedBetter');
       else if (torso.leather) yield* refuse('leather', 'owned');
       else if (PRICE.leather > money) yield* refuse('leather', 'money');
       else yield* buy('leather');
@@ -72,13 +74,15 @@ export const market = Effect.gen(function* () {
       else if (PRICE.adidas > money) yield* refuse('adidas', 'money');
       else yield* buy('adidas');
     }
-    if (st.world.district > 2 && command === CMD.market.coolBoots) {
-      if (feet.coolBoots) yield* refuse('coolBoots', 'owned');
+    if (command === CMD.market.coolBoots) {
+      if (st.world.district <= 2) yield* refuse('coolBoots', 'notHere');
+      else if (feet.coolBoots) yield* refuse('coolBoots', 'owned');
       else if (PRICE.boots2 > money) yield* refuse('coolBoots', 'money');
       else yield* buy('coolBoots');
     }
-    if (st.world.district > 3 && command === CMD.market.coolLeather) {
-      if (torso.coolLeather) yield* refuse('coolLeather', 'owned');
+    if (command === CMD.market.coolLeather) {
+      if (st.world.district <= 3) yield* refuse('coolLeather', 'notHere');
+      else if (torso.coolLeather) yield* refuse('coolLeather', 'owned');
       else if (PRICE.leather2 > money) yield* refuse('coolLeather', 'money');
       else yield* buy('coolLeather');
     }

@@ -521,6 +521,8 @@ export const PLACES = {
   utebyaEstKozhankaKruche: () => yellow`Утебя есть кожанка круче.`,
   tyUzheKupilEto: () => yellow`Ты уже купил это.`,
   neDostatochnoBabla: () => red`Не достаточно бабла`,
+  // not in the original: the market of a lower district about goods of a higher one
+  netTakogoShmota: () => yellow`Э, слышь, ты чё, попутал? Такого шмота у нас на районе не водится!`,
   nuVesNaPontah: () => green`Ну весь на понтах.`,
   uTebyaUzheEst2: () => yellow`У тебя уже есть этот костюм.`,
   chistyyGopnik: () => green`Чистый гопник.`,
