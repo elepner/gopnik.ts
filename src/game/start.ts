@@ -3,15 +3,18 @@ import { Effect } from 'effect';
 
 import { readKey, readLine } from '../crt/crt';
 import { attr, set } from '../state/attributes';
-import { CHARACTER_CLASSES, CHARACTER_TYPES } from '../state/kinds';
+import { CHARACTER_CLASSES, CHARACTER_TYPES, type CharacterType } from '../state/kinds';
 import { decodeSave, decodePlaces } from '../state/legacy';
-import { startGame } from '../state/state';
+import { type Game, type GameState, playing, startGame } from '../state/state';
 import { District, SaveName } from '../tp/brands';
 import { div, i16, val } from '../tp/num';
-import { emit } from './events';
+import { emit, reporter } from './events';
 import { Disk, started, state } from './prelude';
 import { titleScreen } from './screens';
+import type { StartEvent } from './start-view';
 import { START } from './texts';
+
+const report = reporter(apply);
 
 /** 0000:6A0D */
 export const newGame = Effect.gen(function* () {
@@ -27,12 +30,9 @@ export const newGame = Effect.gen(function* () {
     if ('23450'.includes(key)) {
       const rec = yield* disk.read(SaveName(`save_r${key}.sav`));
       if (rec) {
-        st.world.district = District(val(key)[0]);
         decodeSave(st, rec);
-        yield* emit({ type: 'startSaveLoaded', key });
-        if (st.world.district === 0) yield* loadPlaces;
-        if (st.world.district === 0)
-          st.world.district = District(div(st.player.progression.level, 10) + 1);
+        yield* report({ type: 'startSaveLoaded', key });
+        if (key === '0') yield* loadPlaces;
         return yield* arrive;
       }
       yield* emit({ type: 'startSaveBroken' });
@@ -48,62 +48,24 @@ const loadPlaces = Effect.gen(function* () {
   if (places) {
     decodePlaces(st, places);
     yield* emit({ type: 'startPlacesLoaded' });
-    return;
-  }
-  yield* resetPlaces;
-  yield* emit({ type: 'startPlacesLost' });
+  } else yield* report({ type: 'startPlacesLost' });
 });
 
 /** places a character type keeps when moving to a new district (also used on load failure) */
-export const resetPlaces = Effect.gen(function* () {
-  const st = yield* started;
-  st.world.places.hospital = false;
-  st.world.places.market = false;
-  if (st.player.type !== 'patsan') st.world.places.club = false;
-  st.world.places.gym = false;
-  if (st.player.type !== 'patsan') st.world.places.girlfriend = false;
-  st.world.places.dealers = false;
-  if (st.player.type !== 'gopnik') st.world.places.den = false;
-});
+export const resetPlaces = report({ type: 'startPlacesReset' });
 
 /** 0000:6DBE */
 const createCharacter = Effect.gen(function* () {
-  const st = yield* creating;
-  st.world.district = District(1);
-  st.world.places.hospital = true;
-  st.world.places.market = true;
-  st.version = START.gopnikVersion102().format;
-  st.player.progression.expNext = 10;
-  yield* emit({ type: 'startStory' });
+  yield* create({ type: 'startStory' });
   let choice = yield* readType;
   if (choice === 4) {
     yield* emit({ type: 'startTypesExplained' });
     choice = yield* readType;
   }
   if (choice < 0 || choice > 3) choice = 0;
-  const {
-    strength: str,
-    agility: agi,
-    vitality: vit,
-    luck,
-  } = CHARACTER_CLASSES[CHARACTER_TYPES[choice]].start;
-  set(st.player, 'strength', i16(str));
-  set(st.player, 'agility', i16(agi));
-  set(st.player, 'vitality', i16(vit));
-  set(st.player, 'luck', i16(luck));
-  startGame(st, CHARACTER_TYPES[choice]);
-  set(
-    st.player,
-    'healthMax',
-    i16(attr(st.player, 'vitality') * 5 + 10 + attr(st.player, 'strength'))
-  );
-  st.player.health.current = attr(st.player, 'healthMax');
-  set(st.player, 'damageMin', i16(div(attr(st.player, 'strength'), 2)));
-  set(st.player, 'damageMax', attr(st.player, 'strength'));
+  yield* create({ type: 'startTypeChosen', hero: CHARACTER_TYPES[choice] });
   yield* emit({ type: 'startNameAsked' });
-  st.player.name = yield* readLine;
-  if (st.player.name === '') st.player.name = START.razDolBay().format;
-  st.player.name = START.namePrefix().format + st.player.name;
+  yield* report({ type: 'startNamed', name: yield* readLine });
 });
 
 /** the typed choice as Val reads it (garbage reads as 0) */
@@ -113,9 +75,76 @@ const readType = Effect.gen(function* () {
 });
 
 /** 0000:7262 — district intro, starting bonuses of the character type */
-const arrive = Effect.gen(function* () {
-  const st = yield* started;
-  yield* emit({ type: 'startArrived' });
+const arrive = report({ type: 'startArrived' });
+
+/** the character is created before the game has started, and `report` needs a started game */
+function create(event: StartEvent) {
+  return Effect.gen(function* () {
+    const st = yield* state;
+    if (st.phase !== 'not-started') throw new Error('the character already exists');
+    apply(st, event);
+    yield* emit(event);
+  });
+}
+
+/** what happens at the start goes into the state */
+function apply(st: GameState, event: StartEvent) {
+  switch (event.type) {
+    case 'startSaveLoaded':
+      // `0`: the district the save was made in, from the level
+      st.world.district = District(
+        event.key === '0' ? div(st.player.progression.level, 10) + 1 : val(event.key)[0]
+      );
+      return;
+    case 'startPlacesLost':
+    case 'startPlacesReset':
+      return forgetPlaces(playing(st));
+    case 'startStory':
+      st.world.district = District(1);
+      st.world.places.hospital = true;
+      st.world.places.market = true;
+      st.version = START.gopnikVersion102().format;
+      st.player.progression.expNext = 10;
+      return;
+    case 'startTypeChosen':
+      return begin(st, event.hero);
+    case 'startNamed':
+      st.player.name =
+        START.namePrefix().format + (event.name === '' ? START.razDolBay().format : event.name);
+      return;
+    case 'startArrived':
+      return settle(playing(st));
+  }
+}
+
+/** the places a new district doesn't know yet; a type keeps its bonus places */
+function forgetPlaces(st: Game) {
+  const places = st.world.places;
+  places.hospital = false;
+  places.market = false;
+  if (st.player.type !== 'patsan') places.club = false;
+  places.gym = false;
+  if (st.player.type !== 'patsan') places.girlfriend = false;
+  places.dealers = false;
+  if (st.player.type !== 'gopnik') places.den = false;
+}
+
+/** the new character: the type's stats, health and damage from them */
+function begin(st: GameState, hero: CharacterType) {
+  const { strength, agility, vitality, luck } = CHARACTER_CLASSES[hero].start;
+  set(st.player, 'strength', strength);
+  set(st.player, 'agility', agility);
+  set(st.player, 'vitality', vitality);
+  set(st.player, 'luck', luck);
+  const p = startGame(st, hero).player;
+  set(p, 'healthMax', attr(p, 'vitality') * 5 + 10 + attr(p, 'strength'));
+  set(p, 'health', attr(p, 'healthMax'));
+  set(p, 'damageMin', div(attr(p, 'strength'), 2));
+  set(p, 'damageMax', attr(p, 'strength'));
+}
+
+/** the district's rector, the type's bonus places, the den's loans */
+function settle(st: Game) {
   if (st.world.district === 5) st.world.rector = true;
   if (st.player.type === 'gopnik') st.world.places.den = true;
   else if (st.player.type === 'patsan') {
@@ -123,11 +152,4 @@ const arrive = Effect.gen(function* () {
     st.world.places.club = true;
   } else if (st.player.type === 'vor') st.world.places.dealers = true;
   st.world.den.loans = 5;
-});
-
-/** the state while the character is being created */
-const creating = Effect.gen(function* () {
-  const st = yield* state;
-  if (st.phase !== 'not-started') throw new Error('the character already exists');
-  return st;
-});
+}

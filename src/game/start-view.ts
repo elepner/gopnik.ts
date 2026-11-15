@@ -16,7 +16,7 @@ import {
   writeLn,
   WHITE,
 } from '../crt/crt';
-import { CHARACTER_CLASSES } from '../state/kinds';
+import { CHARACTER_CLASSES, type CharacterType } from '../state/kinds';
 import { typeName } from '../state/names';
 import { print, println, started } from './prelude';
 import { type Color, COLORS } from './text';
@@ -28,19 +28,25 @@ export type StartEvent =
   | { readonly type: 'startTitle' }
   /** saves found on the disk: the district digit of each (`0`: the same place) */
   | { readonly type: 'startSavesFound'; readonly districts: readonly string[] }
-  /** the save of the pressed key is loaded */
+  /** the save of the pressed key is loaded: the key's district (`0`: the save's own) */
   | { readonly type: 'startSaveLoaded'; readonly key: string }
   /** the save of the pressed key is not there */
   | { readonly type: 'startSaveBroken' }
   | { readonly type: 'startPlacesLoaded' }
   /** `places.sav` is not there: the places are reset */
   | { readonly type: 'startPlacesLost' }
-  /** a new game: the story, then the character types to choose from */
+  /** a new district: the places are reset, the type keeps its bonus places */
+  | { readonly type: 'startPlacesReset' }
+  /** a new game in the first district: the story, then the character types to choose from */
   | { readonly type: 'startStory' }
   /** "4": the types explained, choose again */
   | { readonly type: 'startTypesExplained' }
+  /** the character gets its type and its stats */
+  | { readonly type: 'startTypeChosen'; readonly hero: CharacterType }
   | { readonly type: 'startNameAsked' }
-  /** the hero arrives in the district (`started` knows which) */
+  /** the name as typed (empty: Раздолбай) */
+  | { readonly type: 'startNamed'; readonly name: string }
+  /** the hero arrives in the district (`started` knows which) and gets the type's places */
   | { readonly type: 'startArrived' }
   /** the end: "ТЫ ПОБЕДИЛ" or "ТЫ СДОХ", until a key is pressed */
   | { readonly type: 'gameEnded'; readonly won: boolean }
@@ -58,9 +64,12 @@ export const startView: View<StartEvent> = {
     startSaveBroken: true,
     startPlacesLoaded: true,
     startPlacesLost: true,
+    startPlacesReset: true,
     startStory: true,
     startTypesExplained: true,
+    startTypeChosen: true,
     startNameAsked: true,
+    startNamed: true,
     startArrived: true,
     gameEnded: true,
     victoryCelebrated: true,
@@ -104,6 +113,10 @@ function showStart(event: StartEvent) {
         return;
       case 'startNameAsked':
         return yield* print(START.aZovutTebya());
+      case 'startPlacesReset':
+      case 'startTypeChosen':
+      case 'startNamed':
+        return;
       case 'startArrived':
         return yield* arrival;
       case 'gameEnded':
