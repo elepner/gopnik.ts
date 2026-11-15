@@ -41,7 +41,7 @@ export function snapshotState(st: GameState): Record<string, number | string> {
 /** the state written into a fresh data segment */
 export function encode(st: GameState): Memory {
   const m = new Memory();
-  for (const [name, [get]] of Object.entries(BINDINGS) as [FieldName, Binding][])
+  for (const [name, [get]] of Object.entries(BINDINGS) as [StateField, Binding][])
     m.set(
       LAYOUT[name],
       typeof get(st) === 'boolean' ? Number(get(st)) : (get(st) as number | string)
@@ -55,7 +55,7 @@ export function encode(st: GameState): Memory {
 }
 
 function decode(st: GameState, m: Memory, include: (f: Field) => boolean) {
-  for (const [name, [, set]] of Object.entries(BINDINGS) as [FieldName, Binding][])
+  for (const [name, [, set]] of Object.entries(BINDINGS) as [StateField, Binding][])
     if (include(LAYOUT[name])) set(st, m.get(LAYOUT[name]));
   if (include(LAYOUT.level))
     for (let level = 1; level <= 40; level++)
@@ -81,7 +81,31 @@ const CODE_STAT: Record<string, StatKey> = {
 };
 
 /** how every LAYOUT field maps to the state */
-const BINDINGS: Record<FieldName, Binding> = {
+/**
+ * Working variables of the original (its locals living in the data segment). The port keeps them
+ * as locals of its procedures; they are not part of the game state and not compared.
+ */
+export const SCRATCH_FIELDS = [
+  'event',
+  'eventRoll',
+  'cmd',
+  'engaged',
+  'found',
+  'color',
+  'tmp',
+  'valCode',
+  'sneak',
+  'bet',
+  'saveCount',
+  'saveKey',
+  'dir',
+  'sold',
+  'press',
+] as const satisfies readonly FieldName[];
+
+type StateField = Exclude<FieldName, (typeof SCRATCH_FIELDS)[number]>;
+
+const BINDINGS: Record<StateField, Binding> = {
   district: [(s) => s.world.district, (s, v) => (s.world.district = District(Number(v)))],
   trail: flag((s) => s.world, 'trail'),
   knowsMarket: flag((s) => s.world.places, 'market'),
@@ -94,7 +118,8 @@ const BINDINGS: Record<FieldName, Binding> = {
   version: [(s) => s.version, (s, v) => (s.version = String(v))],
   name: [(s) => s.player.name, (s, v) => (s.player.name = String(v))],
   charType: [
-    (s) => (s.phase === 'started' ? CHARACTER_CLASSES[s.player.type].tier : s.typeChoice),
+    // 0 until the character exists (the original's choice is always reset before the next key)
+    (s) => (s.phase === 'started' ? CHARACTER_CLASSES[s.player.type].tier : 0),
     (s, v) => {
       const type = CHARACTER_TYPES.find((t) => CHARACTER_CLASSES[t].tier === v);
       if (!type) throw new Error(`save holds an unknown character type ${v}`);
@@ -174,29 +199,14 @@ const BINDINGS: Record<FieldName, Binding> = {
   eBeer: num((s) => s.enemy.loot, 'beer'),
   eMoney: num((s) => s.enemy.loot, 'money'),
   eJunk: num((s) => s.enemy.loot, 'junk'),
-  event: num((s) => s.scratch, 'event'),
-  eventRoll: num((s) => s.scratch, 'eventRoll'),
-  cmd: text((s) => s.scratch, 'cmd'),
-  input: text((s) => s.scratch, 'input'),
-  engaged: flag((s) => s.scratch, 'engaged'),
-  found: num((s) => s.scratch, 'found'),
+  input: text((s) => s.session, 'lastAnswer'),
   marketHeat: num((s) => s.world.heat, 'market'),
   clubHeat: num((s) => s.world.heat, 'club'),
   denQuestHelp: flag((s) => s.world.den, 'helpQuest'),
   denQuestJob: flag((s) => s.world.den, 'jobQuest'),
-  color: num((s) => s.scratch, 'color'),
-  tmp: text((s) => s.scratch, 'tmp'),
-  valCode: num((s) => s.scratch, 'valCode'),
-  sneak: num((s) => s.scratch, 'sneak'),
   backup: num((s) => s.combat, 'backup'),
-  bet: num((s) => s.scratch, 'bet'),
   rector: flag((s) => s.world, 'rector'),
-  saveCount: num((s) => s.scratch, 'saveCount'),
-  saveKey: num((s) => s.scratch, 'saveKey'),
-  dir: text((s) => s.scratch, 'dir'),
   phoneCalls: num((s) => s.world, 'dealerCalls'),
-  sold: num((s) => s.scratch, 'sold'),
-  press: num((s) => s.scratch, 'press'),
   loans: num((s) => s.world.den, 'loans'),
 };
 
@@ -435,12 +445,20 @@ export class Memory {
   }
 }
 
-/** field-by-field snapshot used to compare against the emulated original */
-export function snapshot(bytes: Uint8Array, base = 0): Record<string, number | string> {
+/**
+ * Field-by-field view of a data segment, as compared with the emulated original. Working
+ * variables of the original are left out unless `all` is set (the bots read them).
+ */
+export function snapshot(
+  bytes: Uint8Array,
+  base = 0,
+  all = false
+): Record<string, number | string> {
   const m = new Memory();
   m.bytes.set(bytes.subarray(base + DS_LO, base + DS_HI), DS_LO);
   const out: Record<string, number | string> = {};
-  for (const [k, f] of Object.entries(LAYOUT) as [FieldName, Field][]) out[k] = m.get(f);
+  for (const [k, f] of Object.entries(LAYOUT) as [FieldName, Field][])
+    if (all || !(SCRATCH_FIELDS as readonly string[]).includes(k)) out[k] = m.get(f);
   for (let lvl = 1; lvl <= 40; lvl++) out[`history${lvl}`] = m.history(lvl);
   return out;
 }

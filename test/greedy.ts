@@ -27,7 +27,8 @@ export function playGreedy(seed: number, save: string, cls: string, limit: numbe
   const dos = new Dos({ exe: join(ROOT, 'original/g.exe'), workdir: dir, seed });
   const keys: string[] = [];
   const log: string[] = [];
-  const state = () => snapshot(dos.cpu.mem, (LOAD_SEG + IMG.dataSeg) * 16) as unknown as State;
+  const state = () =>
+    snapshot(dos.cpu.mem, (LOAD_SEG + IMG.dataSeg) * 16, true) as unknown as State;
   const press = (why: string, ...ks: string[]) => {
     log.push(`# ${lastLine(dos)}  => ${why}`);
     for (const k of ks) {

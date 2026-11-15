@@ -63,4 +63,4 @@ each entry names the original code address and the place in the port.
     on every luck check fails (`luck >= Random(n)`), stolen sums use `Random(luck*2)` with the
     wrapped value, and `money` itself can wrap negative after a big theft. The port stores state
     in the original byte layout, so it wraps identically. Note for porting: every luck check of
-    the original calls `Random` *before* comparing, also when the luck is negative.
+    the original calls `Random` _before_ comparing, also when the luck is negative.

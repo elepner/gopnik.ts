@@ -16,22 +16,20 @@ export const newGame = Effect.gen(function* () {
   const st = yield* state;
   const disk = yield* Disk;
   yield* clrScr;
-  st.scratch.dir = 'C:\\GOP\\';
   yield* titleScreen;
   // Randomize happens here; the Rng service is seeded when it is created
-  st.scratch.saveCount = 0;
+  let saveCount = 0;
   const saves = yield* disk.list(/^save_r.\.sav$/i);
   for (const name of saves) {
-    if (st.scratch.saveCount > 0) yield* println(START.ili());
-    st.scratch.saveCount = u8(st.scratch.saveCount + 1);
+    if (saveCount > 0) yield* println(START.ili());
+    saveCount++;
     const ch = name.toUpperCase()[6];
     if (ch !== '0') yield* println(START.mozhnoNachatSRayona(ch));
     if (ch === '0') yield* println(START.mozhnoNachatSTogo());
   }
-  if (st.scratch.saveCount > 0) {
+  if (saveCount > 0) {
     yield* println(START.nazhmiTsifruSKakogo());
-    st.scratch.saveKey = u8(yield* readKey);
-    const key = String.fromCharCode(st.scratch.saveKey);
+    const key = String.fromCharCode(yield* readKey);
     if ('23450'.includes(key)) {
       const rec = yield* disk.read(SaveName(`save_r${key}.sav`));
       if (rec) {
@@ -104,9 +102,8 @@ const createCharacter = Effect.gen(function* () {
   yield* println(START.vyberiKemTyBudesh());
   for (const line of TYPE_MENU) yield* println(line);
   yield* println(START.n4CheZaBatva());
-  yield* readType;
-  if (st.typeChoice === 4) {
-    st.typeChoice = 0;
+  let choice = yield* readType;
+  if (choice === 4) {
     yield* writeLn;
     yield* println(START.patsanEtoNormalnyyTip());
     yield* println(START.otmorozokTupoyKoryavyyMudak());
@@ -115,20 +112,20 @@ const createCharacter = Effect.gen(function* () {
     yield* writeLn;
     yield* println(START.aTeperVybiray());
     for (const line of TYPE_MENU) yield* println(line);
-    yield* readType;
+    choice = yield* readType;
   }
-  if (st.typeChoice < 0 || st.typeChoice > 3) st.typeChoice = 0;
+  if (choice < 0 || choice > 3) choice = 0;
   const {
     strength: str,
     agility: agi,
     vitality: vit,
     luck,
-  } = CHARACTER_CLASSES[CHARACTER_TYPES[st.typeChoice]].start;
+  } = CHARACTER_CLASSES[CHARACTER_TYPES[choice]].start;
   st.player.stats.strength = i16(str);
   st.player.stats.agility = i16(agi);
   st.player.stats.vitality = i16(vit);
   st.player.stats.luck = i16(luck);
-  startGame(st, CHARACTER_TYPES[st.typeChoice]);
+  startGame(st, CHARACTER_TYPES[choice]);
   st.player.health.max = i16(st.player.stats.vitality * 5 + 10 + st.player.stats.strength);
   st.player.health.current = st.player.health.max;
   st.player.damage.min = i16(div(st.player.stats.strength, 2));
@@ -141,12 +138,10 @@ const createCharacter = Effect.gen(function* () {
 
 const TYPE_MENU = [START.n0Patsan(), START.n1Otmorozok(), START.n2Gopnik(), START.n3Vor()];
 
+/** the typed choice as Val reads it (garbage reads as 0) */
 const readType = Effect.gen(function* () {
-  const st = yield* creating;
-  st.scratch.tmp = yield* readLine;
-  const [v, code] = val(st.scratch.tmp);
-  st.typeChoice = i16(v);
-  st.scratch.valCode = i16(code);
+  const [choice] = val(yield* readLine);
+  return i16(choice);
 });
 
 /** 0000:7262 — district intro, starting bonuses of the character type */

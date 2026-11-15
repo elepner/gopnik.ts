@@ -16,6 +16,11 @@
     "greedy": "bun test/greedy.ts",
     "test": "vp test"
   },
+  "dependencies": {
+    "chalk": "^6.0.1",
+    "effect": "^4.1.4",
+    "immer": "^11.2.10"
+  },
   "devDependencies": {
     "@effect/vitest": "^4.1.4",
     "@types/node": "^26.6.6",
@@ -24,10 +29,5 @@
     "oxc-parser": "^0.158.0",
     "typescript": "^7.0.2",
     "vite-plus": "^1.6.0"
-  },
-  "dependencies": {
-    "chalk": "^6.0.1",
-    "effect": "^4.1.4",
-    "immer": "^11.2.10"
   }
 }

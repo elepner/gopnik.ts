@@ -8,7 +8,7 @@ import { type StatKey } from '../state/state';
 import { div, i16, mod, round, u8 } from '../tp/num';
 import { CMD } from './commands';
 import { showEnemy } from './enemy';
-import { drinkBeer, gainRing, levelUp, showStats } from './hero';
+import { beerMode, drinkBeer, gainRing, levelUp, showStats } from './hero';
 import { halt, lowerCase, luckAtLeast, print, println, rnd, started } from './prelude';
 import { gameOver, victoryAnimation } from './screens';
 import type { Text } from './text';
@@ -57,8 +57,8 @@ export function fight(kind: FightKind) {
         for (const line of yield* crowdShout) yield* println(line);
 
       yield* print(FIGHT.bitva());
-      st.scratch.input = lowerCase(yield* readLine);
-      const input = st.scratch.input;
+      st.session.lastAnswer = lowerCase(yield* readLine);
+      const input = st.session.lastAnswer;
 
       if (input === CMD.fight.kick) {
         yield* playerKicks(playerHits);
@@ -92,7 +92,8 @@ export function fight(kind: FightKind) {
         }
       }
 
-      yield* drinkBeer(input);
+      const beer = beerMode(input);
+      if (beer) yield* drinkBeer(beer);
       if (input === CMD.fight.joint) yield* smokeJoint(3);
       if (input === CMD.fight.stats) yield* showStats;
       if (input === CMD.fight.inspectEnemy) yield* showEnemy;

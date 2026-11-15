@@ -11,7 +11,7 @@ import { CMD } from './commands';
 import { saveMage, temple } from './encounters';
 import { setupRector, spawnEnemy } from './enemy';
 import { fight, smokeJoint } from './fight';
-import { drinkBeer, showStats } from './hero';
+import { beerMode, drinkBeer, showStats } from './hero';
 import { club, dealers, den, girlfriend, gym, market, prompt, vet } from './places';
 import {
   Disk,
@@ -47,9 +47,8 @@ const turn = Effect.gen(function* () {
     yield* fight(4);
   }
   yield* print(plain`\\`);
-  st.scratch.cmd = lowerCase(yield* readLine);
-  const cmd = st.scratch.cmd;
-  if (cmd === CMD.main.walk || cmd === CMD.main.run) yield* walk;
+  const cmd = lowerCase(yield* readLine);
+  if (cmd === CMD.main.walk || cmd === CMD.main.run) yield* walk(cmd);
   if (cmd === CMD.main.market) yield* market;
   if (cmd === CMD.main.dealers) yield* dealers;
   if (cmd === CMD.main.vet) yield* vet;
@@ -58,7 +57,8 @@ const turn = Effect.gen(function* () {
   if (cmd === CMD.main.den) yield* den;
   if (cmd === CMD.main.club) yield* club;
   if (cmd === CMD.main.gym) yield* gym;
-  yield* drinkBeer(cmd);
+  const beer = beerMode(cmd);
+  if (beer) yield* drinkBeer(beer);
   if (cmd === CMD.main.joint) yield* smokeJoint(10);
   if (cmd === CMD.main.commands) yield* commands;
   if (cmd === CMD.main.stats) yield* showStats;
@@ -87,9 +87,9 @@ const nextDistrict = Effect.gen(function* () {
   yield* println(MAIN.tyDokazalChtoTy());
   yield* println(MAIN.hocheshSohranitSvoiDostizheniya());
   if ((yield* prompt(plain`\\`)) === CMD.answer.yes) {
-    st.scratch.tmp = str(st.world.district);
-    yield* (yield* Disk).write(SaveName(`save_r${st.scratch.tmp}.sav`), encodeSave(st));
-    yield* println(MAIN.sohranenoVSaveR(st.scratch.tmp));
+    const slot = str(st.world.district);
+    yield* (yield* Disk).write(SaveName(`save_r${slot}.sav`), encodeSave(st));
+    yield* println(MAIN.sohranenoVSaveR(slot));
   }
   switch (st.world.district) {
     case 2:
@@ -115,114 +115,118 @@ const nextDistrict = Effect.gen(function* () {
 });
 
 /** 0000:AEA1 — `w`/`run`: wander around looking for trouble */
-const walk = Effect.gen(function* () {
-  const st = yield* started;
-  if (st.player.stoned > 0) {
-    st.player.stoned = u8(st.player.stoned - 1);
-    if (st.player.stoned === 0) {
-      st.player.stats.strength = i16(st.player.stats.strength - 2);
-      st.player.damage.min = i16(st.player.damage.min - 1);
-      st.player.damage.max = i16(st.player.damage.max - 2);
-      yield* println(MAIN.glyukiProshliSila2());
-    }
-  }
-  if (st.scratch.cmd === CMD.main.run) yield* println(MAIN.zabegalMudak());
-  if (st.world.den.loans < st.world.district * 10) st.world.den.loans = u8(st.world.den.loans + 1);
-  if (st.world.places.dealers && st.player.body.pockets.pistol && st.world.dealerCalls < 25) {
-    st.world.dealerCalls = u8(st.world.dealerCalls + 1);
-    if (st.world.dealerCalls === 25 && st.player.body.pockets.phone)
-      yield* println(MAIN.telefonAleTyGde());
-  }
-  if (!st.world.den.helpQuest && (yield* rnd(20)) === 0) {
-    st.world.den.helpQuest = true;
-    if (st.world.places.den && st.player.body.pockets.phone)
-      yield* println(MAIN.telefonAleTyGde2(st.player.name));
-  }
-  if (!st.world.den.jobQuest && (yield* rnd(20)) === 0) {
-    st.world.den.jobQuest = true;
-    if (st.world.places.den && st.player.respect >= 100 && st.player.body.pockets.phone)
-      yield* println(MAIN.telefonAleTySchas(st.player.name));
-  }
-  if (st.player.body.pockets.phone && (yield* rnd(200)) === 0) {
-    yield* println(MAIN.telefonAleVasya());
-    yield* readKey;
-    yield* println(MAIN.netEto(st.player.name));
-    yield* readKey;
-    yield* println(MAIN.telefonAVasyuMozhno());
-    yield* readKey;
-    yield* println(MAIN.netOnBudetV());
-  }
-  if (st.player.body.pockets.phone) {
-    if ((yield* rnd(100)) === 0 && st.world.places.girlfriend) {
-      yield* println(MAIN.telefonTvoyaPassiyaPrivet());
-      yield* println(MAIN.aTyBezbazarovZhdi());
-    }
-    if (st.world.heat.market === 1 && st.world.places.den) yield* println(MAIN.telefonEtoTyTam());
-    if (st.world.heat.club === 1 && st.world.places.den) yield* println(MAIN.telefonTyCheTam());
-  }
-  if (st.world.heat.market > 0) st.world.heat.market = u8(st.world.heat.market - 1);
-  if (st.world.heat.club > 0) st.world.heat.club = u8(st.world.heat.club - 1);
-  if ((yield* rnd(10)) === 0 && !st.world.places.hospital) {
-    st.world.places.hospital = true;
-    yield* println(MAIN.tySprosilUProhozhego());
-  }
-  if ((yield* rnd(10)) === 0 && !st.world.places.market) {
-    st.world.places.market = true;
-    yield* println(MAIN.tyNashelBazar());
-  }
-  if ((yield* rnd(100)) === 0 && !st.world.places.club) {
-    st.world.places.club = true;
-    yield* println(MAIN.tyUvidelObyavlenieTipa());
-  }
-  if ((yield* rnd(100)) === 0 && !st.world.places.gym) {
-    st.world.places.gym = true;
-    yield* println(MAIN.naSteneReklamaZhizn());
-  }
-  if (st.player.body.hands.rings.pomiluy) {
-    if (st.player.health.current < st.player.health.max) {
-      st.player.health.current = i16(st.player.health.current + 3);
-      if (st.player.health.current > st.player.health.max)
-        st.player.health.current = st.player.health.max;
-    }
-    if ((yield* rnd(20)) === 0) {
-      if (!st.player.injuries.jaw && st.player.injuries.leg) {
-        st.player.injuries.leg = false;
-        yield* println(MAIN.tvoyaNogaZalechilasS());
-      }
-      if (st.player.injuries.jaw) {
-        st.player.injuries.jaw = false;
-        yield* println(MAIN.tvoyaChelyustZalechilasS());
+function walk(cmd: string) {
+  return Effect.gen(function* () {
+    const st = yield* started;
+    if (st.player.stoned > 0) {
+      st.player.stoned = u8(st.player.stoned - 1);
+      if (st.player.stoned === 0) {
+        st.player.stats.strength = i16(st.player.stats.strength - 2);
+        st.player.damage.min = i16(st.player.damage.min - 1);
+        st.player.damage.max = i16(st.player.damage.max - 2);
+        yield* println(MAIN.glyukiProshliSila2());
       }
     }
-  }
-  if (st.player.type === 'otmorozok') {
-    if (st.player.health.current < st.player.health.max)
-      st.player.health.current = i16(st.player.health.current + 1);
-  } else if (st.player.type === 'vor' && (yield* luckAtLeast(st.world.district * 20))) {
-    st.scratch.found = i16((yield* rnd(st.world.district * 5)) + 1);
-    st.player.resources.money = i16(st.player.resources.money + st.scratch.found);
-    yield* println(MAIN.opaBabkiRubleyNa(st.scratch.found));
-  }
-  st.scratch.eventRoll = u8((yield* rnd(25)) + 1);
-  if (st.scratch.eventRoll >= 10) st.scratch.event = 4;
-  if (st.scratch.eventRoll <= 9 && st.scratch.eventRoll >= 5) st.scratch.event = 3;
-  if (st.scratch.eventRoll <= 4 && st.scratch.eventRoll >= 2) st.scratch.event = 2;
-  if (st.scratch.eventRoll === 1) st.scratch.event = 1;
-  if ((yield* rnd(200)) === 0) yield* temple;
-  if ((yield* rnd(100)) === 0) yield* saveMage;
-  switch (st.scratch.event) {
-    case 1:
-      return yield* toggleTrail;
-    case 2:
-      return yield* prettyGirl;
-    case 3:
-      return yield* meetSomeone;
-    case 4:
-      return yield* nothingHappens;
-    default:
-      return yield* println(MAIN.nicheNeProishodit());
-  }
-});
+    if (cmd === CMD.main.run) yield* println(MAIN.zabegalMudak());
+    if (st.world.den.loans < st.world.district * 10)
+      st.world.den.loans = u8(st.world.den.loans + 1);
+    if (st.world.places.dealers && st.player.body.pockets.pistol && st.world.dealerCalls < 25) {
+      st.world.dealerCalls = u8(st.world.dealerCalls + 1);
+      if (st.world.dealerCalls === 25 && st.player.body.pockets.phone)
+        yield* println(MAIN.telefonAleTyGde());
+    }
+    if (!st.world.den.helpQuest && (yield* rnd(20)) === 0) {
+      st.world.den.helpQuest = true;
+      if (st.world.places.den && st.player.body.pockets.phone)
+        yield* println(MAIN.telefonAleTyGde2(st.player.name));
+    }
+    if (!st.world.den.jobQuest && (yield* rnd(20)) === 0) {
+      st.world.den.jobQuest = true;
+      if (st.world.places.den && st.player.respect >= 100 && st.player.body.pockets.phone)
+        yield* println(MAIN.telefonAleTySchas(st.player.name));
+    }
+    if (st.player.body.pockets.phone && (yield* rnd(200)) === 0) {
+      yield* println(MAIN.telefonAleVasya());
+      yield* readKey;
+      yield* println(MAIN.netEto(st.player.name));
+      yield* readKey;
+      yield* println(MAIN.telefonAVasyuMozhno());
+      yield* readKey;
+      yield* println(MAIN.netOnBudetV());
+    }
+    if (st.player.body.pockets.phone) {
+      if ((yield* rnd(100)) === 0 && st.world.places.girlfriend) {
+        yield* println(MAIN.telefonTvoyaPassiyaPrivet());
+        yield* println(MAIN.aTyBezbazarovZhdi());
+      }
+      if (st.world.heat.market === 1 && st.world.places.den) yield* println(MAIN.telefonEtoTyTam());
+      if (st.world.heat.club === 1 && st.world.places.den) yield* println(MAIN.telefonTyCheTam());
+    }
+    if (st.world.heat.market > 0) st.world.heat.market = u8(st.world.heat.market - 1);
+    if (st.world.heat.club > 0) st.world.heat.club = u8(st.world.heat.club - 1);
+    if ((yield* rnd(10)) === 0 && !st.world.places.hospital) {
+      st.world.places.hospital = true;
+      yield* println(MAIN.tySprosilUProhozhego());
+    }
+    if ((yield* rnd(10)) === 0 && !st.world.places.market) {
+      st.world.places.market = true;
+      yield* println(MAIN.tyNashelBazar());
+    }
+    if ((yield* rnd(100)) === 0 && !st.world.places.club) {
+      st.world.places.club = true;
+      yield* println(MAIN.tyUvidelObyavlenieTipa());
+    }
+    if ((yield* rnd(100)) === 0 && !st.world.places.gym) {
+      st.world.places.gym = true;
+      yield* println(MAIN.naSteneReklamaZhizn());
+    }
+    if (st.player.body.hands.rings.pomiluy) {
+      if (st.player.health.current < st.player.health.max) {
+        st.player.health.current = i16(st.player.health.current + 3);
+        if (st.player.health.current > st.player.health.max)
+          st.player.health.current = st.player.health.max;
+      }
+      if ((yield* rnd(20)) === 0) {
+        if (!st.player.injuries.jaw && st.player.injuries.leg) {
+          st.player.injuries.leg = false;
+          yield* println(MAIN.tvoyaNogaZalechilasS());
+        }
+        if (st.player.injuries.jaw) {
+          st.player.injuries.jaw = false;
+          yield* println(MAIN.tvoyaChelyustZalechilasS());
+        }
+      }
+    }
+    if (st.player.type === 'otmorozok') {
+      if (st.player.health.current < st.player.health.max)
+        st.player.health.current = i16(st.player.health.current + 1);
+    } else if (st.player.type === 'vor' && (yield* luckAtLeast(st.world.district * 20))) {
+      const found = i16((yield* rnd(st.world.district * 5)) + 1);
+      st.player.resources.money = i16(st.player.resources.money + found);
+      yield* println(MAIN.opaBabkiRubleyNa(found));
+    }
+    // what happens on this walk: 1 path, 2 girl, 3 someone comes along, 4 nothing (by 1/25 odds)
+    const roll = (yield* rnd(25)) + 1;
+    let event = roll >= 10 ? 4 : roll >= 5 ? 3 : roll >= 2 ? 2 : 1;
+    if ((yield* rnd(200)) === 0) {
+      yield* temple;
+      event = 0; // the temple visit is the whole walk
+    }
+    if ((yield* rnd(100)) === 0) yield* saveMage;
+    switch (event) {
+      case 1:
+        return yield* toggleTrail;
+      case 2:
+        return yield* prettyGirl;
+      case 3:
+        return yield* meetSomeone;
+      case 4:
+        return yield* nothingHappens;
+      default:
+        return yield* println(MAIN.nicheNeProishodit());
+    }
+  });
+}
 
 const toggleTrail = Effect.gen(function* () {
   const st = yield* started;
@@ -248,8 +252,8 @@ const prettyGirl = Effect.gen(function* () {
   const st = yield* started;
   if (st.world.places.girlfriend) return yield* println(MAIN.sovsemNicheNeProishodit());
   yield* println(MAIN.idetTipaKlevayaTsypa());
-  st.scratch.input = lowerCase(yield* readLine);
-  if (st.scratch.input !== CMD.answer.yes) return;
+  st.session.lastAnswer = lowerCase(yield* readLine);
+  if (st.session.lastAnswer !== CMD.answer.yes) return;
   if ((yield* rnd(2)) === 0) {
     yield* println(MAIN.tyTakoyPodkatyvaeshA());
     st.world.places.girlfriend = true;
@@ -259,27 +263,28 @@ const prettyGirl = Effect.gen(function* () {
 const meetSomeone = Effect.gen(function* () {
   const st = yield* started;
   yield* spawnEnemy(0);
-  st.scratch.engaged = false;
+  let engaged = false;
   if (st.enemy.type !== 'ment') {
-    st.scratch.sneak = i16(st.world.district * 7 + 15);
-    if (st.player.body.skin.tattoo) st.scratch.sneak = i16(Math.trunc(st.scratch.sneak / 2));
+    // the tattoo halves the odds of being picked on
+    let sneak = st.world.district * 7 + 15;
+    if (st.player.body.skin.tattoo) sneak = Math.trunc(sneak / 2);
     // weaklings never look for trouble; lads only when the hero is unlucky; thugs and maniacs always
     const group = ENEMIES[st.enemy.type].group;
     const calm =
-      ((yield* luckAtLeast(st.scratch.sneak)) || group === 'weakling') &&
+      ((yield* luckAtLeast(sneak)) || group === 'weakling') &&
       (group === 'weakling' || group === 'lad');
     const type = typeName(st.enemy.type);
     if (calm) {
       yield* println(MAIN.idetUrovnyaHocheshNaehat(type, st.enemy.level));
-      st.scratch.input = lowerCase(yield* readLine);
-      if (st.scratch.input === CMD.answer.yes) st.scratch.engaged = true;
+      st.session.lastAnswer = lowerCase(yield* readLine);
+      if (st.session.lastAnswer === CMD.answer.yes) engaged = true;
     } else {
       yield* println(MAIN.idetUrovnyaIschuschiyKogo(type, st.enemy.level));
-      st.scratch.input = lowerCase(yield* readLine);
-      if (st.scratch.input === CMD.answer.yes) st.scratch.engaged = true;
+      st.session.lastAnswer = lowerCase(yield* readLine);
+      if (st.session.lastAnswer === CMD.answer.yes) engaged = true;
       else if ((yield* rnd(2)) === 0) {
         yield* println(MAIN.onTebyaZametil());
-        st.scratch.engaged = true;
+        engaged = true;
       } else yield* println(MAIN.tySmylsya());
     }
   } else {
@@ -291,10 +296,10 @@ const meetSomeone = Effect.gen(function* () {
       yield* println(MAIN.stendeRazyskivayutsyaZaGopnichestvo());
     } else {
       yield* println(MAIN.zapalil());
-      st.scratch.engaged = true;
+      engaged = true;
     }
   }
-  if (st.scratch.engaged) yield* fight(0);
+  if (engaged) yield* fight(0);
 });
 
 const nothingHappens = Effect.gen(function* () {
@@ -303,7 +308,7 @@ const nothingHappens = Effect.gen(function* () {
   if (st.player.stoned > 0 && (yield* rnd(7)) === 0) {
     const type = typeName(enemyAt(yield* rnd(7)));
     yield* println(MAIN.idetUrovnyaHocheshNaehat(type, yield* rnd(st.world.district * 10 + 1)));
-    st.scratch.input = yield* readLine;
+    st.session.lastAnswer = yield* readLine;
     yield* println(MAIN.cheZaBotvaNi());
   } else yield* println(MAIN.nicheNeProishodit());
 });

@@ -126,7 +126,6 @@ export const temple = Effect.gen(function* () {
   yield* readKey;
   if (st.world.templeVisits < 2) yield* println(ENCOUNTERS.aTeperValiOtsyuda());
   else yield* println(ENCOUNTERS.aTeperProvalivay());
-  st.scratch.event = 0;
   yield* writeLn;
   yield* println(ENCOUNTERS.tyIdeschDalshe());
 });

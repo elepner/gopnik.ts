@@ -3,7 +3,7 @@ import { Effect } from 'effect';
 
 import { i16 } from '../../src/tp/num';
 import { hero, play } from '../../test/game';
-import { drinkBeer, levelUp } from './hero';
+import { beerMode, drinkBeer, levelUp } from './hero';
 
 describe('levelUp (0000:2526)', () => {
   it.effect('spends experience, raises two stats per level and records them', () =>
@@ -66,9 +66,9 @@ describe('levelUp (0000:2526)', () => {
 });
 
 describe('drinkBeer (0000:29C4)', () => {
-  it.effect('h drinks one beer for up to 5 health', () =>
+  it.effect('one drinks one beer for up to 5 health', () =>
     Effect.gen(function* () {
-      const { st, lines } = yield* play(drinkBeer('h'), {
+      const { st, lines } = yield* play(drinkBeer('one'), {
         setup: (s) => (hero(s), (s.player.health.current = 20), (s.player.resources.beer = 3)),
       });
       expect([st.player.health.current, st.player.resources.beer]).toEqual([25, 2]);
@@ -76,9 +76,9 @@ describe('drinkBeer (0000:29C4)', () => {
     })
   );
 
-  it.effect('mh drinks until healthy and reports once', () =>
+  it.effect('untilHealthy drinks until healthy and reports once', () =>
     Effect.gen(function* () {
-      const { st, lines } = yield* play(drinkBeer('mh'), {
+      const { st, lines } = yield* play(drinkBeer('untilHealthy'), {
         setup: (s) => (hero(s), (s.player.health.current = 22), (s.player.resources.beer = 5)),
       });
       expect([st.player.health.current, st.player.resources.beer]).toEqual([35, 2]);
@@ -88,7 +88,7 @@ describe('drinkBeer (0000:29C4)', () => {
 
   it.effect('a broken jaw stops drinking', () =>
     Effect.gen(function* () {
-      const { st, lines } = yield* play(drinkBeer('mh'), {
+      const { st, lines } = yield* play(drinkBeer('untilHealthy'), {
         setup: (s) => (
           hero(s),
           (s.player.health.current = 10),
@@ -101,10 +101,11 @@ describe('drinkBeer (0000:29C4)', () => {
     })
   );
 
-  it.effect('other commands do nothing', () =>
-    Effect.gen(function* () {
-      const { lines } = yield* play(drinkBeer('w'), { setup: hero });
-      expect(lines).toEqual([]);
-    })
-  );
+  it('only the beer commands drink', () => {
+    expect([beerMode('h'), beerMode('mh'), beerMode('w')]).toEqual([
+      'one',
+      'untilHealthy',
+      undefined,
+    ]);
+  });
 });

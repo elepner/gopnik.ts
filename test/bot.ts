@@ -61,7 +61,7 @@ export function playToWin(seed: number, save: string, maxInputs = 40000, cls = '
     }
     if (screen.includes('Ты сдох.') && screen.includes('Нажми какую-нибудь кнопку')) {
       press('space');
-      const st = snapshot(dos.cpu.mem, (LOAD_SEG + IMG.dataSeg) * 16);
+      const st = snapshot(dos.cpu.mem, (LOAD_SEG + IMG.dataSeg) * 16, true);
       return {
         keys,
         log,
@@ -88,7 +88,7 @@ export function playToWin(seed: number, save: string, maxInputs = 40000, cls = '
       continue;
     }
     if (last.endsWith('Хочешь наехать?')) {
-      const me = snapshot(dos.cpu.mem, (LOAD_SEG + IMG.dataSeg) * 16);
+      const me = snapshot(dos.cpu.mem, (LOAD_SEG + IMG.dataSeg) * 16, true);
       const level = Number(last.match(/ (\d+) уровня/)?.[1] ?? 0);
       const fit = Number(me.hp) > Number(me.hpMax) * 0.7;
       // лохи и дохляки are easy prey even a few levels above us
@@ -108,7 +108,7 @@ export function playToWin(seed: number, save: string, maxInputs = 40000, cls = '
       press('space'); // a ReadKey pause
       continue;
     }
-    const st = snapshot(dos.cpu.mem, (LOAD_SEG + IMG.dataSeg) * 16);
+    const st = snapshot(dos.cpu.mem, (LOAD_SEG + IMG.dataSeg) * 16, true);
     const hp = Number(st.hp);
     const max = Number(st.hpMax);
     const lowHp = hp < max * 0.6;
@@ -166,7 +166,7 @@ export function playToWin(seed: number, save: string, maxInputs = 40000, cls = '
       press(...'mar', 'enter');
     } else press('w', 'enter');
   }
-  const st = snapshot(dos.cpu.mem, (LOAD_SEG + IMG.dataSeg) * 16);
+  const st = snapshot(dos.cpu.mem, (LOAD_SEG + IMG.dataSeg) * 16, true);
   const where = `district ${st.district} level ${st.level} exp ${st.exp}/${st.expNext} hp ${st.hp}/${st.hpMax} money ${st.money}`;
   return {
     keys,

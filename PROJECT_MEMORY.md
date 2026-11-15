@@ -1,6 +1,7 @@
 # Project Memory: gopnik.ts
 
 ## What this repo is
+
 - A 1:1 TypeScript rewrite of the DOS text RPG "ГОПНИК v1.02" (V.P., 2003, Akademgorodok /
   Novosibirsk). The sources are lost; the port is reverse-engineered from `original/g.exe`.
 - "1:1" is verified, not assumed: the original runs in our own emulator and every test compares
@@ -11,6 +12,7 @@
 - Repo: https://github.com/elepner/gopnik.ts (private, contains the original binary).
 
 ## Status
+
 - All procedures of G.EXE are ported (`src/game/*`), playable in a terminal (`bun run play`).
 - Verified identical: 4000+ random play-throughs (fuzzer, 800 keys each, new game and original
   saves), bot games up to 73 000 keys / 30 000 `Random` calls, full wins from a new game.
@@ -19,12 +21,14 @@
 - 47 tests (`vp test`, ~20 s): game-logic specs + regression against the emulated original.
 
 ## Core stack
+
 - Vite+ (`vp`): fmt (Oxfmt), lint (Oxlint, type-aware), test (Vitest 5). Config: `vite.config.ts`.
 - Bun runs scripts (`bun <file>.ts`); TypeScript 7 (`tsc --noEmit` covers src, test, oracle).
 - Effect 4 (services, `Brand`, `@effect/vitest`), chalk for the terminal renderer.
 - `capstone-wasm` (disassembly) and `oxc-parser` (codemods) — tooling only.
 
 ## Layout
+
 - `original/` — untouched G.EXE, SAVE_R*.SAV, PLACES.SAV, README. Never edit.
 - `oracle/` — the reference machine: `cpu.ts` (8086/186 interpreter), `dos.ts` (minimal DOS +
   BIOS: B800 screen, scripted keyboard, files, Random/Print hooks), `cli.ts`, `disasm.ts`
@@ -34,7 +38,7 @@
 - `src/tp/` — Turbo Pascal runtime semantics: `rng.ts` (LCG), `num.ts` (Integer wrap, div/mod,
   Round, Str/Val), `cp866.ts`, `brands.ts`.
 - `src/state/` — `state.ts` (game state as plain grouped objects: not-started vs started game,
-  world, player with body slots, enemy, scratch), `kinds.ts` (character classes and enemy kinds),
+  world, player with body slots, enemy, session), `kinds.ts` (character classes and enemy kinds),
   `store.ts` (immutable snapshots + immer transactions), `legacy.ts` (the original's byte layout:
   saves and comparison snapshots), `names.ts`.
 - `src/crt/` — CRT unit: `screen.ts` (80×25 B800 cells), `crt.ts` (ReadKey, CrtRead line editor,
@@ -46,6 +50,7 @@
 - `test/` — harness (original vs port), fuzzer, bots, replay, fixtures, helpers.
 
 ## High-value commands
+
 - Play: `bun run play [--seed N] [--dir saves]`
 - Run the original: `bun run original -- [--seed N] [-v] [-r] key1 key2 ...`
   (`-v` screen after every key, `-r` Random log; keys: chars, `enter`, `space`, `esc`, `bs`, `up`…)
@@ -59,6 +64,7 @@
 - Check: `bun run typecheck`, `vp lint`, `vp test` (or `bun run test`)
 
 ## How the oracle works
+
 - `oracle/dos.ts` loads the MZ image at segment 0200, emulates INT 10h/16h/1Ah/21h, keeps the
   cursor in the BIOS data area (CRT reads it there), fakes the BIOS tick for CRT's Delay.
 - Seed: `Randomize` takes the DOS time (INT 21h/2Ch); the oracle returns the seed there, so
@@ -68,6 +74,7 @@
   `onPoll`, KeyPressed takes the next scripted key (the victory animation).
 
 ## Important coding constraints
+
 - Formatting: single quotes, semicolons, trailing commas (es5), print width 100, 2 spaces.
 - TypeScript object shapes use `interface`; `type` only for unions, mapped/conditional types.
 - Effect services in functional style — `const Crt = Context.Service<ICrt>('Crt')` — never
@@ -84,23 +91,28 @@
 - Texts live only in `src/game/texts.ts`: every text is a typed function returning a `Text`,
   built with the colour DSL of `src/game/text.ts`:
   `green\`Ты пнул врага на ${n1}з. У него осталось ${n2}\``, `text(plain\`Сл:\`, blue\`${n1}\`, …)`.
-  Tags `gray blue green cyan red magenta yellow white` = the original's `^0`..`^7`; a tag switches
-  the colour until the next one (Pascal semantics), `plain` adds no code; `paint(color)` for run-time
+  Tags `gray blue green cyan red magenta yellow white`= the original's`^0`..`^7`; a tag switches
+  the colour until the next one (Pascal semantics), `plain`adds no code;`paint(color)`for run-time
   colours. Interpolated numbers are Print arguments, strings are spliced verbatim (names carry their
-  own codes), nested texts bring their arguments. A `Text` compiles to the exact Pascal string the
+  own codes), nested texts bring their arguments. A`Text` compiles to the exact Pascal string the
   original printed — keep it that way (the regression compares it byte for byte).
 - `print(text)`/`println(text)` take a `Text`; never build texts by string concatenation.
 - Everything the player types lives in `CMD` (`src/game/commands.ts`), one dictionary per prompt
   (`CMD.main.walk`, `CMD.den.borrow`, `CMD.market.beer`, …): the same letter means different
   things in different places. Compare the raw input from the state with these constants on every
-  check (`st.scratch.input === CMD.den.borrow`) — don't parse it once into a local: the original
-  re-reads it, and a fight inside a place overwrites it.
+  check (`st.session.lastAnswer === CMD.den.borrow`) — don't parse it once into a local: the
+  original re-reads it, and a fight inside a place overwrites it.
+- Working variables (the rolled event, a bet, sale flags, the save number…) are locals and
+  parameters, not state: the only shared input in the state is `session.lastAnswer`. They still
+  sit in the original's data segment, so `legacy.ts` lists them in `SCRATCH_FIELDS` and the
+  comparison snapshots skip them (`snapshot(..., true)` keeps them for the bots).
 - Every Print/PrintLn lands in `Game.transcript` (`{ text, args, newline, segments }`).
 - Never edit `original/`; never hand-edit generated files (`analysis/`, `src/data/*`).
 - When editing files from scripts, don't use `String.replace` with replacement text containing
   `$` (`` $` `` and `$&` are special) — use a replacer function or `split/join`.
 
 ## Fidelity rules (lessons learned)
+
 - Same screen cells, same `Random` sequence (count, argument, order), same state after every
   key, same Print calls. Keep the original's bugs (`BUGS.md`).
 - Turbo Pascal may evaluate the right operand first: follow the lifter's `Random#k` numbering.
@@ -117,6 +129,7 @@
   in the game (verified against the original's `RRound`).
 
 ## Tests
+
 - Logic specs next to the code (`src/**/*.spec.ts`, `@effect/vitest`). `play()` from
   `test/game.ts` runs one game procedure with prepared state (`setup`), seed and keys and
   returns state, printed texts and the Random log; `hero()` sets up a level-0 Отморозок.
@@ -134,6 +147,7 @@
 - Type-level tests (`expectTypeOf`, `@ts-expect-error`) are checked by `tsc`, not by vitest.
 
 ## LLM ideas (not started)
+
 - Keep the 1:1 core; add an `Npc`/`Narrator` service as a separate mode, with state fields and
   `Game.transcript` as context.
 - Start with pure narration (no mechanics risk): a chronicle/rumours of the district from the
@@ -144,6 +158,7 @@
 - Mods beyond 1:1: enemies that remember you, dynamic den quests, talking to the rector.
 
 ## Commit messages by Agents
+
 - Keep commit messages short.
 - Do not use conventional commits.
 - No need to specify agents in co-authors.

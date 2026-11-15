@@ -80,7 +80,7 @@ describe('market (0000:B940)', () => {
         setup: (s) => (hero(s), (s.player.stats.luck = i16(-642))),
       });
       expect(lines).toContain('Корявый! ты попался!');
-      expect([st.world.heat.market, st.scratch.input]).toEqual([5, 'w']);
+      expect([st.world.heat.market, st.session.lastAnswer]).toEqual([5, 'w']);
     })
   );
 });

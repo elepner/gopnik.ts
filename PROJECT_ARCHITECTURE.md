@@ -4,6 +4,7 @@ This file is the canonical architecture reference for AI assistants in this repo
 Entry point for assistants is `PROJECT_MEMORY.md`.
 
 ## System Overview
+
 - Goal: a 1:1 TypeScript rewrite of the DOS text RPG "ГОПНИК v1.02" (2003, Akademgorodok,
   Novosibirsk). The original sources are lost; the port is reverse-engineered from `G.EXE`.
 - Single package, Vite+ toolchain (`vp`), Bun runtime for scripts.
@@ -17,6 +18,7 @@ Entry point for assistants is `PROJECT_MEMORY.md`.
   - `vendor/`: upstream web version `xpl/gop` (DOSBox/Emscripten) for manual play.
 
 ## Original Program Facts (Critical)
+
 - `G.EXE`: Turbo Pascal 7 (Borland 1992), MZ, not packed. Segments (image paragraphs):
   `0000` main program, `0EE5` Dos.FindFirst/FindNext, `0EED` custom print unit,
   `0F16` CRT, `0F78` System, `10AE` data segment (DS).
@@ -31,6 +33,7 @@ Entry point for assistants is `PROJECT_MEMORY.md`.
   (`SAVE_R?.SAV`); `PLACES.SAV` is `DS:3694`, 7 bytes.
 
 ## Port Architecture (`src/`)
+
 - `tp/`: Turbo Pascal runtime semantics (Random LCG, integer wrap, Round, Str/Val, cp866).
 - `state/`: `Memory` = byte-exact copy of the DS layout with typed field accessors; the game
   reads/writes named fields (`st.hp`, `st.money`) and gets Integer/Byte wrap-around for free.
@@ -42,6 +45,7 @@ Entry point for assistants is `PROJECT_MEMORY.md`.
   `Disk`. Runners provide them: terminal (chalk) for play, scripted for tests.
 
 ## Fidelity Rules
+
 - Behaviour must match the original byte for byte: same screen cells (char + attribute), same
   `Random` call sequence (count, argument, order), same state after every key.
 - Keep original quirks and bugs (wrong price shown, odd boolean expressions, typos in texts).
@@ -52,6 +56,7 @@ Entry point for assistants is `PROJECT_MEMORY.md`.
   raw listing (`analysis/g.asm`) whenever a Random sits inside a condition chain.
 
 ## Verification
+
 - `oracle/cli.ts` runs the original with a seed and a key script and prints screens.
 - Differential tests feed the same keys and seed to the original (emulated) and to the port,
   then compare every screen at each key read, the Random log and the state fields.

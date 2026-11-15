@@ -10,7 +10,7 @@ import { spawnEnemy } from './enemy';
 import { fight } from './fight';
 import { levelUp } from './hero';
 import { lowerCase, luckAtLeast, print, println, rnd, started } from './prelude';
-import { digitColor, type Text } from './text';
+import { type Color, type Text } from './text';
 import { PLACES } from './texts';
 
 /** 0000:B940 — `mar` */
@@ -34,7 +34,7 @@ export const market = Effect.gen(function* () {
   if (st.world.district > 3) yield* offer(9, PRICE.leather2, PLACES.rubVascheKrutuyuKozhanku());
   do {
     yield* prompt(PLACES.bazar());
-    if (st.scratch.input === CMD.market.hotdog) {
+    if (st.session.lastAnswer === CMD.market.hotdog) {
       if (st.player.injuries.jaw) yield* println(PLACES.tyNeMozheshHavat());
       else if (st.player.health.current < st.player.health.max) {
         if (PRICE.hotdog > st.player.resources.money) yield* println(PLACES.chertBabokDazheNa());
@@ -47,7 +47,7 @@ export const market = Effect.gen(function* () {
         }
       } else yield* println(PLACES.daNeohotaHavat());
     }
-    if (st.scratch.input === CMD.market.beer) {
+    if (st.session.lastAnswer === CMD.market.beer) {
       if (PRICE.beer > st.player.resources.money) yield* println(PLACES.neHvataet());
       else {
         st.player.resources.money = i16(st.player.resources.money - PRICE.beer);
@@ -55,7 +55,7 @@ export const market = Effect.gen(function* () {
         st.player.resources.beer = i16(st.player.resources.beer + 1);
       }
     }
-    if (st.scratch.input === CMD.market.glasses) {
+    if (st.session.lastAnswer === CMD.market.glasses) {
       if (st.player.body.eyes.glasses) yield* println(PLACES.uTebyaEstOchki());
       else if (PRICE.glasses > st.player.resources.money) yield* println(PLACES.neHvataetBabok());
       else {
@@ -64,7 +64,7 @@ export const market = Effect.gen(function* () {
         yield* println(PLACES.modnyeTakieOchkiOt());
       }
     }
-    if (st.scratch.input === CMD.market.abibas) {
+    if (st.session.lastAnswer === CMD.market.abibas) {
       if (st.player.body.torso.adidas) yield* println(PLACES.uTebyaEstBolee());
       else if (st.player.body.torso.abibas) yield* println(PLACES.uTebyaUzheEst());
       else if (PRICE.abibas > st.player.resources.money) yield* println(PLACES.neHvataetDeneg());
@@ -75,7 +75,7 @@ export const market = Effect.gen(function* () {
         st.player.armor = u8(st.player.armor + 1);
       }
     }
-    if (st.scratch.input === CMD.market.boots) {
+    if (st.session.lastAnswer === CMD.market.boots) {
       if (st.player.body.feet.coolBoots) yield* println(PLACES.uTebyaButsyPo());
       else if (st.player.body.feet.boots) yield* println(PLACES.uTebyaTakieUzhe());
       else if (PRICE.boots > st.player.resources.money) yield* println(PLACES.netuNaNihDeneg());
@@ -87,7 +87,7 @@ export const market = Effect.gen(function* () {
         st.player.damage.max = i16(st.player.damage.max + 1);
       }
     }
-    if (st.world.district > 1 && st.scratch.input === CMD.market.leather) {
+    if (st.world.district > 1 && st.session.lastAnswer === CMD.market.leather) {
       if (st.player.body.torso.coolLeather) yield* println(PLACES.utebyaEstKozhankaKruche());
       else if (st.player.body.torso.leather) yield* println(PLACES.tyUzheKupilEto());
       else if (PRICE.leather > st.player.resources.money)
@@ -100,7 +100,7 @@ export const market = Effect.gen(function* () {
       }
     }
     // sic: no district check for the adidas suit
-    if (st.scratch.input === CMD.market.adidas) {
+    if (st.session.lastAnswer === CMD.market.adidas) {
       if (st.player.body.torso.adidas) yield* println(PLACES.uTebyaUzheEst2());
       else if (PRICE.adidas > st.player.resources.money) yield* println(PLACES.neHvataetDeneg());
       else {
@@ -110,7 +110,7 @@ export const market = Effect.gen(function* () {
         st.player.armor = u8(st.player.armor + (st.player.body.torso.abibas ? 1 : 2));
       }
     }
-    if (st.world.district > 2 && st.scratch.input === CMD.market.coolBoots) {
+    if (st.world.district > 2 && st.session.lastAnswer === CMD.market.coolBoots) {
       if (st.player.body.feet.coolBoots) yield* println(PLACES.uTebyaTakieUzhe());
       else if (PRICE.boots2 > st.player.resources.money) yield* println(PLACES.netuNaNihDeneg());
       else {
@@ -122,7 +122,7 @@ export const market = Effect.gen(function* () {
         st.player.damage.max = i16(st.player.damage.max + bonus);
       }
     }
-    if (st.world.district > 3 && st.scratch.input === CMD.market.coolLeather) {
+    if (st.world.district > 3 && st.session.lastAnswer === CMD.market.coolLeather) {
       if (st.player.body.torso.coolLeather) yield* println(PLACES.tyUzheKupilEto());
       else if (PRICE.leather2 > st.player.resources.money)
         yield* println(PLACES.neDostatochnoBabla());
@@ -133,8 +133,8 @@ export const market = Effect.gen(function* () {
         st.player.armor = u8(st.player.armor + (st.player.body.torso.leather ? 2 : 4));
       }
     }
-    if (st.scratch.input === CMD.market.steal) yield* pickpocket;
-  } while (st.scratch.input !== CMD.place.leave);
+    if (st.session.lastAnswer === CMD.market.steal) yield* pickpocket;
+  } while (st.session.lastAnswer !== CMD.place.leave);
 });
 
 const BEER_LINES = [PLACES.glinskoeCheZaNafig(), PLACES.pivkoHolodnenkoe(), PLACES.nuChePoPivu()];
@@ -142,19 +142,18 @@ const BEER_LINES = [PLACES.glinskoeCheZaNafig(), PLACES.pivkoHolodnenkoe(), PLAC
 const pickpocket = Effect.gen(function* () {
   const st = yield* started;
   if ((yield* luckAtLeast(st.world.district * 5 + 5)) && (yield* rnd(10)) < 9) {
-    st.scratch.found = i16((yield* rnd(st.player.stats.luck * 2)) + 1);
-    st.player.resources.money = i16(st.player.resources.money + st.scratch.found);
-    yield* println(PLACES.opaBabkiRubleyNa(st.scratch.found));
+    const found = i16((yield* rnd(st.player.stats.luck * 2)) + 1);
+    st.player.resources.money = i16(st.player.resources.money + found);
+    yield* println(PLACES.opaBabkiRubleyNa(found));
     yield* gainExp(st.world.district * 2);
     return;
   }
   yield* spawnEnemy(1);
-  st.scratch.engaged = true;
   yield* println(PLACES.koryavyyTyPopalsya());
   yield* println(PLACES.etoUrovnya(typeName(st.enemy.type), st.enemy.level));
   yield* fight(1);
   yield* println(PLACES.blinMentyZapalyatSmatyvaysya());
-  st.scratch.input = CMD.place.leave;
+  st.session.lastAnswer = CMD.place.leave;
   st.world.heat.market = 5;
 });
 
@@ -179,7 +178,7 @@ export const dealers = Effect.gen(function* () {
     yield* offerShowing(9, PRICE.silencer, PRICE.bullets, PLACES.rubGlushitel());
   do {
     yield* prompt(PLACES.barygi());
-    if (st.scratch.input === CMD.dealers.joint) {
+    if (st.session.lastAnswer === CMD.dealers.joint) {
       if (PRICE.joint > st.player.resources.money) yield* println(PLACES.chertBabokNeHvataet());
       else {
         st.player.resources.money = i16(st.player.resources.money - PRICE.joint);
@@ -187,7 +186,7 @@ export const dealers = Effect.gen(function* () {
         yield* println(PLACES.tyKupilKosyak());
       }
     }
-    if (st.scratch.input === CMD.dealers.phone) {
+    if (st.session.lastAnswer === CMD.dealers.phone) {
       if (st.player.body.pockets.phone) yield* println(PLACES.uTebyaUzheEst3());
       else if (PRICE.phone > st.player.resources.money) yield* println(PLACES.netuDeneg());
       else {
@@ -196,7 +195,7 @@ export const dealers = Effect.gen(function* () {
         yield* println(PLACES.cheTyModnyyTipa());
       }
     }
-    if (st.scratch.input === CMD.dealers.superJoint) {
+    if (st.session.lastAnswer === CMD.dealers.superJoint) {
       if (PRICE.superJoint > st.player.resources.money) yield* println(PLACES.neHvataet());
       else {
         st.player.resources.money = i16(st.player.resources.money - PRICE.superJoint);
@@ -224,7 +223,7 @@ export const dealers = Effect.gen(function* () {
         }
       }
     }
-    if (st.scratch.input === CMD.dealers.tattoo) {
+    if (st.session.lastAnswer === CMD.dealers.tattoo) {
       if (st.player.body.skin.tattoo) yield* println(PLACES.sdelatKonechnoMozhnoNo());
       else if (PRICE.tattoo > st.player.resources.money) yield* println(PLACES.netuDeneg());
       else {
@@ -233,7 +232,7 @@ export const dealers = Effect.gen(function* () {
         yield* println(PLACES.chistyyZek());
       }
     }
-    if (st.scratch.input === CMD.dealers.knuckles) {
+    if (st.session.lastAnswer === CMD.dealers.knuckles) {
       if (
         st.player.body.hands.weapons.club &&
         st.player.body.hands.weapons.knife &&
@@ -251,7 +250,7 @@ export const dealers = Effect.gen(function* () {
         yield* println(PLACES.tyKupilKastetSmotri());
       }
     }
-    if (st.scratch.input === CMD.dealers.club) {
+    if (st.session.lastAnswer === CMD.dealers.club) {
       if (st.player.body.hands.weapons.knife && st.player.body.hands.weapons.cleaver)
         yield* println(PLACES.daNafigOnaNuzhna());
       else if (st.player.body.hands.weapons.club) yield* println(PLACES.uTebyaEstDubina());
@@ -266,7 +265,7 @@ export const dealers = Effect.gen(function* () {
         yield* println(PLACES.tyKupilDubinkuPohozhe());
       }
     }
-    if (st.scratch.input === CMD.dealers.pistol) {
+    if (st.session.lastAnswer === CMD.dealers.pistol) {
       if (st.player.body.pockets.pistol) yield* println(PLACES.nuTyVascheOfigel());
       else if (PRICE.pistol > st.player.resources.money) yield* println(PLACES.dorogayaShtuka());
       else {
@@ -276,7 +275,7 @@ export const dealers = Effect.gen(function* () {
         yield* println(PLACES.tolkoPomniStrelyayV());
       }
     }
-    if (st.scratch.input === CMD.dealers.bullets) {
+    if (st.session.lastAnswer === CMD.dealers.bullets) {
       if (!st.player.body.pockets.pistol) yield* println(PLACES.netuPushkiSnachalaKupi());
       else if (PRICE.bullets > st.player.resources.money) yield* println(PLACES.nehvatkaDeneg());
       else {
@@ -286,7 +285,7 @@ export const dealers = Effect.gen(function* () {
       }
     }
     if (
-      st.scratch.input === CMD.dealers.silencer &&
+      st.session.lastAnswer === CMD.dealers.silencer &&
       st.player.body.pockets.pistol &&
       st.world.dealerCalls === 25
     ) {
@@ -298,20 +297,21 @@ export const dealers = Effect.gen(function* () {
         yield* println(PLACES.teperStrelyayGdeHochesh());
       }
     }
-    if (st.scratch.input === CMD.dealers.sellJunk) {
+    if (st.session.lastAnswer === CMD.dealers.sellJunk) {
       if (st.player.resources.junk > 0) {
         st.player.resources.money = i16(st.player.resources.money + st.player.resources.junk);
         st.player.resources.junk = 0;
         yield* println(PLACES.barygiDaliTebeDeneg());
       } else yield* println(PLACES.tebeNechegoSpihnut());
     }
-    if (st.scratch.input === CMD.dealers.sellSpareThings) yield* sellStuff;
-  } while (st.scratch.input !== CMD.place.leave);
+    if (st.session.lastAnswer === CMD.dealers.sellSpareThings) yield* sellStuff;
+  } while (st.session.lastAnswer !== CMD.place.leave);
 });
 
 const sellStuff = Effect.gen(function* () {
   const st = yield* started;
-  st.scratch.sold = 255;
+  /** price of the last offer as a signed byte; 255 = nothing to sell */
+  let sold = 255;
   const sell = (
     question: Text,
     base: number,
@@ -322,11 +322,11 @@ const sellStuff = Effect.gen(function* () {
     Effect.gen(function* () {
       yield* println(question);
       const answer = yield* prompt(PLACES.prodatVeschi());
-      st.scratch.sold = u8((yield* rnd(spread)) + base);
+      sold = u8((yield* rnd(spread)) + base);
       if (answer !== CMD.answer.yes) return;
       drop();
-      st.player.resources.money = i16(st.player.resources.money + ((st.scratch.sold << 24) >> 24));
-      yield* println(done((st.scratch.sold << 24) >> 24));
+      st.player.resources.money = i16(st.player.resources.money + ((sold << 24) >> 24));
+      yield* println(done((sold << 24) >> 24));
     });
   if (st.player.body.torso.abibas && st.player.body.torso.adidas)
     yield* sell(PLACES.uTebyaEstNenuzhnyy(), 8, 5, PLACES.tyProdalKostyumZa, () => {
@@ -360,8 +360,8 @@ const sellStuff = Effect.gen(function* () {
     yield* sell(PLACES.uTebyaEstNozhik(), 38, 23, PLACES.tyProdalNozhikZa, () => {
       st.player.body.hands.weapons.knife = false;
     });
-  if (st.scratch.sold === 255) yield* println(PLACES.uTebyaNetNeuzhnyh());
-  st.scratch.input = CMD.place.nothing;
+  if (sold === 255) yield* println(PLACES.uTebyaNetNeuzhnyh());
+  st.session.lastAnswer = CMD.place.nothing;
 });
 
 /** 0000:D39C — `rep`: the vet */
@@ -375,16 +375,14 @@ export const vet = Effect.gen(function* () {
     !st.player.injuries.leg;
   if (!healthy()) {
     yield* println(PLACES.dokNeVolnuysyaVse());
-    st.scratch.color = u8(st.player.resources.money >= 3 ? 48 : 52);
-    yield* println(PLACES.hZa3Rublya(digitColor(st.scratch.color)));
-    st.scratch.color = u8(st.player.resources.money >= 7 ? 48 : 52);
-    yield* println(PLACES.rZa7Rubley(digitColor(st.scratch.color)));
+    yield* println(PLACES.hZa3Rublya(affordable(st.player.resources.money >= 3)));
+    yield* println(PLACES.rZa7Rubley(affordable(st.player.resources.money >= 7)));
   }
   for (;;) {
     if (healthy()) return yield* println(PLACES.dokValiOtsyudaTy());
     yield* prompt(PLACES.veterenar());
     if (
-      st.scratch.input === CMD.vet.fixBones &&
+      st.session.lastAnswer === CMD.vet.fixBones &&
       (st.player.injuries.jaw || st.player.injuries.leg)
     ) {
       if (st.player.resources.money >= 7) {
@@ -395,7 +393,10 @@ export const vet = Effect.gen(function* () {
         yield* println(PLACES.tvoiPerelomyZalecheny());
       } else yield* println(PLACES.blinHalyavschikMeditsinaNe());
     }
-    if (st.scratch.input === CMD.vet.patchUp && st.player.health.current < st.player.health.max) {
+    if (
+      st.session.lastAnswer === CMD.vet.patchUp &&
+      st.player.health.current < st.player.health.max
+    ) {
       if (st.player.resources.money >= 3) {
         st.player.resources.money = i16(st.player.resources.money - 3);
         st.player.health.current = i16(st.player.health.current + 5);
@@ -411,7 +412,7 @@ export const vet = Effect.gen(function* () {
         yield* println(PLACES.zdorovya(st.player.health.current, st.player.health.max));
       } else yield* println(PLACES.blinHalyavschikMeditsinaNe());
     }
-    if (st.scratch.input === CMD.place.leave || st.scratch.input === CMD.vet.exit) return;
+    if (st.session.lastAnswer === CMD.place.leave || st.session.lastAnswer === CMD.vet.exit) return;
   }
 });
 
@@ -451,11 +452,9 @@ export const den = Effect.gen(function* () {
     yield* println(PLACES.patsanyHotyatTebeKoe());
   yield* writeLn;
   yield* println(PLACES.napishiWChtobyUyti());
-  st.scratch.color = u8(st.player.resources.beer !== 0 ? 48 : 52);
-  yield* println(PLACES.napishiPChtobyUgostit(digitColor(st.scratch.color)));
-  st.scratch.color = u8(st.player.respect >= 2 ? 48 : 52);
+  yield* println(PLACES.napishiPChtobyUgostit(affordable(st.player.resources.beer !== 0)));
   if (st.world.den.loans > 0)
-    yield* println(PLACES.napishiRChtobyZanyat(digitColor(st.scratch.color)));
+    yield* println(PLACES.napishiRChtobyZanyat(affordable(st.player.respect >= 2)));
   if (st.world.den.helpQuest) yield* println(PLACES.napishiHpChtobyOtpinat());
   yield* println(PLACES.napishiSChtobyUznat());
   if (curious() && (rel() - 5) * 5 + st.player.respect >= 40)
@@ -464,14 +463,14 @@ export const den = Effect.gen(function* () {
     yield* println(PLACES.napishiDChtobyPoyti());
   do {
     yield* prompt(PLACES.priton());
-    if (st.scratch.input === CMD.den.treatToBeer) {
+    if (st.session.lastAnswer === CMD.den.treatToBeer) {
       if (st.player.resources.beer > 0) {
         st.player.resources.beer = i16(st.player.resources.beer - 1);
         st.player.respect = i16(st.player.respect + 5);
         yield* println(PLACES.tyUgostilPatsanovPivom());
       } else yield* println(PLACES.aNetUTebya());
     }
-    if (st.scratch.input === CMD.den.borrow) {
+    if (st.session.lastAnswer === CMD.den.borrow) {
       if (st.world.den.loans <= 0) yield* println(PLACES.tyUzheVsyuMeloch());
       else if (st.player.respect > 0) {
         st.player.resources.money = i16(st.player.resources.money + 2);
@@ -480,26 +479,25 @@ export const den = Effect.gen(function* () {
         yield* println(PLACES.tyZanyal2Rublya());
       } else yield* println(PLACES.tyNeMozheshZanyat());
     }
-    if (st.world.den.helpQuest && st.scratch.input === CMD.den.helpTheLad) {
+    if (st.world.den.helpQuest && st.session.lastAnswer === CMD.den.helpTheLad) {
       yield* spawnEnemy(1);
-      st.scratch.engaged = true;
       yield* println(PLACES.etoUrovnya(typeName(st.enemy.type), st.enemy.level));
       yield* fight(6);
       st.world.den.helpQuest = false;
     }
-    if (st.scratch.input === CMD.den.respect) {
+    if (st.session.lastAnswer === CMD.den.respect) {
       yield* println(PLACES.tvoyaPontovostSeychas(st.player.respect));
       if (st.world.district * 10 + 10 <= st.player.respect) yield* println(PLACES.daEsliCheMy());
     }
-    if (curious() && rel() * 2 + st.player.respect >= 40 && st.scratch.input === CMD.den.ask) {
+    if (curious() && rel() * 2 + st.player.respect >= 40 && st.session.lastAnswer === CMD.den.ask) {
       st.world.places.dealers = true;
       st.world.places.gym = true;
       yield* println(PLACES.tutUNasEst());
       yield* println(PLACES.tyUznalGdeNahoditsya());
     }
-    if (st.scratch.input === CMD.den.job && st.player.respect >= 100 && st.world.den.jobQuest)
+    if (st.session.lastAnswer === CMD.den.job && st.player.respect >= 100 && st.world.den.jobQuest)
       yield* job;
-  } while (st.scratch.input !== CMD.place.leave);
+  } while (st.session.lastAnswer !== CMD.place.leave);
 });
 
 const job = Effect.gen(function* () {
@@ -534,20 +532,18 @@ export const club = Effect.gen(function* () {
   if (st.world.heat.club > 0) return yield* println(PLACES.tebeNeStoitPoka());
   yield* println(PLACES.tyPrishelVKlub());
   yield* println(PLACES.zdesMozhnoSygratV());
-  st.scratch.color = u8(st.player.resources.money >= 15 ? 48 : 52);
-  yield* println(PLACES.n115PotusovatsyaNa(digitColor(st.scratch.color)));
+  yield* println(PLACES.n115PotusovatsyaNa(affordable(st.player.resources.money >= 15)));
   if (st.world.district > 1) {
-    st.scratch.color = u8(st.player.resources.money >= 22 ? 48 : 52);
-    yield* println(PLACES.n222RazuznatPriemy(digitColor(st.scratch.color)));
+    yield* println(PLACES.n222RazuznatPriemy(affordable(st.player.resources.money >= 22)));
   }
-  st.scratch.bet = 5;
+  let bet = 5;
   do {
     yield* prompt(PLACES.klub());
-    if (st.scratch.input === CMD.club.playCards) {
-      if (st.scratch.bet <= st.player.resources.money) yield* playCards;
-      else yield* println(PLACES.neHvataetDenegNado(st.scratch.bet));
+    if (st.session.lastAnswer === CMD.club.playCards) {
+      if (bet <= st.player.resources.money) bet = yield* playCards(bet);
+      else yield* println(PLACES.neHvataetDenegNado(bet));
     }
-    if (st.scratch.input === CMD.club.disco) {
+    if (st.session.lastAnswer === CMD.club.disco) {
       if (st.player.resources.money >= 15) {
         st.player.resources.money = i16(st.player.resources.money - 15);
         yield* println(PLACES.tyProkachivaeshLovkost());
@@ -555,7 +551,7 @@ export const club = Effect.gen(function* () {
         yield* println(PLACES.lovkost1());
       } else yield* println(PLACES.neHvataet());
     }
-    if (st.world.district > 1 && st.scratch.input === CMD.club.cheatTricks) {
+    if (st.world.district > 1 && st.session.lastAnswer === CMD.club.cheatTricks) {
       if (st.player.resources.money >= 22) {
         st.player.resources.money = i16(st.player.resources.money - 22);
         yield* println(PLACES.tyProkachivaeshUdachu());
@@ -563,64 +559,63 @@ export const club = Effect.gen(function* () {
         yield* println(PLACES.udacha1());
       } else yield* println(PLACES.neHvataet());
     }
-  } while (st.scratch.input !== CMD.place.leave);
+  } while (st.session.lastAnswer !== CMD.place.leave);
 });
 
-const playCards = Effect.gen(function* () {
-  const st = yield* started;
-  yield* println(PLACES.tyPostavilRubley(st.scratch.bet));
-  st.player.resources.money = i16(st.player.resources.money - st.scratch.bet);
-  if (yield* luckAtLeast(st.world.district * 12)) {
-    st.player.resources.money = i16(st.player.resources.money + st.scratch.bet * 2);
-    yield* println(PLACES.tyVyigralRubley(st.scratch.bet));
-    st.scratch.bet = u8(st.scratch.bet + 2);
-    yield* gainExp(st.world.district);
-  } else {
-    yield* println(PLACES.tyProigralRubley(st.scratch.bet));
-    st.scratch.bet = 5;
-  }
-  if (st.scratch.bet < 17 && st.scratch.bet > 5)
-    yield* println(PLACES.stavkiIzmenilisTeperStavka(st.scratch.bet));
-  if (st.scratch.bet < 17) return;
-  yield* spawnEnemy(1);
-  st.scratch.engaged = true;
-  yield* println(PLACES.kozelDaTyMuhleval());
-  yield* println(PLACES.etoUrovnya(typeName(st.enemy.type), st.enemy.level));
-  yield* println(PLACES.tyPoluchaeshKachkovOpyta(st.world.district * 5));
-  st.player.progression.exp = i16(st.player.progression.exp + st.world.district * 5);
-  yield* levelUp(false);
-  yield* fight(2);
-  yield* println(PLACES.unosiNogiPokaNe());
-  st.world.heat.club = 5;
-  st.scratch.input = CMD.place.leave;
-});
+/** one round of cards; returns the next bet (a byte; 17 and more means "you cheated") */
+function playCards(stake: number) {
+  return Effect.gen(function* () {
+    let bet = stake;
+    const st = yield* started;
+    yield* println(PLACES.tyPostavilRubley(bet));
+    st.player.resources.money = i16(st.player.resources.money - bet);
+    if (yield* luckAtLeast(st.world.district * 12)) {
+      st.player.resources.money = i16(st.player.resources.money + bet * 2);
+      yield* println(PLACES.tyVyigralRubley(bet));
+      bet = u8(bet + 2);
+      yield* gainExp(st.world.district);
+    } else {
+      yield* println(PLACES.tyProigralRubley(bet));
+      bet = 5;
+    }
+    if (bet < 17 && bet > 5) yield* println(PLACES.stavkiIzmenilisTeperStavka(bet));
+    if (bet < 17) return bet;
+    yield* spawnEnemy(1);
+    yield* println(PLACES.kozelDaTyMuhleval());
+    yield* println(PLACES.etoUrovnya(typeName(st.enemy.type), st.enemy.level));
+    yield* println(PLACES.tyPoluchaeshKachkovOpyta(st.world.district * 5));
+    st.player.progression.exp = i16(st.player.progression.exp + st.world.district * 5);
+    yield* levelUp(false);
+    yield* fight(2);
+    yield* println(PLACES.unosiNogiPokaNe());
+    st.world.heat.club = 5;
+    st.session.lastAnswer = CMD.place.leave;
+    return bet;
+  });
+}
 
 /** 0000:E386 — `trn`: the gym */
 export const gym = Effect.gen(function* () {
   const st = yield* started;
   if (!st.world.places.gym) return yield* println(PLACES.tyPokaNeznaeshGde());
-  st.scratch.press = st.player.armor;
-  if (st.player.body.torso.abibas && !st.player.body.torso.adidas)
-    st.scratch.press = u8(st.scratch.press - 1);
-  if (st.player.body.torso.adidas) st.scratch.press = u8(st.scratch.press - 2);
-  if (st.player.body.torso.leather && !st.player.body.torso.coolLeather)
-    st.scratch.press = u8(st.scratch.press - 2);
-  if (st.player.body.torso.coolLeather) st.scratch.press = u8(st.scratch.press - 4);
+  /** armour from training only: total armour minus what the clothes give */
+  let press = st.player.armor;
+  if (st.player.body.torso.abibas && !st.player.body.torso.adidas) press = u8(press - 1);
+  if (st.player.body.torso.adidas) press = u8(press - 2);
+  if (st.player.body.torso.leather && !st.player.body.torso.coolLeather) press = u8(press - 2);
+  if (st.player.body.torso.coolLeather) press = u8(press - 4);
   yield* println(PLACES.tyPrishelVKachalku());
-  const c = (price: number) => {
-    st.scratch.color = u8(st.player.resources.money >= price ? 48 : 52);
-    return digitColor(st.scratch.color);
-  };
+  const c = (price: number) => affordable(st.player.resources.money >= price);
   yield* println(PLACES.n120KachatsyaGatelyami(c(20)));
   yield* println(PLACES.n220KachatsyaNa(c(20)));
   if (st.world.district > 1 && st.world.district * 10 - 3 > st.player.progression.level)
     yield* println(PLACES.n310ProkachatKachkov(c(10), 10));
   if (st.world.district > 1) yield* println(PLACES.n430KupitZubnuyu(c(30)));
-  if (st.world.district > 2 && st.scratch.press < st.world.district * 2)
+  if (st.world.district > 2 && press < st.world.district * 2)
     yield* println(PLACES.n520ProkachatPress(c(20)));
   do {
     yield* prompt(PLACES.kachalka());
-    if (st.scratch.input === CMD.gym.weights) {
+    if (st.session.lastAnswer === CMD.gym.weights) {
       if (st.player.resources.money >= 20) {
         st.player.resources.money = i16(st.player.resources.money - 20);
         yield* println(PLACES.tyProkachivaeshSilu());
@@ -633,7 +628,7 @@ export const gym = Effect.gen(function* () {
         yield* println(PLACES.sila1());
       } else yield* println(PLACES.neHvataet());
     }
-    if (st.scratch.input === CMD.gym.machines) {
+    if (st.session.lastAnswer === CMD.gym.machines) {
       if (st.player.resources.money >= 20) {
         st.player.resources.money = i16(st.player.resources.money - 20);
         yield* println(PLACES.tyProkachivaeshVynoslivost());
@@ -643,7 +638,7 @@ export const gym = Effect.gen(function* () {
         yield* println(PLACES.vynoslivost1());
       } else yield* println(PLACES.neHvataet());
     }
-    if (st.world.district > 1 && st.scratch.input === CMD.gym.exp) {
+    if (st.world.district > 1 && st.session.lastAnswer === CMD.gym.exp) {
       if (st.world.district * 10 - 3 <= st.player.progression.level)
         yield* println(PLACES.tySlishkomKrutoyChtoby());
       else if (st.player.resources.money < 10) yield* println(PLACES.neHvataetDenzhat());
@@ -655,7 +650,7 @@ export const gym = Effect.gen(function* () {
         if (st.player.progression.exp >= st.player.progression.expNext) yield* levelUp(false);
       }
     }
-    if (st.world.district > 1 && st.scratch.input === CMD.gym.mouthGuard) {
+    if (st.world.district > 1 && st.session.lastAnswer === CMD.gym.mouthGuard) {
       if (st.player.body.mouth.guard) yield* println(PLACES.uTebyaEstEta2());
       else if (st.player.resources.money < 30) yield* println(PLACES.aNeHvataetRublikov());
       else {
@@ -664,14 +659,14 @@ export const gym = Effect.gen(function* () {
         yield* println(PLACES.tyKupilZaschitu());
       }
     }
-    if (st.world.district > 2 && st.scratch.input === CMD.gym.press) {
-      if (st.scratch.press < (st.world.district - 2) * 10) {
+    if (st.world.district > 2 && st.session.lastAnswer === CMD.gym.press) {
+      if (press < (st.world.district - 2) * 10) {
         if (st.player.resources.money < 20) yield* println(PLACES.neHvataetRublikov());
         else {
           st.player.resources.money = i16(st.player.resources.money - 20);
           yield* println(PLACES.tyProkachivaeshPress());
           st.player.armor = u8(st.player.armor + 1);
-          st.scratch.press = u8(st.scratch.press + 1);
+          press = u8(press + 1);
           yield* println(PLACES.bronya1());
         }
       } else {
@@ -679,16 +674,21 @@ export const gym = Effect.gen(function* () {
         if (st.world.district < 4) yield* println(PLACES.kachayDalsheVSleduyuschem());
       }
     }
-  } while (st.scratch.input !== CMD.place.leave);
+  } while (st.session.lastAnswer !== CMD.place.leave);
 });
+
+/** price colour: grey when the player can afford it, red otherwise */
+function affordable(ok: boolean): Color {
+  return ok ? 'gray' : 'red';
+}
 
 /** "Print(prompt); ReadLn(input); LowerCase(input)" */
 export function prompt(text: Text) {
   return Effect.gen(function* () {
     const st = yield* started;
     yield* print(text);
-    st.scratch.input = lowerCase(yield* readLine);
-    return st.scratch.input;
+    st.session.lastAnswer = lowerCase(yield* readLine);
+    return st.session.lastAnswer;
   });
 }
 
@@ -711,7 +711,13 @@ function offer(n: number, price: number, description: Text) {
 function offerShowing(n: number, price: number, shown: number, description: Text) {
   return Effect.gen(function* () {
     const st = yield* started;
-    st.scratch.color = u8(price <= st.player.resources.money ? 48 : 52);
-    yield* println(PLACES.offerLine(String(n), digitColor(st.scratch.color), shown, description));
+    yield* println(
+      PLACES.offerLine(
+        String(n),
+        affordable(price <= st.player.resources.money),
+        shown,
+        description
+      )
+    );
   });
 }

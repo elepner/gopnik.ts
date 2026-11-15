@@ -14,7 +14,6 @@ export type { CharacterType, EnemyKind } from './kinds';
 export function createState(): GameState {
   return {
     phase: 'not-started',
-    typeChoice: 0,
     version: '',
     world: {
       district: 0 as District,
@@ -70,24 +69,7 @@ export function createState(): GameState {
       loot: { beer: 0, money: 0, junk: 0 },
     },
     combat: { backup: 0 },
-    scratch: {
-      cmd: '',
-      input: '',
-      tmp: '',
-      dir: '',
-      valCode: 0,
-      event: 0,
-      eventRoll: 0,
-      engaged: false,
-      found: 0,
-      color: 0,
-      sneak: 0,
-      bet: 0,
-      sold: 0,
-      press: 0,
-      saveCount: 0,
-      saveKey: 0,
-    },
+    session: { lastAnswer: '' },
   };
 }
 
@@ -96,8 +78,6 @@ export type GameState = NotStartedGame | StartedGame;
 /** before the character exists: title, save menu, story, choosing a type */
 export interface NotStartedGame extends CommonState {
   readonly phase: 'not-started';
-  /** the typed character choice (0..4, any Integer) */
-  typeChoice: number;
   readonly player: PlayerBase;
 }
 
@@ -109,9 +89,8 @@ export interface StartedGame extends CommonState {
 
 /** the only transition between the phases: the character got its type */
 export function startGame(st: GameState, type: CharacterType): StartedGame {
-  const started = st as unknown as { phase: string; typeChoice?: number; player: Player };
+  const started = st as unknown as { phase: string; player: Player };
   started.phase = 'started';
-  delete started.typeChoice;
   started.player.type = type;
   return st as StartedGame;
 }
@@ -128,7 +107,7 @@ interface CommonState {
   readonly world: World;
   readonly enemy: Enemy;
   readonly combat: Combat;
-  readonly scratch: Scratch;
+  readonly session: Session;
 }
 
 // ------------------------------------------------------------------ world
@@ -292,29 +271,12 @@ export interface Combat {
   backup: number;
 }
 
-/**
- * Working variables the original keeps in its data segment between procedures. They are part
- * of the state because the original's behaviour depends on them (e.g. a fight overwrites the
- * input a place loop checks next) and the comparison with the original covers them.
- */
-export interface Scratch {
-  /** last main-loop command */
-  cmd: string;
-  /** last answer inside places, fights and questions */
-  input: string;
-  tmp: string;
-  dir: string;
-  valCode: number;
-  event: number;
-  eventRoll: number;
-  engaged: boolean;
-  found: number;
-  /** colour digit of the last price line */
-  color: number;
-  sneak: number;
-  bet: number;
-  sold: number;
-  press: number;
-  saveCount: number;
-  saveKey: number;
+/** the conversation with the player */
+export interface Session {
+  /**
+   * The last answer typed in a place, a fight or to a question. One string shared by all of them,
+   * like in the original: a fight started inside a place leaves its last command here, and the
+   * place's loop goes on checking it.
+   */
+  lastAnswer: string;
 }

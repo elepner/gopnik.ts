@@ -263,13 +263,22 @@ export function levelUp(rector: boolean) {
   });
 }
 
-/** 0000:29C4 — `h` drinks one beer, `mh` drinks until healthy */
-export function drinkBeer(cmd: string) {
+/** `h` drinks one beer, `mh` drinks until healthy (or the beer runs out) */
+export type BeerMode = 'one' | 'untilHealthy';
+
+/** the beer mode of a typed command, if it is one */
+export function beerMode(command: string): BeerMode | undefined {
+  if (command === CMD.beer.one) return 'one';
+  if (command === CMD.beer.untilHealthy) return 'untilHealthy';
+  return undefined;
+}
+
+/** 0000:29C4 — only reached for the beer commands */
+export function drinkBeer(mode: BeerMode) {
   return Effect.gen(function* () {
     const st = yield* started;
-    if (cmd !== CMD.beer.one && cmd !== CMD.beer.untilHealthy) return;
     const start = st.player.health.current;
-    const h = cmd === CMD.beer.one;
+    const h = mode === 'one';
     for (;;) {
       if (st.player.injuries.jaw) {
         yield* println(HERO.tyNeMozheshPit());
@@ -309,7 +318,7 @@ export function drinkBeer(cmd: string) {
       if (h || st.player.health.current >= st.player.health.max || st.player.resources.beer <= 0)
         break;
     }
-    if (cmd !== CMD.beer.untilHealthy) return;
+    if (mode !== 'untilHealthy') return;
     if (st.player.health.current !== start)
       yield* println(
         HERO.pivoPribavlyaetZZdorovya(
