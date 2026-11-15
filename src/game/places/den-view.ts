@@ -25,15 +25,20 @@ export type DenEvent =
   | { readonly type: 'denLoanRefused' }
   /** the lad's offender is here (the battle's enemy) */
   | { readonly type: 'denHelpFight' }
+  /** the lad's quarrel is over, whoever won */
+  | { readonly type: 'denHelpFinished' }
   | { readonly type: 'denRespectTold' }
   /** the dealers and the gym are known now */
   | { readonly type: 'denToldPlaces' }
   | { readonly type: 'denJobStarted' }
-  | { readonly type: 'denJobLooted' }
+  /** the money and the junk just taken */
+  | { readonly type: 'denJobLooted'; readonly money: number; readonly junk: number }
   | { readonly type: 'denJobCops' }
   | { readonly type: 'denJobEscaped' }
   /** after the fight with the cops */
-  | { readonly type: 'denJobBusted' };
+  | { readonly type: 'denJobBusted' }
+  /** the job is done, however it went */
+  | { readonly type: 'denJobFinished' };
 
 export const denView: View<DenEvent> = {
   events: {
@@ -45,6 +50,7 @@ export const denView: View<DenEvent> = {
     denBorrowed: true,
     denLoanRefused: true,
     denHelpFight: true,
+    denHelpFinished: true,
     denRespectTold: true,
     denToldPlaces: true,
     denJobStarted: true,
@@ -52,6 +58,7 @@ export const denView: View<DenEvent> = {
     denJobCops: true,
     denJobEscaped: true,
     denJobBusted: true,
+    denJobFinished: true,
   },
   show: (event) => showDen(event),
 };
@@ -96,6 +103,9 @@ function showDen(event: DenEvent) {
         return yield* println(PLACES.tySmylsyaOtMentov());
       case 'denJobBusted':
         return yield* println(PLACES.poraValit());
+      case 'denHelpFinished':
+      case 'denJobFinished':
+        return;
     }
   });
 }
