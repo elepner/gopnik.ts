@@ -116,6 +116,15 @@
   with `push`. The loop (`fight`, `kickSeries`) runs the rules and `tell`s returned events right
   away: `fight-view.ts` turns events into texts and key pauses and reads what the state already
   knows (health left, bullets, names) from the state. Don't put state into events.
+- The hero's stats, damage, armor and maximum health are a projection (`src/state/attributes.ts`):
+  `player.base` (start, levels, training, steroids, the temple) plus `player.boosts` by source
+  (`clothes`, `weapons`, `rings`, `cross`, `joint`), each holding what it actually added (the
+  original adds differences: club-then-knife gives +10, knife-then-club +6). Always read with
+  `attr(p, 'strength')`, change the base with `inc`/`dec`/`set`, items with `boost`; the joint
+  wears off with `unboost(p, 'joint')`. Never touch `base` directly. Values wrap like the
+  original (sums mod 2¹⁶ match its step-by-step additions). Saves only know totals: they load
+  into the base, except a stoned hero's joint (`fromTotals`); the normalized form (goldens) holds
+  totals.
 - Every fight is the same loop; what differs is a `FightRules` object: the crowd (a `Rule`; the
   rector's fights roll nothing), `flee`, whether the den lads bail the hero out, and the backup
   (`DEN_LADS`: access, arrival and beaten counts). `STREET_FIGHT` and `RECTOR_FIGHT`; the fight
@@ -159,11 +168,12 @@
 - `test/regression.spec.ts` replays `test/fixtures/*.keys` (bot logs) and random scenarios on
   the emulated original and the port. To pin a new behaviour, copy a log from `logs/` into
   `test/fixtures/`.
-- `test/golden.spec.ts` (e2e, no emulator): whole sessions from `test/fixtures/` must match
-  `test/golden/*.jsonl` — per key read: the key, Random count and the printed `[colour, text]`
-  segments; last line = final state in the original's field names. Goldens were recorded on the
-  pre-refactor port `069ac2b` (verified against the original). Re-record only on purpose:
-  `bun test/golden.ts record`. A failure shows the first differing step as readable text.
+- `test/gold.spec.ts` (e2e, no emulator): whole sessions `test/gold/*.jsonl` must play the same —
+  first line the start (seed, and the normalized state for a session from the main loop), then
+  per key read the key, Random count and printed `[colour, text]` segments, last line the final
+  normalized state (`src/state/normalized.ts`). Self-contained, no save files. Migrated from the
+  old goldens (original's layout, recorded on `069ac2b`, verified against the original) with the
+  same steps and final state. Re-record only on purpose: `bun test/gold.ts record`.
 - No tests for screen rendering / CRT output: the display layer will be replaced.
 - Type-level tests (`expectTypeOf`, `@ts-expect-error`) are checked by `tsc`, not by vitest.
 

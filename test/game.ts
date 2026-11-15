@@ -2,6 +2,7 @@
 import { Effect, Exit } from 'effect';
 
 import { Engine, state, transaction } from '../src/game/prelude';
+import { set } from '../src/state/attributes';
 import { type GameState, playing, type Game, startGame } from '../src/state/state';
 import { District } from '../src/tp/brands';
 import { type RandCall, Rng } from '../src/tp/rng';
@@ -46,14 +47,14 @@ export function play<A, E, R>(eff: Effect.Effect<A, E, R>, opts: PlayOptions = {
 export function hero(state: GameState): Game {
   const st = startGame(state, 'otmorozok');
   st.world.district = District(1);
-  st.player.stats.strength = 5;
-  st.player.stats.agility = 2;
-  st.player.stats.vitality = 4;
-  st.player.stats.luck = 1;
-  st.player.health.max = 35;
+  set(st.player, 'strength', 5);
+  set(st.player, 'agility', 2);
+  set(st.player, 'vitality', 4);
+  set(st.player, 'luck', 1);
+  set(st.player, 'healthMax', 35);
   st.player.health.current = 35;
-  st.player.damage.min = 2;
-  st.player.damage.max = 5;
+  set(st.player, 'damageMin', 2);
+  set(st.player, 'damageMax', 5);
   st.player.progression.expNext = 10;
   st.world.places.market = true;
   st.world.places.hospital = true;

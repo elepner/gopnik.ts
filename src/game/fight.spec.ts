@@ -3,6 +3,7 @@ import { Effect } from 'effect';
 
 import { i16 } from '../../src/tp/num';
 import { hero, play } from '../../test/game';
+import { attr, set } from '../state/attributes';
 import type { GameState as State } from '../state/state';
 import { claimVictory } from './aftermath';
 import { fight, RECTOR_FIGHT, STREET_FIGHT } from './fight';
@@ -38,10 +39,10 @@ describe('fight (0000:3D11)', () => {
         },
       });
       expect([
-        st.player.stats.strength,
-        st.player.stats.agility,
-        st.player.damage.max,
-        st.player.health.max,
+        attr(st.player, 'strength'),
+        attr(st.player, 'agility'),
+        attr(st.player, 'damageMax'),
+        attr(st.player, 'healthMax'),
       ]).toEqual([4, 1, 4, 34]);
       expect([
         st.player.progression.level,
@@ -84,9 +85,9 @@ describe('fight (0000:3D11)', () => {
       expect([
         st.player.resources.joints,
         st.player.stoned,
-        st.player.stats.strength,
-        st.player.damage.min,
-        st.player.damage.max,
+        attr(st.player, 'strength'),
+        attr(st.player, 'damageMin'),
+        attr(st.player, 'damageMax'),
         st.player.health.current,
       ]).toEqual([1, 3, 7, 3, 7, 30]);
     })
@@ -101,8 +102,8 @@ describe('fight (0000:3D11)', () => {
           setup: (s) => (
             hero(s),
             enemy(s),
-            (s.player.stats.luck = i16(luck)),
-            (s.player.stats.agility = 20)
+            set(s.player, 'luck', i16(luck)),
+            set(s.player, 'agility', 20)
           ),
         });
         // Random(100) to hit, Random(dmgMax - dmgMin) damage, Random(100) crit — no skipping
@@ -126,7 +127,7 @@ describe('fight (0000:3D11)', () => {
           s.enemy.loot.money = 7;
           s.enemy.loot.junk = 3;
           s.enemy.loot.beer = 1;
-          s.player.stats.agility = 30;
+          set(s.player, 'agility', 30);
           s.player.health.current = 20;
           s.player.progression.expNext = 100; // no level-up in between
         },

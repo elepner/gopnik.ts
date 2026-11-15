@@ -2,6 +2,7 @@
 import { Effect } from 'effect';
 
 import { clrScr, readKey, readLine, writeLn } from '../crt/crt';
+import { attr, set } from '../state/attributes';
 import { CHARACTER_CLASSES, CHARACTER_TYPES } from '../state/kinds';
 import { decodeSave, decodePlaces } from '../state/legacy';
 import { startGame } from '../state/state';
@@ -121,15 +122,19 @@ const createCharacter = Effect.gen(function* () {
     vitality: vit,
     luck,
   } = CHARACTER_CLASSES[CHARACTER_TYPES[choice]].start;
-  st.player.stats.strength = i16(str);
-  st.player.stats.agility = i16(agi);
-  st.player.stats.vitality = i16(vit);
-  st.player.stats.luck = i16(luck);
+  set(st.player, 'strength', i16(str));
+  set(st.player, 'agility', i16(agi));
+  set(st.player, 'vitality', i16(vit));
+  set(st.player, 'luck', i16(luck));
   startGame(st, CHARACTER_TYPES[choice]);
-  st.player.health.max = i16(st.player.stats.vitality * 5 + 10 + st.player.stats.strength);
-  st.player.health.current = st.player.health.max;
-  st.player.damage.min = i16(div(st.player.stats.strength, 2));
-  st.player.damage.max = st.player.stats.strength;
+  set(
+    st.player,
+    'healthMax',
+    i16(attr(st.player, 'vitality') * 5 + 10 + attr(st.player, 'strength'))
+  );
+  st.player.health.current = attr(st.player, 'healthMax');
+  set(st.player, 'damageMin', i16(div(attr(st.player, 'strength'), 2)));
+  set(st.player, 'damageMax', attr(st.player, 'strength'));
   yield* print(START.aZovutTebya());
   st.player.name = yield* readLine;
   if (st.player.name === '') st.player.name = START.razDolBay().format;

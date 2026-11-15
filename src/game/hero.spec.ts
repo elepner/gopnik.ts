@@ -3,6 +3,7 @@ import { Effect } from 'effect';
 
 import { i16 } from '../../src/tp/num';
 import { hero, play } from '../../test/game';
+import { attr } from '../state/attributes';
 import { drinkBeer, levelUp } from './hero';
 
 describe('levelUp (0000:2526)', () => {
@@ -19,10 +20,10 @@ describe('levelUp (0000:2526)', () => {
       ]).toEqual([1, 15, 20]);
       expect(rand.map((r) => r.n)).toEqual([12, 12]); // Отморозок weights 5+2+4+1
       expect(
-        st.player.stats.strength +
-          st.player.stats.agility +
-          st.player.stats.vitality +
-          st.player.stats.luck
+        attr(st.player, 'strength') +
+          attr(st.player, 'agility') +
+          attr(st.player, 'vitality') +
+          attr(st.player, 'luck')
       ).toBe(5 + 2 + 4 + 1 + 2);
       expect(st.player.progression.history[1]).toHaveLength(2);
       expect(lines.at(-1)).toBe('Сейчас у тебя 15 качков опыта. До слеующей прокачки надо 20');

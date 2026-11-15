@@ -2,6 +2,7 @@
 import { Effect } from 'effect';
 
 import { writeLn } from '../crt/crt';
+import { attr, boost, dec, inc } from '../state/attributes';
 import { CHARACTER_CLASSES } from '../state/kinds';
 import { typeName, rankName } from '../state/names';
 import type { Game, StatKey } from '../state/state';
@@ -40,13 +41,13 @@ export const showStats = Effect.gen(function* () {
   yield* println(
     HERO.slLvZhvUd(
       c[0],
-      st.player.stats.strength,
+      attr(st.player, 'strength'),
       c[1],
-      st.player.stats.agility,
+      attr(st.player, 'agility'),
       c[2],
-      st.player.stats.vitality,
+      attr(st.player, 'vitality'),
       c[3],
-      st.player.stats.luck
+      attr(st.player, 'luck')
     )
   );
   if (st.player.body.neck.cross || st.player.body.hands.rings.spasi) {
@@ -87,7 +88,9 @@ export const showStats = Effect.gen(function* () {
     st.player.body.hands.weapons.club ||
     st.player.body.hands.weapons.knife ||
     st.player.body.hands.weapons.cleaver;
-  yield* print(HERO.uron(armed ? 'blue' : 'white', st.player.damage.min, st.player.damage.max));
+  yield* print(
+    HERO.uron(armed ? 'blue' : 'white', attr(st.player, 'damageMin'), attr(st.player, 'damageMax'))
+  );
   if (st.player.body.feet.boots && !st.player.body.feet.coolBoots) yield* print(HERO.butsy1());
   if (st.player.body.feet.boots && st.player.body.feet.coolBoots) yield* print(HERO.butsy());
   if (st.player.body.feet.coolBoots) yield* print(HERO.pontovyeButsyUron2());
@@ -124,15 +127,15 @@ export const showStats = Effect.gen(function* () {
   yield* writeLn;
   yield* println(
     HERO.zdorove(
-      healthColor(st.player.health.current, st.player.health.max),
+      healthColor(st.player.health.current, attr(st.player, 'healthMax')),
       st.player.health.current,
-      st.player.health.max,
+      attr(st.player, 'healthMax'),
       text(...heroInjuries(st))
     )
   );
-  yield* accuracy(st.player.stats.agility);
-  if (st.player.armor > 0) {
-    yield* print(HERO.bronya(st.player.armor));
+  yield* accuracy(attr(st.player, 'agility'));
+  if (attr(st.player, 'armor') > 0) {
+    yield* print(HERO.bronya(attr(st.player, 'armor')));
     if (st.player.body.torso.abibas) {
       if (st.player.body.torso.adidas) {
         yield* print(HERO.abibas());
@@ -224,26 +227,25 @@ export function levelUp(rector: boolean) {
       for (let j = 1; j <= 2; j++) {
         const r = (yield* rnd(total)) + 1;
         if (w0 >= r) {
-          st.player.stats.strength = i16(st.player.stats.strength + 1);
+          inc(st.player, 'strength', 1);
           yield* print(HERO.sila1());
           history('strength');
-          st.player.damage.max = i16(st.player.damage.max + 1);
-          if (mod(st.player.stats.strength, 2) === 0)
-            st.player.damage.min = i16(st.player.damage.min + 1);
-          st.player.health.max = i16(st.player.health.max + 1);
+          inc(st.player, 'damageMax', 1);
+          if (mod(attr(st.player, 'strength'), 2) === 0) inc(st.player, 'damageMin', 1);
+          inc(st.player, 'healthMax', 1);
           st.player.health.current = i16(st.player.health.current + 1);
         } else if (w1 + w0 >= r) {
-          st.player.stats.agility = i16(st.player.stats.agility + 1);
+          inc(st.player, 'agility', 1);
           yield* print(HERO.lovkost1());
           history('agility');
         } else if (w2 + w1 + w0 >= r) {
-          st.player.stats.vitality = i16(st.player.stats.vitality + 1);
+          inc(st.player, 'vitality', 1);
           yield* print(HERO.zhivuchest1());
           history('vitality');
-          st.player.health.max = i16(st.player.health.max + 5);
+          inc(st.player, 'healthMax', 5);
           st.player.health.current = i16(st.player.health.current + 5);
         } else if (w3 + w2 + w1 + w0 >= r) {
-          st.player.stats.luck = i16(st.player.stats.luck + 1);
+          inc(st.player, 'luck', 1);
           yield* print(HERO.udacha1());
           history('luck');
         }
@@ -271,19 +273,21 @@ export function drinkBeer(mode: BeerMode) {
         yield* println(HERO.tyNeMozheshPit());
         break;
       }
-      if (st.player.health.current >= st.player.health.max)
+      if (st.player.health.current >= attr(st.player, 'healthMax'))
         return yield* println(HERO.blinTolkoTupitNe());
       if (st.player.resources.beer > 0) {
         st.player.resources.beer = i16(st.player.resources.beer - 1);
-        if (st.player.health.max - st.player.health.current < 5) {
+        if (attr(st.player, 'healthMax') - st.player.health.current < 5) {
           if (h)
-            yield* print(HERO.pivoPribavlyaetZ(st.player.health.max - st.player.health.current));
-          st.player.health.current = st.player.health.max;
+            yield* print(
+              HERO.pivoPribavlyaetZ(attr(st.player, 'healthMax') - st.player.health.current)
+            );
+          st.player.health.current = attr(st.player, 'healthMax');
           if (h)
             yield* println(
               HERO.zdorovyaOstalosLPiva(
                 st.player.health.current,
-                st.player.health.max,
+                attr(st.player, 'healthMax'),
                 div(st.player.resources.beer, 2),
                 beerTenths(st.player.resources.beer)
               )
@@ -295,14 +299,18 @@ export function drinkBeer(mode: BeerMode) {
               HERO.pivoPribavlyaetZZdorovya(
                 5,
                 st.player.health.current,
-                st.player.health.max,
+                attr(st.player, 'healthMax'),
                 div(st.player.resources.beer, 2),
                 beerTenths(st.player.resources.beer)
               )
             );
         }
       } else if (h) yield* println(HERO.pivaNetu());
-      if (h || st.player.health.current >= st.player.health.max || st.player.resources.beer <= 0)
+      if (
+        h ||
+        st.player.health.current >= attr(st.player, 'healthMax') ||
+        st.player.resources.beer <= 0
+      )
         break;
     }
     if (mode !== 'untilHealthy') return;
@@ -311,7 +319,7 @@ export function drinkBeer(mode: BeerMode) {
         HERO.pivoPribavlyaetZZdorovya(
           st.player.health.current - start,
           st.player.health.current,
-          st.player.health.max,
+          attr(st.player, 'healthMax'),
           div(st.player.resources.beer, 2),
           beerTenths(st.player.resources.beer)
         )
@@ -326,11 +334,11 @@ export function drinkBeer(mode: BeerMode) {
 /** +1 strength with its derived stats (temple blessing) */
 export const strengthUp = Effect.gen(function* () {
   const st = yield* started;
-  st.player.stats.strength = i16(st.player.stats.strength + 1);
-  st.player.health.max = i16(st.player.health.max + 1);
+  inc(st.player, 'strength', 1);
+  inc(st.player, 'healthMax', 1);
   st.player.health.current = i16(st.player.health.current + 1);
-  st.player.damage.max = i16(st.player.damage.max + 1);
-  st.player.damage.min = i16(st.player.damage.min + (1 - mod(st.player.stats.strength, 2)));
+  inc(st.player, 'damageMax', 1);
+  inc(st.player, 'damageMin', 1 - mod(attr(st.player, 'strength'), 2));
 });
 
 /** a ring of the Пг → Мега → Гп chain */
@@ -340,26 +348,26 @@ export type ChainRing = 'pomogi' | 'mega' | 'pomiluy';
 export function nextRing(st: Game): ChainRing | undefined {
   const rings = st.player.body.hands.rings;
   if (!rings.pomogi) {
-    st.player.stats.strength = i16(st.player.stats.strength + 1);
-    st.player.stats.agility = i16(st.player.stats.agility + 1);
-    st.player.stats.vitality = i16(st.player.stats.vitality + 1);
-    st.player.stats.luck = i16(st.player.stats.luck + 1);
-    st.player.health.max = i16(st.player.health.max + 6);
+    boost(st.player, 'rings', 'strength', 1);
+    boost(st.player, 'rings', 'agility', 1);
+    boost(st.player, 'rings', 'vitality', 1);
+    boost(st.player, 'rings', 'luck', 1);
+    boost(st.player, 'rings', 'healthMax', 6);
     st.player.health.current = i16(st.player.health.current + 6);
-    st.player.damage.max = i16(st.player.damage.max + 1);
-    st.player.damage.min = i16(st.player.damage.min + (1 - mod(st.player.stats.strength, 2)));
+    boost(st.player, 'rings', 'damageMax', 1);
+    boost(st.player, 'rings', 'damageMin', 1 - mod(attr(st.player, 'strength'), 2));
     rings.pomogi = true;
     return 'pomogi';
   }
   if (!rings.mega) {
-    st.player.stats.strength = i16(st.player.stats.strength + 4);
-    st.player.stats.agility = i16(st.player.stats.agility + 4);
-    st.player.stats.vitality = i16(st.player.stats.vitality + 4);
-    st.player.stats.luck = i16(st.player.stats.luck + 4);
-    st.player.health.max = i16(st.player.health.max + 24);
+    boost(st.player, 'rings', 'strength', 4);
+    boost(st.player, 'rings', 'agility', 4);
+    boost(st.player, 'rings', 'vitality', 4);
+    boost(st.player, 'rings', 'luck', 4);
+    boost(st.player, 'rings', 'healthMax', 24);
     st.player.health.current = i16(st.player.health.current + 24);
-    st.player.damage.max = i16(st.player.damage.max + 4);
-    st.player.damage.min = i16(st.player.damage.min + 2);
+    boost(st.player, 'rings', 'damageMax', 4);
+    boost(st.player, 'rings', 'damageMin', 2);
     rings.mega = true;
     return 'mega';
   }
@@ -407,21 +415,20 @@ export function levelDown(st: Game): readonly StatKey[] {
 
 function loseStat(st: Game, stat: StatKey) {
   if (stat === 'strength') {
-    st.player.stats.strength = i16(st.player.stats.strength - 1);
-    st.player.damage.max = i16(st.player.damage.max - 1);
-    if (mod(st.player.stats.strength, 2) === 1)
-      st.player.damage.min = i16(st.player.damage.min - 1);
-    st.player.health.max = i16(st.player.health.max - 1);
-    if (st.player.health.current > st.player.health.max)
-      st.player.health.current = st.player.health.max;
+    dec(st.player, 'strength', 1);
+    dec(st.player, 'damageMax', 1);
+    if (mod(attr(st.player, 'strength'), 2) === 1) dec(st.player, 'damageMin', 1);
+    dec(st.player, 'healthMax', 1);
+    if (st.player.health.current > attr(st.player, 'healthMax'))
+      st.player.health.current = attr(st.player, 'healthMax');
   } else if (stat === 'agility') {
-    st.player.stats.agility = i16(st.player.stats.agility - 1);
+    dec(st.player, 'agility', 1);
   } else if (stat === 'vitality') {
-    st.player.stats.vitality = i16(st.player.stats.vitality - 1);
-    st.player.health.max = i16(st.player.health.max - 5);
-    if (st.player.health.current > st.player.health.max)
-      st.player.health.current = st.player.health.max;
+    dec(st.player, 'vitality', 1);
+    dec(st.player, 'healthMax', 5);
+    if (st.player.health.current > attr(st.player, 'healthMax'))
+      st.player.health.current = attr(st.player, 'healthMax');
   } else if (stat === 'luck') {
-    st.player.stats.luck = i16(st.player.stats.luck - 1);
+    dec(st.player, 'luck', 1);
   }
 }

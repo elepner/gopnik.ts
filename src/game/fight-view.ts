@@ -7,9 +7,10 @@
 import { Effect } from 'effect';
 
 import { readKey, writeLn } from '../crt/crt';
+import { attr } from '../state/attributes';
 import { type CharacterType, ENEMIES } from '../state/kinds';
 import { typeName } from '../state/names';
-import { type Health, type StatKey } from '../state/state';
+import { type StatKey } from '../state/state';
 import { type ChainRing, ringLines, showStats } from './hero';
 import { print, println, started } from './prelude';
 import type { Text } from './text';
@@ -238,7 +239,7 @@ function show(event: FightEvent) {
           yield* println(
             FIGHT.zdorovyaOstalosKosyakov(
               st.player.health.current,
-              st.player.health.max,
+              attr(st.player, 'healthMax'),
               st.player.resources.joints
             )
           );
@@ -250,7 +251,7 @@ function show(event: FightEvent) {
             healed(
               event.healed,
               st.player.health.current,
-              st.player.health.max,
+              attr(st.player, 'healthMax'),
               st.player.resources.joints
             )
           );
@@ -303,7 +304,11 @@ function pausedLines(...ls: Text[]) {
 }
 
 /** `victim`: the one kicked, after the kick */
-function kick(by: Side, hit: Hit | undefined, victim: { readonly health: Health }) {
+function kick(
+  by: Side,
+  hit: Hit | undefined,
+  victim: { readonly health: { readonly current: number } }
+) {
   return Effect.gen(function* () {
     const hero = by === 'hero';
     if (!hit) return yield* println(hero ? FIGHT.tyPromazal() : FIGHT.vragPromazal());

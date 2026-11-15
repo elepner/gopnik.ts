@@ -5,6 +5,7 @@
  */
 import { Effect } from 'effect';
 
+import { attr, boost } from '../state/attributes';
 import { ENEMIES } from '../state/kinds';
 import { type Game, type Weapons } from '../state/state';
 import { div, i16 } from '../tp/num';
@@ -94,8 +95,8 @@ function takeSpoils(st: Game): FightEvent {
   st.player.resources.money = i16(st.player.resources.money + st.enemy.loot.money);
   st.player.resources.junk = i16(st.player.resources.junk + st.enemy.loot.junk);
   st.player.health.current = i16(st.player.health.current + 5);
-  if (st.player.health.current > st.player.health.max)
-    st.player.health.current = st.player.health.max;
+  if (st.player.health.current > attr(st.player, 'healthMax'))
+    st.player.health.current = attr(st.player, 'healthMax');
   st.player.respect = i16(
     st.player.respect + (ENEMIES[st.enemy.type].tier + 1 + div(st.enemy.level, 3))
   );
@@ -125,19 +126,19 @@ function* loot(st: Game): Rule {
   }
   if (!(yield* lucky(st, st.world.district * 40))) return;
   const weapon = (n: number) => {
-    st.player.damage.min = i16(st.player.damage.min + n);
-    st.player.damage.max = i16(st.player.damage.max + n);
+    boost(st.player, 'weapons', 'damageMin', n);
+    boost(st.player, 'weapons', 'damageMax', n);
   };
   const w = st.player.body.hands.weapons;
   const group = ENEMIES[st.enemy.type].group;
   if (st.enemy.type === 'nefor') {
     const r = yield* random(3);
     if (r === 0 && !st.player.body.neck.cross) {
-      st.player.stats.luck = i16(st.player.stats.luck + 2);
+      boost(st.player, 'cross', 'luck', 2);
       st.player.body.neck.cross = true;
       yield { type: 'found', item: 'cross' };
     } else if (r === 1 && !st.player.body.hands.rings.spasi) {
-      st.player.stats.luck = i16(st.player.stats.luck + 1);
+      boost(st.player, 'rings', 'luck', 1);
       st.player.body.hands.rings.spasi = true;
       yield { type: 'found', item: 'spasiRing' };
     } else if (r === 2 && !st.player.body.pockets.phone) {

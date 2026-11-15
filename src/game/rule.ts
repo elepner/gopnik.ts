@@ -6,6 +6,7 @@
  */
 import { Effect } from 'effect';
 
+import { attr } from '../state/attributes';
 import type { Game } from '../state/state';
 import { type FightEvent, tell } from './fight-view';
 import { rnd } from './prelude';
@@ -25,7 +26,7 @@ export function* random(n: number): Generator<Roll, number, number> {
 /** `luck >= Random(n)`: Random is always called first, like the original's Longint compare */
 export function* lucky(st: Game, n: number): Generator<Roll, boolean, number> {
   const r = yield* random(n);
-  return st.player.stats.luck >= r;
+  return attr(st.player, 'luck') >= r;
 }
 
 export function run<R>(rule: Rule<R>) {

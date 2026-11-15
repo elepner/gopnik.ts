@@ -64,9 +64,38 @@ each entry names the original code address and the place in the port.
     wrapped value, and `money` itself can wrap negative after a big theft. The port stores state
     in the original byte layout, so it wraps identically. Note for porting: every luck check of
     the original calls `Random` _before_ comparing, also when the luck is negative.
+
 14. **"Подошли пацаны." after the lads' kicks can never show** — `0000:4DA7`: the lads kick only
     when the backup counter is at least 3; then, with Random(2) = 0, it grows by one and is
     compared with 3 to say the lads arrived. After the increment it is at least 4, so the line is
     dead (the counter goes on towards 7, when the lads get beaten up). Probably the lads were
     meant to arrive on their own once, before the entry condition changed. The port keeps the
     check (`backupKicks`); it costs no Random.
+
+15. **Bought knuckles always add +2** — dealers `0000:CB5B`: the dealers refuse knuckles only to
+    a hero holding a club, a knife and a cleaver at once; otherwise the purchase adds +2 to the
+    damage, also when a better weapon is already in hand (a club, a knife or a cleaver). Found
+    knuckles get it right: they add nothing then.
+
+16. **Endless damage: sell the knuckles, buy them again** — dealers `wes` (`0000:D110`) and
+    `0000:CB5B`: with a club (or a knife, a cleaver) in hand, the knuckles are "spare" and sell
+    for 13..20 roubles; selling keeps their +2 (bug 7), and buying them back for 25 adds +2 again
+    (bug 15). Every round costs 5..12 roubles and gives +2 min and max damage, with no limit.
+
+17. **Weapon damage depends on the order the weapons came in** — bugs 5, 6 and 15 together: the
+    intended total is the best weapon in hand (knuckles 2, club 4 "replaces knuckles", knife 6,
+    cleaver 9), added as differences; the differences are wrong in 128 of the orders a hero can
+    get them in. For example:
+
+    | order | total | best weapon |
+    | --- | --- | --- |
+    | knife → cleaver (both from maniacs, common) | +16 | +9 |
+    | club (found) → cleaver | +16 | +9 |
+    | club (found) → knife | +10 | +6 |
+    | club (found) → cleaver → knife | +22 | +9 |
+    | cleaver → knuckles (bought) | +11 | +9 |
+    | club (bought) without knuckles | 0 | +4 |
+    | club (bought) → knuckles (found) | 0 | +4 |
+
+    The port keeps what each weapon actually added (`boosts.weapons`), so it plays the same; a
+    "fixed" mode could compute the weapons' boost as the best weapon in hand instead.

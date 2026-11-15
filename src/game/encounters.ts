@@ -3,6 +3,7 @@ import { Effect } from 'effect';
 /** Rare encounters while walking: the saving mage and the temple. */
 import { i16, u8 } from '../../src/tp/num';
 import { readKey, readLine, writeLn } from '../crt/crt';
+import { inc } from '../state/attributes';
 import { encodeSave, encodePlaces } from '../state/legacy';
 import { typeName, rankName } from '../state/names';
 import { SaveName } from '../tp/brands';
@@ -96,17 +97,17 @@ export const temple = Effect.gen(function* () {
           break;
         case 1:
           yield* println(ENCOUNTERS.daUmenshitsyaTvoyaKoryavost());
-          st.player.stats.agility = i16(st.player.stats.agility + 1);
+          inc(st.player, 'agility', 1);
           break;
         case 2:
           yield* println(ENCOUNTERS.daVozrastutTvoySily());
-          st.player.stats.vitality = i16(st.player.stats.vitality + 1);
-          st.player.health.max = i16(st.player.health.max + 5);
+          inc(st.player, 'vitality', 1);
+          inc(st.player, 'healthMax', 5);
           st.player.health.current = i16(st.player.health.current + 5);
           break;
         case 3:
           yield* println(ENCOUNTERS.daSnizoydetNaTebya());
-          st.player.stats.luck = i16(st.player.stats.luck + 1);
+          inc(st.player, 'luck', 1);
           break;
       }
       break;
@@ -120,7 +121,7 @@ export const temple = Effect.gen(function* () {
       break;
     case 3:
       yield* println(ENCOUNTERS.nakladyvayuNaTebyaZaschitu());
-      st.player.armor = u8(st.player.armor + 1);
+      inc(st.player, 'armor', 1);
       break;
     case 4:
       yield* println(ENCOUNTERS.daUvelichitsyaOfigennoTvoya());

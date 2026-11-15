@@ -6,8 +6,9 @@
 import { DS_INIT } from '../data/ds-init';
 import { District, DsOffset, type TypeId } from '../tp/brands';
 import { decodeCp866, encodeCp866 } from '../tp/cp866';
+import { attr, fromTotals, set } from './attributes';
 import { CHARACTER_CLASSES, CHARACTER_TYPES, ENEMIES, enemyAt } from './kinds';
-import { type GameState, startGame, type StatKey } from './state';
+import { type Attribute, type GameState, startGame, type StatKey } from './state';
 
 /** SAVE_R?.SAV: the 694-byte record at DS:369C */
 export function encodeSave(st: GameState): Uint8Array {
@@ -24,6 +25,7 @@ export function decodeSave(st: GameState, record: Uint8Array) {
   const m = encode(st);
   m.loadRecord(record);
   decode(st, m, (f) => f.off >= SAVE_OFF && f.off < SAVE_OFF + SAVE_SIZE);
+  fromTotals(st.player);
 }
 
 /** loads PLACES.SAV into the state */
@@ -126,18 +128,18 @@ const BINDINGS: Record<StateField, Binding> = {
       startGame(s, type);
     },
   ],
-  str: num((s) => s.player.stats, 'strength'),
-  agi: num((s) => s.player.stats, 'agility'),
-  vit: num((s) => s.player.stats, 'vitality'),
-  luck: num((s) => s.player.stats, 'luck'),
+  str: attribute('strength'),
+  agi: attribute('agility'),
+  vit: attribute('vitality'),
+  luck: attribute('luck'),
   level: num((s) => s.player.progression, 'level'),
-  dmgMin: num((s) => s.player.damage, 'min'),
-  dmgMax: num((s) => s.player.damage, 'max'),
+  dmgMin: attribute('damageMin'),
+  dmgMax: attribute('damageMax'),
   hp: num((s) => s.player.health, 'current'),
-  hpMax: num((s) => s.player.health, 'max'),
+  hpMax: attribute('healthMax'),
   jawBroken: flag((s) => s.player.injuries, 'jaw'),
   legBroken: flag((s) => s.player.injuries, 'leg'),
-  armor: num((s) => s.player, 'armor'),
+  armor: attribute('armor'),
   glasses: flag((s) => s.player.body.eyes, 'glasses'),
   abibas: flag((s) => s.player.body.torso, 'abibas'),
   boots: flag((s) => s.player.body.feet, 'boots'),
@@ -213,6 +215,10 @@ const BINDINGS: Record<StateField, Binding> = {
 /** a field of some object of the state; the codec is the one place that addresses fields by name */
 type Holder = (s: GameState) => object;
 
+/** the hero's attribute as the game uses it; written as the total */
+function attribute(a: Attribute): Binding {
+  return [(s) => attr(s.player, a), (s, v) => set(s.player, a, Number(v))];
+}
 function num(obj: Holder, key: string): Binding {
   return [
     (s) => (obj(s) as Record<string, number>)[key],

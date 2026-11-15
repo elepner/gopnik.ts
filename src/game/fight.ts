@@ -7,7 +7,8 @@
 import { Effect } from 'effect';
 
 import { readLine } from '../crt/crt';
-import { type Combat, type Enemy, type Health, type Injuries, type Game } from '../state/state';
+import { attr, boostAll, JOINT } from '../state/attributes';
+import { type Combat, type Game, type Injuries } from '../state/state';
 import { div, i16, round, u8 } from '../tp/num';
 import { CMD, parseCommand } from './commands';
 import { showEnemy } from './enemy';
@@ -77,7 +78,7 @@ export function fight(rules: FightRules) {
   return Effect.gen(function* () {
     const st = yield* started;
     const enemyBudget = hitBudget(st.enemy.stats.agility);
-    const playerBudget = hitBudget(st.player.stats.agility);
+    const playerBudget = hitBudget(attr(st.player, 'agility'));
     const enemyHits = extraHits(enemyBudget, playerBudget);
     if (losesKicks(enemyBudget, enemyHits))
       yield* tell({
@@ -221,28 +222,59 @@ function breaksBone(attacker: number, defender: number) {
   return luckBeats(attacker * 3, defender * 3 + 200);
 }
 
-type Fighter = Pick<Enemy, 'stats' | 'health' | 'damage' | 'armor' | 'injuries'>;
+/** what a kick needs of a fighter; only the victim's health and injuries change during it */
+interface Fighter {
+  readonly luck: number;
+  readonly damageMin: number;
+  readonly damageMax: number;
+  readonly armor: number;
+  readonly health: { current: number };
+  readonly injuries: Injuries;
+}
+
+function fighter(st: Game, side: Side): Fighter {
+  if (side === 'hero') {
+    const p = st.player;
+    return {
+      luck: attr(p, 'luck'),
+      damageMin: attr(p, 'damageMin'),
+      damageMax: attr(p, 'damageMax'),
+      armor: attr(p, 'armor'),
+      health: p.health,
+      injuries: p.injuries,
+    };
+  }
+  const e = st.enemy;
+  return {
+    luck: e.stats.luck,
+    damageMin: e.damage.min,
+    damageMax: e.damage.max,
+    armor: e.armor,
+    health: e.health,
+    injuries: e.injuries,
+  };
+}
 
 /** one kick with what is left of the budget; no hit is a miss */
 function kick(st: Game, by: Side, budget: number) {
   return Effect.gen(function* () {
-    const [attacker, victim]: [Fighter, Fighter] =
-      by === 'hero' ? [st.player, st.enemy] : [st.enemy, st.player];
+    const attacker = fighter(st, by);
+    const victim = fighter(st, by === 'hero' ? 'enemy' : 'hero');
     const guard = by === 'enemy' && st.player.body.mouth.guard;
     const roll = (yield* rnd(100)) + 1;
     if (!lands(budget, roll)) return undefined;
     const prev = victim.health.current;
-    let dmg = attacker.damage.min + (yield* rnd(attacker.damage.max - attacker.damage.min)) + 1;
+    let dmg = attacker.damageMin + (yield* rnd(attacker.damageMax - attacker.damageMin)) + 1;
     let critical: number | undefined;
-    if (yield* criticalKick(attacker.stats.luck)) {
-      dmg += attacker.damage.max;
+    if (yield* criticalKick(attacker.luck)) {
+      dmg += attacker.damageMax;
       critical = yield* rnd(3);
     }
     dmg -= victim.armor;
     if (dmg < 0) dmg = 0;
     victim.health.current = i16(victim.health.current - dmg);
     let broke: Hit['broke'];
-    if (yield* breaksBone(attacker.stats.luck, victim.stats.luck)) {
+    if (yield* breaksBone(attacker.luck, victim.luck)) {
       if ((yield* rnd(2)) === 0) {
         if (!victim.injuries.jaw) {
           if (!guard) broke = 'jaw';
@@ -279,12 +311,12 @@ function smoke(st: Game, turns: number): FightEvent {
   if (st.player.resources.joints <= 0) return { type: 'jointRefused', because: 'none' };
   st.player.resources.joints = i16(st.player.resources.joints - 1);
   st.player.stoned = u8(turns);
-  st.player.stats.strength = i16(st.player.stats.strength + 2);
-  st.player.damage.min = i16(st.player.damage.min + 1);
-  st.player.damage.max = i16(st.player.damage.max + 2);
-  const full = st.player.health.max - st.player.health.current < 10;
-  const healed = full ? st.player.health.max - st.player.health.current : 10;
-  st.player.health.current = full ? st.player.health.max : i16(st.player.health.current + 10);
+  boostAll(st.player, 'joint', JOINT);
+  const full = attr(st.player, 'healthMax') - st.player.health.current < 10;
+  const healed = full ? attr(st.player, 'healthMax') - st.player.health.current : 10;
+  st.player.health.current = full
+    ? attr(st.player, 'healthMax')
+    : i16(st.player.health.current + 10);
   return { type: 'smoked', healed, full, inFight: turns === 3 };
 }
 
@@ -345,7 +377,7 @@ function shoot(st: Game) {
     if (pistol.bullets <= 0) return { type: 'outOfBullets' } satisfies FightEvent;
     pistol.bullets = i16(pistol.bullets - 1);
     const aim = yield* rnd(50);
-    if (st.player.stats.agility <= aim) return { type: 'shotMissed' } satisfies FightEvent;
+    if (attr(st.player, 'agility') <= aim) return { type: 'shotMissed' } satisfies FightEvent;
     const prev = st.enemy.health.current;
     st.enemy.health.current = i16(st.enemy.health.current - ((yield* rnd(10)) + 20));
     return { type: 'shotHit', damage: prev - st.enemy.health.current } satisfies FightEvent;
@@ -356,9 +388,9 @@ function shoot(st: Game) {
 function bailOut(st: Game): FightEvent {
   st.player.respect = i16(st.player.respect - 10);
   st.player.resources.money = i16(
-    st.player.resources.money - round((st.player.health.max / 5) * 3)
+    st.player.resources.money - round((attr(st.player, 'healthMax') / 5) * 3)
   );
-  st.player.health.current = st.player.health.max;
+  st.player.health.current = attr(st.player, 'healthMax');
   if (fractured(st.player.injuries)) {
     st.player.resources.money = i16(st.player.resources.money - 7);
     st.player.injuries.jaw = false;
@@ -376,7 +408,7 @@ function bailOut(st: Game): FightEvent {
 /** spectators gather one per turn; a full crowd starts shouting */
 const FULL_CROWD = 5;
 
-function alive(fighter: { readonly health: Health }): boolean {
+function alive(fighter: { readonly health: { readonly current: number } }): boolean {
   return fighter.health.current > 0;
 }
 

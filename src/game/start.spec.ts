@@ -2,6 +2,7 @@ import { describe, expect, it } from '@effect/vitest';
 import { Effect } from 'effect';
 
 import { play } from '../../test/game';
+import { attr } from '../state/attributes';
 import { newGame } from './start';
 
 const STORY = ['space', '1', '2', '3', '4', '5', '6', '7'];
@@ -14,16 +15,16 @@ describe('newGame (0000:6A0D)', () => {
       expect(exit._tag).toBe('Success');
       expect([
         st.player.type,
-        st.player.stats.strength,
-        st.player.stats.agility,
-        st.player.stats.vitality,
-        st.player.stats.luck,
+        attr(st.player, 'strength'),
+        attr(st.player, 'agility'),
+        attr(st.player, 'vitality'),
+        attr(st.player, 'luck'),
       ]).toEqual(['otmorozok', 5, 2, 4, 1]);
       expect([
-        st.player.health.max,
+        attr(st.player, 'healthMax'),
         st.player.health.current,
-        st.player.damage.min,
-        st.player.damage.max,
+        attr(st.player, 'damageMin'),
+        attr(st.player, 'damageMax'),
       ]).toEqual([35, 35, 2, 5]);
       expect([
         st.world.district,
@@ -45,7 +46,7 @@ describe('newGame (0000:6A0D)', () => {
           true,
         ]);
         const vor = yield* play(newGame, { keys: [...STORY, ...keys('3', 'a')] });
-        expect([vor.st.world.places.dealers, vor.st.player.stats.luck]).toEqual([true, 4]);
+        expect([vor.st.world.places.dealers, attr(vor.st.player, 'luck')]).toEqual([true, 4]);
         const gop = yield* play(newGame, { keys: [...STORY, ...keys('2', 'a')] });
         expect(gop.st.world.places.den).toBe(true);
       })
@@ -57,7 +58,7 @@ describe('newGame (0000:6A0D)', () => {
       Effect.gen(function* () {
         const { st, lines } = yield* play(newGame, { keys: [...STORY, ...keys('4', 'xyz', '')] });
         expect(lines).toContain('Пацан - это нормальный тип. (Бонус - Гёлфренд, Клуб).');
-        expect([st.player.type, st.player.stats.strength]).toEqual(['patsan', 3]);
+        expect([st.player.type, attr(st.player, 'strength')]).toEqual(['patsan', 3]);
         expect(st.player.name).toBe('^7 Раз^6дол^4бай');
       })
   );

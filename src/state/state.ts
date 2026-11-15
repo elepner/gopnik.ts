@@ -35,10 +35,18 @@ export function createState(): GameState {
     },
     player: {
       name: '',
-      stats: { strength: 0, agility: 0, vitality: 0, luck: 0 },
-      health: { current: 0, max: 0 },
-      damage: { min: 0, max: 0 },
-      armor: 0,
+      base: {
+        strength: 0,
+        agility: 0,
+        vitality: 0,
+        luck: 0,
+        damageMin: 0,
+        damageMax: 0,
+        armor: 0,
+        healthMax: 0,
+      },
+      boosts: {},
+      health: { current: 0 },
       injuries: { jaw: false, leg: false },
       progression: { level: 0, exp: 0, expNext: 0, history: [] },
       resources: { money: 0, beer: 0, joints: 0, junk: 0 },
@@ -154,6 +162,17 @@ export interface Den {
 
 export type StatKey = 'strength' | 'agility' | 'vitality' | 'luck';
 
+/** what a hero is made of: the four stats, damage, armor and maximum health */
+export type Attribute = StatKey | 'damageMin' | 'damageMax' | 'armor' | 'healthMax';
+
+export type Attributes = Record<Attribute, number>;
+
+/** where a boost comes from: things worn or carried, or a joint */
+export type BoostSource = 'rings' | 'cross' | 'clothes' | 'weapons' | 'joint';
+
+/** what each source adds, as it was added (the original adds differences, not totals) */
+export type Boosts = { [S in BoostSource]?: Partial<Attributes> };
+
 export interface Stats {
   strength: number;
   agility: number;
@@ -183,10 +202,13 @@ export interface Player extends PlayerBase {
 /** everything of the hero except the type, which only exists once the game has started */
 export interface PlayerBase {
   name: string;
-  readonly stats: Stats;
-  readonly health: Health;
-  readonly damage: Damage;
-  armor: number;
+  /**
+   * stats, damage, armor and maximum health: what training and levels gave; items and effects
+   * add their `boosts` on top (`attributes.ts` reads and changes them)
+   */
+  readonly base: Attributes;
+  readonly boosts: Boosts;
+  readonly health: { current: number };
   readonly injuries: Injuries;
   readonly progression: Progression;
   readonly resources: Resources;

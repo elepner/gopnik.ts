@@ -2,6 +2,7 @@
 import { Effect } from 'effect';
 
 import { readKey, readLine } from '../crt/crt';
+import { attr, unboost } from '../state/attributes';
 import { ENEMIES, enemyAt } from '../state/kinds';
 import { encodeSave } from '../state/legacy';
 import { typeName } from '../state/names';
@@ -102,9 +103,7 @@ function walk(running: boolean) {
     if (st.player.stoned > 0) {
       st.player.stoned = u8(st.player.stoned - 1);
       if (st.player.stoned === 0) {
-        st.player.stats.strength = i16(st.player.stats.strength - 2);
-        st.player.damage.min = i16(st.player.damage.min - 1);
-        st.player.damage.max = i16(st.player.damage.max - 2);
+        unboost(st.player, 'joint');
         yield* println(MAIN.glyukiProshliSila2());
       }
     }
@@ -162,10 +161,10 @@ function walk(running: boolean) {
       yield* println(MAIN.naSteneReklamaZhizn());
     }
     if (st.player.body.hands.rings.pomiluy) {
-      if (st.player.health.current < st.player.health.max) {
+      if (st.player.health.current < attr(st.player, 'healthMax')) {
         st.player.health.current = i16(st.player.health.current + 3);
-        if (st.player.health.current > st.player.health.max)
-          st.player.health.current = st.player.health.max;
+        if (st.player.health.current > attr(st.player, 'healthMax'))
+          st.player.health.current = attr(st.player, 'healthMax');
       }
       if ((yield* rnd(20)) === 0) {
         if (!st.player.injuries.jaw && st.player.injuries.leg) {
@@ -179,7 +178,7 @@ function walk(running: boolean) {
       }
     }
     if (st.player.type === 'otmorozok') {
-      if (st.player.health.current < st.player.health.max)
+      if (st.player.health.current < attr(st.player, 'healthMax'))
         st.player.health.current = i16(st.player.health.current + 1);
     } else if (st.player.type === 'vor' && (yield* luckAtLeast(st.world.district * 20))) {
       const found = i16((yield* rnd(st.world.district * 5)) + 1);

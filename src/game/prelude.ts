@@ -5,6 +5,7 @@
 import { Context, Effect } from 'effect';
 
 import { Crt, Halt, textColor, WHITE, write, writeLn } from '../crt/crt';
+import { attr } from '../state/attributes';
 import { type GameState, playing } from '../state/state';
 import { begin, commit, draft, type Store } from '../state/store';
 import { CrtColor, type SaveName } from '../tp/brands';
@@ -127,7 +128,7 @@ export function luckAtLeast(n: number) {
   return Effect.gen(function* () {
     const st = yield* state;
     const r = yield* rnd(n);
-    return st.player.stats.luck >= r;
+    return attr(st.player, 'luck') >= r;
   });
 }
 

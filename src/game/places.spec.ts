@@ -4,6 +4,7 @@ import { Effect } from 'effect';
 import { i16 } from '../../src/tp/num';
 import { hero, play } from '../../test/game';
 import { PRICE } from '../data/tables';
+import { attr, set } from '../state/attributes';
 import { market } from './places';
 
 const keys = (...lines: string[]) => lines.flatMap((l) => [...l, 'enter']);
@@ -51,11 +52,11 @@ describe('market (0000:B940)', () => {
         setup: (s) => (hero(s), (s.player.resources.money = 40)),
       });
       expect(lines.some((l) => l.includes('adidas'))).toBe(false);
-      expect([st.player.body.torso.adidas, st.player.armor, st.player.resources.money]).toEqual([
-        true,
-        2,
-        40 - PRICE.adidas,
-      ]);
+      expect([
+        st.player.body.torso.adidas,
+        attr(st.player, 'armor'),
+        st.player.resources.money,
+      ]).toEqual([true, 2, 40 - PRICE.adidas]);
     })
   );
 
@@ -65,7 +66,7 @@ describe('market (0000:B940)', () => {
         const { rand } = yield* play(market, {
           seed: 11,
           keys: [...keys('t'), ...keys('run'), ...keys('w')],
-          setup: (s) => (hero(s), (s.player.stats.luck = i16(luck))),
+          setup: (s) => (hero(s), set(s.player, 'luck', i16(luck))),
         });
         expect(rand[0].n).toBe(10);
       }
@@ -77,7 +78,7 @@ describe('market (0000:B940)', () => {
       const { st, lines } = yield* play(market, {
         seed: 11,
         keys: [...keys('t'), ...keys('run')],
-        setup: (s) => (hero(s), (s.player.stats.luck = i16(-642))),
+        setup: (s) => (hero(s), set(s.player, 'luck', i16(-642))),
       });
       expect(lines).toContain('Корявый! ты попался!');
       expect([st.world.heat.market, st.session.lastAnswer]).toEqual([5, 'w']);
