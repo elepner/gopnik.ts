@@ -81,10 +81,15 @@
   `District`, `TypeId`, `SaveName`. Outside values (seed, keys, file names) use checked
   constructors; game numbers (hp, money, stats) stay `number` (Integer arithmetic). State fields
   get brands via `LAYOUT` (`u8<District>(0x3692)`).
-- Texts live only in `src/game/texts.ts` (`as const` groups per module, verbatim, typos kept).
-  Format: `^0`..`^7` colour 8..15, `#` integer argument, `$` string argument.
-  `print`/`println`/`fmt` derive argument types from the literal (`NoInfer` keeps it literal);
-  `printf` is the untyped core, only for helpers that build formats (shop lines).
+- Texts live only in `src/game/texts.ts`: every text is a typed function returning a `Text`,
+  built with the colour DSL of `src/game/text.ts`:
+  `green\`Ты пнул врага на ${n1}з. У него осталось ${n2}\``, `text(plain\`Сл:\`, blue\`${n1}\`, …)`.
+  Tags `gray blue green cyan red magenta yellow white` = the original's `^0`..`^7`; a tag switches
+  the colour until the next one (Pascal semantics), `plain` adds no code; `paint(color)` for run-time
+  colours. Interpolated numbers are Print arguments, strings are spliced verbatim (names carry their
+  own codes), nested texts bring their arguments. A `Text` compiles to the exact Pascal string the
+  original printed — keep it that way (the regression compares it byte for byte).
+- `print(text)`/`println(text)` take a `Text`; never build texts by string concatenation.
 - Every Print/PrintLn lands in `Game.transcript` (`{ text, args, newline, segments }`).
 - Never edit `original/`; never hand-edit generated files (`analysis/`, `src/data/*`).
 - When editing files from scripts, don't use `String.replace` with replacement text containing

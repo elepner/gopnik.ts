@@ -3,7 +3,9 @@ import { Effect } from 'effect';
 
 import { check } from '../../test/check';
 import { testGame } from '../../test/layers';
-import { fmt, Game, print, println, type PrintArgs } from './prelude';
+import { Game, print, println } from './prelude';
+import { blue, type Color, green, paint, plain, red, text, type Text, white } from './text';
+import { FIGHT, HERO } from './texts';
 
 const transcript = Effect.map(Game, (g) => g.transcript);
 
@@ -11,22 +13,41 @@ function run<A, E, R>(eff: Effect.Effect<A, E, R>) {
   return eff.pipe(Effect.provide(testGame().layer)) as Effect.Effect<A, E>;
 }
 
-describe('Print / PrintLn (segment 0EED)', () => {
-  it('derives argument types from the format literal', () => {
-    expectTypeOf<PrintArgs<'Здоровье #/#'>>().toEqualTypeOf<[number, number]>();
-    expectTypeOf<PrintArgs<'^$Это $ # уровня$'>>().toEqualTypeOf<
-      [string, string, number, string]
-    >();
-    expectTypeOf<PrintArgs<'просто текст'>>().toEqualTypeOf<[]>();
-    expectTypeOf<PrintArgs<string>>().toEqualTypeOf<readonly (number | string)[]>();
-    // @ts-expect-error a string where # wants a number
-    void println('# руб.', 'пять');
-    // @ts-expect-error a missing argument
-    void println('#/#', 1);
+describe('text DSL', () => {
+  it('compiles colours to the original codes and numbers to Print arguments', () => {
+    expect(green`Ты пнул на ${7}з, осталось ${-3}`).toEqual({
+      format: '^2Ты пнул на #з, осталось #',
+      args: [7, -3],
+    });
+    expect(text(plain`Сл:`, blue`${5}`, white` Лв:`, paint('yellow')`${2}`)).toEqual({
+      format: 'Сл:^1#^7 Лв:^6#',
+      args: [5, 2],
+    });
   });
 
+  it('splices strings verbatim, like the original concatenation (codes in names included)', () => {
+    expect(red`Блин! это же ${'^7 Вася'}`.format).toBe('^4Блин! это же ^7 Вася');
+  });
+
+  it('texts are typed functions of their parameters', () => {
+    expectTypeOf(FIGHT.tyPnulVragaNa).parameters.toEqualTypeOf<[number, number]>();
+    expectTypeOf(HERO.zdorove).parameters.toEqualTypeOf<[Color, number, number, Text]>();
+    // @ts-expect-error a string where a number is expected
+    void FIGHT.tyPnulVragaNa('пять', 1);
+    // @ts-expect-error a colour must be a colour name
+    void HERO.zdorove('2', 1, 2, text());
+  });
+
+  it('literal parts must not contain the format characters', () => {
+    expect(() => green`100#`).toThrow();
+  });
+});
+
+describe('Print / PrintLn (segment 0EED)', () => {
   it.effect('colour codes split the text into segments, # takes integer arguments', () =>
-    run(Effect.andThen(println('^2Ты пнул на #з, ^4осталось #', 7, -3), transcript)).pipe(
+    run(
+      Effect.andThen(println(text(green`Ты пнул на ${7}з, `, red`осталось ${-3}`)), transcript)
+    ).pipe(
       check((t) =>
         t.toEqual([
           {
@@ -43,8 +64,8 @@ describe('Print / PrintLn (segment 0EED)', () => {
     )
   );
 
-  it.effect('$ is spliced before parsing, so a # inside the splice consumes a number', () =>
-    run(Effect.andThen(print('Имя: $ (#)', 'Вася#', 1), transcript)).pipe(
+  it.effect('a # inside a spliced name consumes the next number, like the original', () =>
+    run(Effect.andThen(print(plain`Имя: ${'Вася#'} (${1})`), transcript)).pipe(
       check((t) =>
         t.toMatchObject([{ text: 'Имя: Вася# (#)', segments: [{ text: 'Имя: Вася1 (0)' }] }])
       )
@@ -52,12 +73,8 @@ describe('Print / PrintLn (segment 0EED)', () => {
   );
 
   it.effect('a ^ that is not a colour code stays in the text', () =>
-    run(Effect.andThen(print('a^9b^'), transcript)).pipe(
+    run(Effect.andThen(print(plain`a${'^9b^'}`), transcript)).pipe(
       check((t) => t.toMatchObject([{ segments: [{ color: 15, text: 'a^9b^' }] }]))
     )
   );
-
-  it('fmt splices strings only', () => {
-    expect(fmt('^$Здоровье #/# $', '2', '  ')).toBe('^2Здоровье #/#   ');
-  });
 });

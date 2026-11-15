@@ -6,6 +6,7 @@ import { typeName, rankName } from '../state/names';
 import { div, i16, round, u8 } from '../tp/num';
 import { accuracy, healthColor } from './hero';
 import { println, rnd, started } from './prelude';
+import { text, type Text } from './text';
 import { ENEMY } from './texts';
 
 /** who spawned the enemy: walking, being caught (market/club/den help), the den job (cop) */
@@ -105,29 +106,31 @@ const deriveEnemy = Effect.gen(function* () {
 /** 0000:1348 — `sv`: inspect the enemy */
 export const showEnemy = Effect.gen(function* () {
   const st = yield* started;
-  let title = st.enemy.level > 40 ? ENEMY.neVEtoyZhizni : rankName(st.enemy.level);
+  let title = st.enemy.level > 40 ? ENEMY.neVEtoyZhizni().format : rankName(st.enemy.level);
   title = ' - ' + title;
   // cops, maniacs and the rector have no rank title
   if (ENEMIES[st.enemy.type].tier >= ENEMIES.ment.tier) title = '';
-  yield* println(ENEMY.etoUrovnya, typeName(st.enemy.type), st.enemy.level, title);
+  yield* println(ENEMY.etoUrovnya(typeName(st.enemy.type), st.enemy.level, title));
   yield* println(
-    ENEMY.slLvZhvUd,
-    st.enemy.stats.strength,
-    st.enemy.stats.agility,
-    st.enemy.stats.vitality,
-    st.enemy.stats.luck
+    ENEMY.slLvZhvUd(
+      st.enemy.stats.strength,
+      st.enemy.stats.agility,
+      st.enemy.stats.vitality,
+      st.enemy.stats.luck
+    )
   );
-  yield* println(ENEMY.uron, st.enemy.damage.min, st.enemy.damage.max);
-  let injuries = '';
-  if (st.enemy.injuries.jaw) injuries += ENEMY.slomanaChelyust;
-  if (st.enemy.injuries.leg) injuries += ENEMY.slomanaNoga;
+  yield* println(ENEMY.uron(st.enemy.damage.min, st.enemy.damage.max));
+  const injuries: Text[] = [];
+  if (st.enemy.injuries.jaw) injuries.push(ENEMY.slomanaChelyust());
+  if (st.enemy.injuries.leg) injuries.push(ENEMY.slomanaNoga());
   yield* println(
-    ENEMY.zdorove,
-    healthColor(st.enemy.health.current, st.enemy.health.max),
-    st.enemy.health.current,
-    st.enemy.health.max,
-    injuries
+    ENEMY.zdorove(
+      healthColor(st.enemy.health.current, st.enemy.health.max),
+      st.enemy.health.current,
+      st.enemy.health.max,
+      text(...injuries)
+    )
   );
   yield* accuracy(st.enemy.stats.agility);
-  if (st.enemy.armor > 0) yield* println(ENEMY.bronya, st.enemy.armor);
+  if (st.enemy.armor > 0) yield* println(ENEMY.bronya(st.enemy.armor));
 });

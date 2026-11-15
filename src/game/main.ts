@@ -25,6 +25,7 @@ import {
 } from './prelude';
 import { help } from './screens';
 import { resetPlaces } from './start';
+import { plain } from './text';
 import { MAIN } from './texts';
 
 /** 0000:AB75 — every command is one transaction of the game state */
@@ -44,7 +45,7 @@ const turn = Effect.gen(function* () {
     yield* setupRector(1);
     yield* fight(4);
   }
-  yield* print('\\');
+  yield* print(plain`\\`);
   st.scratch.cmd = lowerCase(yield* readLine);
   const cmd = st.scratch.cmd;
   if (cmd === 'w' || cmd === 'run') yield* walk;
@@ -52,7 +53,7 @@ const turn = Effect.gen(function* () {
   if (cmd === 'bmar') yield* dealers;
   if (cmd === 'rep') yield* vet;
   if (cmd === 'girl') yield* girlfriend;
-  if (cmd === 'fight') yield* println(MAIN.perezhitkiProshlogoZhmiW);
+  if (cmd === 'fight') yield* println(MAIN.perezhitkiProshlogoZhmiW());
   if (cmd === 'pr') yield* den;
   if (cmd === 'kl') yield* club;
   if (cmd === 'trn') yield* gym;
@@ -60,14 +61,14 @@ const turn = Effect.gen(function* () {
   if (cmd === 'kos') yield* smokeJoint(10);
   if (cmd === 'i') yield* commands;
   if (cmd === 's') yield* showStats;
-  if (cmd === 'f' && st.player.body.pockets.pistol) yield* println(MAIN.tyChePsihMigom);
-  if (cmd === 'k') yield* println(MAIN.cheMasheshKopytamiIschi);
+  if (cmd === 'f' && st.player.body.pockets.pistol) yield* println(MAIN.tyChePsihMigom());
+  if (cmd === 'k') yield* println(MAIN.cheMasheshKopytamiIschi());
   if (cmd === 'name') yield* rename;
-  if (cmd === 'version') yield* println(MAIN.gopnikVersion102);
+  if (cmd === 'version') yield* println(MAIN.gopnikVersion102());
   if (cmd === 'help') yield* help;
   if (cmd === 'exit' || cmd === 'e') {
-    yield* println(MAIN.blinNeBytTebe);
-    yield* println(MAIN.aRezultat);
+    yield* println(MAIN.blinNeBytTebe());
+    yield* println(MAIN.aRezultat());
     yield* showStats;
     yield* readKey;
     return yield* halt;
@@ -81,31 +82,31 @@ const nextDistrict = Effect.gen(function* () {
   yield* resetPlaces;
   st.world.heat.market = 0;
   st.world.heat.club = 0;
-  yield* println(MAIN.tyDokazalChtoTy);
-  yield* println(MAIN.hocheshSohranitSvoiDostizheniya);
-  if ((yield* prompt('\\')) === 'y') {
+  yield* println(MAIN.tyDokazalChtoTy());
+  yield* println(MAIN.hocheshSohranitSvoiDostizheniya());
+  if ((yield* prompt(plain`\\`)) === 'y') {
     st.scratch.tmp = str(st.world.district);
     yield* (yield* Disk).write(SaveName(`save_r${st.scratch.tmp}.sav`), encodeSave(st));
-    yield* println(MAIN.sohranenoVSaveR, st.scratch.tmp);
+    yield* println(MAIN.sohranenoVSaveR(st.scratch.tmp));
   }
   switch (st.world.district) {
     case 2:
-      yield* println(MAIN.tySelNaAvtobus);
-      yield* println(MAIN.tamBroditShlyuzovskayaShpana);
+      yield* println(MAIN.tySelNaAvtobus());
+      yield* println(MAIN.tamBroditShlyuzovskayaShpana());
       break;
     case 3:
-      yield* println(MAIN.naMarshrutkeTyDoehal);
-      yield* println(MAIN.zdesBroditUzheBolee);
+      yield* println(MAIN.naMarshrutkeTyDoehal());
+      yield* println(MAIN.zdesBroditUzheBolee());
       break;
     case 4:
-      yield* println(MAIN.tyPriehalVEltsovku);
-      yield* println(MAIN.otoVsyuduDonosyatsyaKriki);
+      yield* println(MAIN.tyPriehalVEltsovku());
+      yield* println(MAIN.otoVsyuduDonosyatsyaKriki());
       break;
     case 5:
-      yield* println(MAIN.poraNakonetsOtomstitRektoru);
+      yield* println(MAIN.poraNakonetsOtomstitRektoru());
       yield* readKey;
-      yield* println(MAIN.tyProbralsyaVUniver);
-      yield* println(MAIN.aVotIOn);
+      yield* println(MAIN.tyProbralsyaVUniver());
+      yield* println(MAIN.aVotIOn());
       st.world.rector = true;
       break;
   }
@@ -120,60 +121,60 @@ const walk = Effect.gen(function* () {
       st.player.stats.strength = i16(st.player.stats.strength - 2);
       st.player.damage.min = i16(st.player.damage.min - 1);
       st.player.damage.max = i16(st.player.damage.max - 2);
-      yield* println(MAIN.glyukiProshliSila2);
+      yield* println(MAIN.glyukiProshliSila2());
     }
   }
-  if (st.scratch.cmd === 'run') yield* println(MAIN.zabegalMudak);
+  if (st.scratch.cmd === 'run') yield* println(MAIN.zabegalMudak());
   if (st.world.den.loans < st.world.district * 10) st.world.den.loans = u8(st.world.den.loans + 1);
   if (st.world.places.dealers && st.player.body.pockets.pistol && st.world.dealerCalls < 25) {
     st.world.dealerCalls = u8(st.world.dealerCalls + 1);
     if (st.world.dealerCalls === 25 && st.player.body.pockets.phone)
-      yield* println(MAIN.telefonAleTyGde);
+      yield* println(MAIN.telefonAleTyGde());
   }
   if (!st.world.den.helpQuest && (yield* rnd(20)) === 0) {
     st.world.den.helpQuest = true;
     if (st.world.places.den && st.player.body.pockets.phone)
-      yield* println(MAIN.telefonAleTyGde2, st.player.name);
+      yield* println(MAIN.telefonAleTyGde2(st.player.name));
   }
   if (!st.world.den.jobQuest && (yield* rnd(20)) === 0) {
     st.world.den.jobQuest = true;
     if (st.world.places.den && st.player.respect >= 100 && st.player.body.pockets.phone)
-      yield* println(MAIN.telefonAleTySchas, st.player.name);
+      yield* println(MAIN.telefonAleTySchas(st.player.name));
   }
   if (st.player.body.pockets.phone && (yield* rnd(200)) === 0) {
-    yield* println(MAIN.telefonAleVasya);
+    yield* println(MAIN.telefonAleVasya());
     yield* readKey;
-    yield* println(MAIN.netEto, st.player.name);
+    yield* println(MAIN.netEto(st.player.name));
     yield* readKey;
-    yield* println(MAIN.telefonAVasyuMozhno);
+    yield* println(MAIN.telefonAVasyuMozhno());
     yield* readKey;
-    yield* println(MAIN.netOnBudetV);
+    yield* println(MAIN.netOnBudetV());
   }
   if (st.player.body.pockets.phone) {
     if ((yield* rnd(100)) === 0 && st.world.places.girlfriend) {
-      yield* println(MAIN.telefonTvoyaPassiyaPrivet);
-      yield* println(MAIN.aTyBezbazarovZhdi);
+      yield* println(MAIN.telefonTvoyaPassiyaPrivet());
+      yield* println(MAIN.aTyBezbazarovZhdi());
     }
-    if (st.world.heat.market === 1 && st.world.places.den) yield* println(MAIN.telefonEtoTyTam);
-    if (st.world.heat.club === 1 && st.world.places.den) yield* println(MAIN.telefonTyCheTam);
+    if (st.world.heat.market === 1 && st.world.places.den) yield* println(MAIN.telefonEtoTyTam());
+    if (st.world.heat.club === 1 && st.world.places.den) yield* println(MAIN.telefonTyCheTam());
   }
   if (st.world.heat.market > 0) st.world.heat.market = u8(st.world.heat.market - 1);
   if (st.world.heat.club > 0) st.world.heat.club = u8(st.world.heat.club - 1);
   if ((yield* rnd(10)) === 0 && !st.world.places.hospital) {
     st.world.places.hospital = true;
-    yield* println(MAIN.tySprosilUProhozhego);
+    yield* println(MAIN.tySprosilUProhozhego());
   }
   if ((yield* rnd(10)) === 0 && !st.world.places.market) {
     st.world.places.market = true;
-    yield* println(MAIN.tyNashelBazar);
+    yield* println(MAIN.tyNashelBazar());
   }
   if ((yield* rnd(100)) === 0 && !st.world.places.club) {
     st.world.places.club = true;
-    yield* println(MAIN.tyUvidelObyavlenieTipa);
+    yield* println(MAIN.tyUvidelObyavlenieTipa());
   }
   if ((yield* rnd(100)) === 0 && !st.world.places.gym) {
     st.world.places.gym = true;
-    yield* println(MAIN.naSteneReklamaZhizn);
+    yield* println(MAIN.naSteneReklamaZhizn());
   }
   if (st.player.body.hands.rings.pomiluy) {
     if (st.player.health.current < st.player.health.max) {
@@ -184,11 +185,11 @@ const walk = Effect.gen(function* () {
     if ((yield* rnd(20)) === 0) {
       if (!st.player.injuries.jaw && st.player.injuries.leg) {
         st.player.injuries.leg = false;
-        yield* println(MAIN.tvoyaNogaZalechilasS);
+        yield* println(MAIN.tvoyaNogaZalechilasS());
       }
       if (st.player.injuries.jaw) {
         st.player.injuries.jaw = false;
-        yield* println(MAIN.tvoyaChelyustZalechilasS);
+        yield* println(MAIN.tvoyaChelyustZalechilasS());
       }
     }
   }
@@ -198,7 +199,7 @@ const walk = Effect.gen(function* () {
   } else if (st.player.type === 'vor' && (yield* luckAtLeast(st.world.district * 20))) {
     st.scratch.found = i16((yield* rnd(st.world.district * 5)) + 1);
     st.player.resources.money = i16(st.player.resources.money + st.scratch.found);
-    yield* println(MAIN.opaBabkiRubleyNa, st.scratch.found);
+    yield* println(MAIN.opaBabkiRubleyNa(st.scratch.found));
   }
   st.scratch.eventRoll = u8((yield* rnd(25)) + 1);
   if (st.scratch.eventRoll >= 10) st.scratch.event = 4;
@@ -217,7 +218,7 @@ const walk = Effect.gen(function* () {
     case 4:
       return yield* nothingHappens;
     default:
-      return yield* println(MAIN.nicheNeProishodit);
+      return yield* println(MAIN.nicheNeProishodit());
   }
 });
 
@@ -229,28 +230,28 @@ const toggleTrail = Effect.gen(function* () {
 });
 
 const TRAIL_IN = [
-  MAIN.tyZashelNaTropinku,
-  MAIN.tyZashelVKakie,
-  MAIN.tyZashelNaPlany,
-  MAIN.tyZashelCherteKuda,
+  MAIN.tyZashelNaTropinku(),
+  MAIN.tyZashelVKakie(),
+  MAIN.tyZashelNaPlany(),
+  MAIN.tyZashelCherteKuda(),
 ];
 const TRAIL_OUT = [
-  MAIN.tyVyshelSTropinki,
-  MAIN.tyVyshelIzPodvaroten,
-  MAIN.tyVyshelSPlanov,
-  MAIN.tyVyshelCherteOtkuda,
+  MAIN.tyVyshelSTropinki(),
+  MAIN.tyVyshelIzPodvaroten(),
+  MAIN.tyVyshelSPlanov(),
+  MAIN.tyVyshelCherteOtkuda(),
 ];
 
 const prettyGirl = Effect.gen(function* () {
   const st = yield* started;
-  if (st.world.places.girlfriend) return yield* println(MAIN.sovsemNicheNeProishodit);
-  yield* println(MAIN.idetTipaKlevayaTsypa);
+  if (st.world.places.girlfriend) return yield* println(MAIN.sovsemNicheNeProishodit());
+  yield* println(MAIN.idetTipaKlevayaTsypa());
   st.scratch.input = lowerCase(yield* readLine);
   if (st.scratch.input !== 'y') return;
   if ((yield* rnd(2)) === 0) {
-    yield* println(MAIN.tyTakoyPodkatyvaeshA);
+    yield* println(MAIN.tyTakoyPodkatyvaeshA());
     st.world.places.girlfriend = true;
-  } else yield* println(MAIN.tyEschePodkatitNeuspel);
+  } else yield* println(MAIN.tyEschePodkatitNeuspel());
 });
 
 const meetSomeone = Effect.gen(function* () {
@@ -267,27 +268,27 @@ const meetSomeone = Effect.gen(function* () {
       (group === 'weakling' || group === 'lad');
     const type = typeName(st.enemy.type);
     if (calm) {
-      yield* println(MAIN.idetUrovnyaHocheshNaehat, type, st.enemy.level);
+      yield* println(MAIN.idetUrovnyaHocheshNaehat(type, st.enemy.level));
       st.scratch.input = lowerCase(yield* readLine);
       if (st.scratch.input === 'y') st.scratch.engaged = true;
     } else {
-      yield* println(MAIN.idetUrovnyaIschuschiyKogo, type, st.enemy.level);
+      yield* println(MAIN.idetUrovnyaIschuschiyKogo(type, st.enemy.level));
       st.scratch.input = lowerCase(yield* readLine);
       if (st.scratch.input === 'y') st.scratch.engaged = true;
       else if ((yield* rnd(2)) === 0) {
-        yield* println(MAIN.onTebyaZametil);
+        yield* println(MAIN.onTebyaZametil());
         st.scratch.engaged = true;
-      } else yield* println(MAIN.tySmylsya);
+      } else yield* println(MAIN.tySmylsya());
     }
   } else {
-    yield* println(MAIN.idetMentyaraUrovnyaGroza, st.enemy.level);
+    yield* println(MAIN.idetMentyaraUrovnyaGroza(st.enemy.level));
     if (yield* luckAtLeast(st.world.district * 7 + 15))
-      yield* println(MAIN.tyZatailsyaPrikinulsyaNe);
+      yield* println(MAIN.tyZatailsyaPrikinulsyaNe());
     else if (st.player.body.eyes.glasses) {
-      yield* println(MAIN.tyNapyalilTemnyeOchki);
-      yield* println(MAIN.stendeRazyskivayutsyaZaGopnichestvo);
+      yield* println(MAIN.tyNapyalilTemnyeOchki());
+      yield* println(MAIN.stendeRazyskivayutsyaZaGopnichestvo());
     } else {
-      yield* println(MAIN.zapalil);
+      yield* println(MAIN.zapalil());
       st.scratch.engaged = true;
     }
   }
@@ -296,47 +297,47 @@ const meetSomeone = Effect.gen(function* () {
 
 const nothingHappens = Effect.gen(function* () {
   const st = yield* started;
-  if (st.player.stoned > 0 && (yield* rnd(7)) === 0) yield* println(MAIN.vseKudaToPlyvet);
+  if (st.player.stoned > 0 && (yield* rnd(7)) === 0) yield* println(MAIN.vseKudaToPlyvet());
   if (st.player.stoned > 0 && (yield* rnd(7)) === 0) {
     const type = typeName(enemyAt(yield* rnd(7)));
-    yield* println(MAIN.idetUrovnyaHocheshNaehat, type, yield* rnd(st.world.district * 10 + 1));
+    yield* println(MAIN.idetUrovnyaHocheshNaehat(type, yield* rnd(st.world.district * 10 + 1)));
     st.scratch.input = yield* readLine;
-    yield* println(MAIN.cheZaBotvaNi);
-  } else yield* println(MAIN.nicheNeProishodit);
+    yield* println(MAIN.cheZaBotvaNi());
+  } else yield* println(MAIN.nicheNeProishodit());
 });
 
 /** `i` */
 const commands = Effect.gen(function* () {
   const st = yield* started;
-  yield* println(MAIN.napishiWChtobyShatatsya);
-  if (st.world.places.market) yield* println(MAIN.napishiMarChtobyIdti);
-  if (st.world.places.dealers) yield* println(MAIN.napishiBmarChtobyIdti);
-  if (st.world.places.hospital) yield* println(MAIN.napishiRepChtobyIdti);
-  if (st.world.places.girlfriend) yield* println(MAIN.napishiGirlChtobyZavalitsya);
-  if (st.world.places.den) yield* println(MAIN.napishiPrChtobyIdti);
-  if (st.world.places.club) yield* println(MAIN.napishiKlChtobyIdti);
-  if (st.world.places.gym) yield* println(MAIN.napishiTrnChtobyIdti);
+  yield* println(MAIN.napishiWChtobyShatatsya());
+  if (st.world.places.market) yield* println(MAIN.napishiMarChtobyIdti());
+  if (st.world.places.dealers) yield* println(MAIN.napishiBmarChtobyIdti());
+  if (st.world.places.hospital) yield* println(MAIN.napishiRepChtobyIdti());
+  if (st.world.places.girlfriend) yield* println(MAIN.napishiGirlChtobyZavalitsya());
+  if (st.world.places.den) yield* println(MAIN.napishiPrChtobyIdti());
+  if (st.world.places.club) yield* println(MAIN.napishiKlChtobyIdti());
+  if (st.world.places.gym) yield* println(MAIN.napishiTrnChtobyIdti());
   for (const line of COMMANDS) yield* println(line);
 });
 
 const COMMANDS = [
-  MAIN.napishiSChtobyPosmotret,
-  MAIN.napishiSvChtobyPriglyadetsya,
-  MAIN.napishiKChtobyGasit,
-  MAIN.napishiVChtobyPozvat,
-  MAIN.napishiKosChtobyShavat,
-  MAIN.napishiHChtobyVypit,
-  MAIN.napishiMhChtobyNabuhatsya,
-  MAIN.napishiNameChtobySmenit,
-  MAIN.napishiEEsliZahochesh,
+  MAIN.napishiSChtobyPosmotret(),
+  MAIN.napishiSvChtobyPriglyadetsya(),
+  MAIN.napishiKChtobyGasit(),
+  MAIN.napishiVChtobyPozvat(),
+  MAIN.napishiKosChtobyShavat(),
+  MAIN.napishiHChtobyVypit(),
+  MAIN.napishiMhChtobyNabuhatsya(),
+  MAIN.napishiNameChtobySmenit(),
+  MAIN.napishiEEsliZahochesh(),
 ];
 
 /** `name` */
 const rename = Effect.gen(function* () {
   const st = yield* started;
-  yield* println(MAIN.zvaliTebya, st.player.name);
-  yield* print(MAIN.aTeperBudut);
+  yield* println(MAIN.zvaliTebya(st.player.name));
+  yield* print(MAIN.aTeperBudut());
   st.player.name = yield* readLine;
-  if (st.player.name === '') st.player.name = MAIN.razDolBay;
-  st.player.name = MAIN.namePrefix + st.player.name;
+  if (st.player.name === '') st.player.name = MAIN.razDolBay().format;
+  st.player.name = MAIN.namePrefix().format + st.player.name;
 });

@@ -11,41 +11,20 @@ import { CrtColor, type SaveName } from '../tp/brands';
 import { CP866, encodeCp866 } from '../tp/cp866';
 import { i16, str } from '../tp/num';
 import { Rng } from '../tp/rng';
+import type { Text } from './text';
 
 /**
- * 0EED:0000 Print. The format is a text literal: `^0`..`^7` switch the colour to 8..15,
- * `#` takes the next number, `$` the next string (spliced in before printing, like the
- * original's string concatenation). Argument types follow from the literal.
+ * 0EED:0000 Print: the original's custom output routine. `^0`..`^7` in the format switch
+ * the colour to 8..15, every `#` prints the next integer argument (texts come from texts.ts).
  */
-export function print<const S extends string>(format: S, ...args: PrintArgs<NoInfer<S>>) {
-  return printf(format, args, false);
+export function print(t: Text) {
+  return printf(t.format, t.args, false);
 }
 
 /** 0EED:01C2 PrintLn */
-export function println<const S extends string>(format: S, ...args: PrintArgs<NoInfer<S>>) {
-  return printf(format, args, true);
+export function println(t: Text) {
+  return printf(t.format, t.args, true);
 }
-
-/** `$` and `#` placeholders of a format literal, in order */
-export type PrintArgs<S extends string> = string extends S
-  ? readonly (number | string)[]
-  : Placeholders<S>;
-
-type Placeholders<S extends string, A extends unknown[] = []> = S extends `${infer C}${infer R}`
-  ? Placeholders<R, C extends '#' ? [...A, number] : C extends '$' ? [...A, string] : A>
-  : A;
-
-/** splices `$` arguments into a text without printing it */
-export function fmt<const S extends string>(format: S, ...args: StringArgs<NoInfer<S>>): string {
-  let k = 0;
-  return format.replace(/\$/g, () => String(args[k++]));
-}
-
-type StringArgs<S extends string, A extends unknown[] = []> = string extends S
-  ? readonly string[]
-  : S extends `${infer C}${infer R}`
-    ? StringArgs<R, C extends '$' ? [...A, string] : A>
-    : A;
 
 /** one Print/PrintLn call: the final Pascal string, its integer arguments and coloured runs */
 export interface PrintCall {
@@ -61,23 +40,11 @@ export interface Segment {
   readonly text: string;
 }
 
-/** untyped core of print/println: the original Print algorithm, byte for byte */
-export function printf(format: string, args: readonly (number | string)[], newline: boolean) {
+/** the original Print algorithm, byte for byte: a Pascal string with codes and its integers */
+function printf(text: string, ints: readonly number[], newline: boolean) {
   return Effect.gen(function* () {
     const game = yield* Game;
     const crt = yield* Crt;
-    let text = '';
-    const ints: number[] = [];
-    let k = 0;
-    for (const ch of format) {
-      if (ch === '$') text += String(args[k++]);
-      else {
-        if (ch === '#') ints.push(Number(args[k++] ?? 0));
-        text += ch;
-      }
-    }
-    // numbers for `#` that come from spliced strings (shop item descriptions)
-    for (; k < args.length; k++) ints.push(Number(args[k]));
     // the original copies the text into a 256-byte stack buffer and may read past its end
     const buf = game.printBuf;
     const bytes = encodeCp866(text);
@@ -115,7 +82,7 @@ export function printf(format: string, args: readonly (number | string)[], newli
     } while (len > i);
     yield* textColor(WHITE);
     if (newline) yield* writeLn;
-    game.transcript.push({ text, args: ints, newline, segments });
+    game.transcript.push({ text, args: [...ints], newline, segments });
   });
 }
 
