@@ -7,6 +7,7 @@ import { encodeSave } from '../state/legacy';
 import { typeName } from '../state/names';
 import { SaveName } from '../tp/brands';
 import { i16, str, u8 } from '../tp/num';
+import { beatFakeRector, beatRector, killedByRector, settle } from './aftermath';
 import { CMD, type Command, parseCommand } from './commands';
 import { saveMage, temple } from './encounters';
 import { setupRector, spawnEnemy } from './enemy';
@@ -41,10 +42,11 @@ const turn = Effect.gen(function* () {
     yield* nextDistrict;
   if (st.world.rector) {
     st.world.places.den = true;
+    // no running from the rector and no lads to pick you up: his fights end in a victory or death
     yield* setupRector(0);
-    yield* fight('fakeRector');
+    yield* (yield* fight('fakeRector')) === 'won' ? beatFakeRector : killedByRector;
     yield* setupRector(1);
-    yield* fight('rector');
+    yield* (yield* fight('rector')) === 'won' ? beatRector : killedByRector;
   }
   yield* print(plain`\\`);
   const cmd = parseCommand('main', lowerCase(yield* readLine));
@@ -273,7 +275,7 @@ const meetSomeone = Effect.gen(function* () {
       engaged = true;
     }
   }
-  if (engaged) yield* fight('street');
+  if (engaged) yield* settle(yield* fight('street'));
 });
 
 const nothingHappens = Effect.gen(function* () {

@@ -69,7 +69,8 @@ export type FightEvent =
   | { readonly type: 'outOfBullets' }
   | { readonly type: 'shotMissed' }
   | { readonly type: 'shotHit'; readonly damage: number }
-  | { readonly type: 'heroDied'; readonly byRector: boolean }
+  | { readonly type: 'heroDied' }
+  | { readonly type: 'killedByRector' }
   | { readonly type: 'bailedOut' }
   | { readonly type: 'rectorKilled' }
   | { readonly type: 'fakeRectorKilled' }
@@ -173,7 +174,10 @@ function show(event: FightEvent) {
           )
         );
       case 'heroDied':
-        yield* println(event.byRector ? FIGHT.tySdohRektorTebya() : FIGHT.tySdoh());
+        yield* println(FIGHT.tySdoh());
+        return yield* readKey;
+      case 'killedByRector':
+        yield* println(FIGHT.tySdohRektorTebya());
         return yield* readKey;
       case 'bailedOut':
         return yield* println(FIGHT.tebePovezloZnakomyePatsany());

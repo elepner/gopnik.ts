@@ -115,6 +115,12 @@
   reads what the state already knows (health left, bullets, names) from the state. Don't put
   state into events; a rule may only return several events if none of them reads state a later
   update of the same rule changes.
+- `fight(kind)` only fights and returns its outcome (`won`, `died`, `fled`, `bailedOut`); the
+  caller decides what follows, right after the call (not later in the main loop: places go on
+  printing and reading after a fight). `aftermath.ts`: `settle(outcome)` claims a victory or ends
+  the game; the rector's fights use `beatFakeRector`/`beatRector`/`killedByRector`, the den adds
+  `denHelpReward`. After a win or a death `fight` leaves `combat.backup` alone: the original
+  resets it after the rewards (and never after a death), and snapshots compare it at key reads.
 - Every Print/PrintLn lands in `Game.transcript` (`{ text, args, newline, segments }`).
 - Never edit `original/`; never hand-edit generated files (`analysis/`, `src/data/*`).
 - When editing files from scripts, don't use `String.replace` with replacement text containing

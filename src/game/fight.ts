@@ -7,7 +7,6 @@
 import { Effect } from 'effect';
 
 import { readLine } from '../crt/crt';
-import { ENEMIES } from '../state/kinds';
 import {
   type Combat,
   type Enemy,
@@ -15,15 +14,13 @@ import {
   type Injuries,
   type StartedGame,
   type StatKey,
-  type Weapons,
 } from '../state/state';
 import { div, i16, mod, round, u8 } from '../tp/num';
 import { CMD, parseCommand } from './commands';
 import { showEnemy } from './enemy';
 import { type FightEvent, type Hit, type Side, tell } from './fight-view';
-import { drinkBeer, levelUp, nextRing, showStats } from './hero';
-import { halt, lowerCase, luckAtLeast, rnd, started } from './prelude';
-import { gameOver, victoryAnimation } from './screens';
+import { DEN_LEVEL, drinkBeer, levelInDistrict, showStats } from './hero';
+import { halt, lowerCase, rnd, started } from './prelude';
 
 /** why the fight started */
 export type FightKind =
@@ -40,7 +37,14 @@ export type FightKind =
   /** helping a lad of the den */
   | 'denHelp';
 
-/** 0000:3D11 */
+/** how a fight ended; the caller decides what follows (`aftermath.ts`) */
+export type FightOutcome = 'won' | 'died' | 'fled' | 'bailedOut';
+
+/**
+ * 0000:3D11. After a victory the called lads stay for it: `claimVictory` (or the rector's
+ * ending) sends them home, like the original, which resets them after the rewards; after a
+ * death the game is over and they stay too.
+ */
 export function fight(kind: FightKind) {
   return Effect.gen(function* () {
     const st = yield* started;
@@ -65,8 +69,8 @@ export function fight(kind: FightKind) {
       });
 
     let spectators = 0;
-    let over = false;
-    while (!over) {
+    let outcome: FightOutcome | undefined;
+    while (!outcome) {
       if (spectators < FULL_CROWD) {
         spectators++;
         if (spectators === FULL_CROWD) yield* tell({ type: 'crowdGathered' });
@@ -85,7 +89,7 @@ export function fight(kind: FightKind) {
       if (input === CMD.fight.run) {
         const fled = flee(st);
         yield* tell(fled);
-        if (fled.type !== 'cantRun') over = true;
+        if (fled.type !== 'cantRun') outcome = 'fled';
       }
       if (input === CMD.fight.beer) yield* drinkBeer('one');
       if (input === CMD.fight.beerUntilHealthy) yield* drinkBeer('untilHealthy');
@@ -102,18 +106,14 @@ export function fight(kind: FightKind) {
       if (!alive(st.player)) {
         if (!st.world.rector && ladsBailOut(st)) {
           yield* tell(bailOut(st));
-          over = true;
-        } else {
-          yield* tell({ type: 'heroDied', byRector: st.world.rector });
-          yield* gameOver(false);
-        }
+          outcome = 'bailedOut';
+        } else return 'died';
       }
-      if (!alive(st.enemy)) {
-        yield* enemyDied(kind);
-        over = true;
-      }
+      // the enemy may go down in the very turn the hero ran or was picked up
+      if (!alive(st.enemy)) outcome = 'won';
     }
-    st.combat.backup = 0;
+    if (outcome !== 'won') st.combat.backup = 0;
+    return outcome;
   });
 }
 
@@ -129,37 +129,6 @@ function kickSeries(by: Side, hits: number) {
       yield* tell({ type: 'anotherKick', by });
       // sic: a hero at exactly 0 takes the next kick too
       if (by === 'enemy' && st.player.health.current < 0) return;
-    }
-  });
-}
-
-/** 0000:4150 — the enemy is down: experience, spoils, maybe a ring and loot */
-function enemyDied(kind: FightKind) {
-  return Effect.gen(function* () {
-    const st = yield* started;
-    if (kind === 'rector' || kind === 'fakeRector') {
-      st.player.progression.exp = st.player.progression.expNext;
-      yield* levelUp(true);
-    }
-    if (kind === 'rector') {
-      yield* tell({ type: 'rectorKilled' });
-      return yield* victoryAnimation;
-    }
-    const fakeRector = kind === 'fakeRector';
-    yield* tell({ type: fakeRector ? 'fakeRectorKilled' : 'enemyDied' });
-    if (!fakeRector) yield* tell(gainEnemyExp(st));
-    if (st.player.progression.exp >= st.player.progression.expNext) yield* levelUp(false);
-    else if (!fakeRector) yield* tell({ type: 'tooWeak' });
-    yield* tell(takeSpoils(st));
-    if (openDen(st)) yield* tell({ type: 'denOpened' });
-    if ((yield* rnd(30)) === 0) {
-      const ring = nextRing(st);
-      if (ring) yield* tell({ type: 'ringDropped', ring });
-    }
-    yield* tell(...(yield* loot(st)));
-    if (kind === 'denHelp') {
-      yield* tell(rewardDenHelp(st));
-      yield* levelUp(false);
     }
   });
 }
@@ -403,126 +372,10 @@ function bailOut(st: StartedGame): FightEvent {
   return { type: 'bailedOut' };
 }
 
-/** experience for an enemy: the sum of its stats */
-function gainEnemyExp(st: StartedGame): FightEvent {
-  const { strength, agility, vitality, luck } = st.enemy.stats;
-  const exp = strength + agility + vitality + luck;
-  st.player.progression.exp = i16(st.player.progression.exp + exp);
-  return { type: 'exp', exp };
-}
-
-/** the enemy's beer, money and junk, 5 health and respect by its tier and level */
-function takeSpoils(st: StartedGame): FightEvent {
-  st.player.resources.beer = i16(st.player.resources.beer + st.enemy.loot.beer);
-  st.player.resources.money = i16(st.player.resources.money + st.enemy.loot.money);
-  st.player.resources.junk = i16(st.player.resources.junk + st.enemy.loot.junk);
-  st.player.health.current = i16(st.player.health.current + 5);
-  if (st.player.health.current > st.player.health.max)
-    st.player.health.current = st.player.health.max;
-  st.player.respect = i16(
-    st.player.respect + (ENEMIES[st.enemy.type].tier + 1 + div(st.enemy.level, 3))
-  );
-  return { type: 'victoryBeer' };
-}
-
-/** true when the den opens now */
-function openDen(st: StartedGame): boolean {
-  if (st.world.places.den || levelInDistrict(st) < DEN_LEVEL) return false;
-  st.world.places.den = true;
-  return true;
-}
-
-function rewardDenHelp(st: StartedGame): FightEvent {
-  const respect = st.world.district * 20;
-  const exp = st.world.district * 10;
-  st.player.respect = i16(st.player.respect + respect);
-  st.player.progression.exp = i16(st.player.progression.exp + exp);
-  return { type: 'denHelped', respect, exp };
-}
-
-/** what a lucky hero finds on the enemy, by its kind */
-function loot(st: StartedGame) {
-  return Effect.gen(function* () {
-    const events: FightEvent[] = [];
-    if ((yield* luckAtLeast(st.world.district * 25)) && st.enemy.type === 'nark') {
-      st.player.resources.joints = i16(st.player.resources.joints + (yield* rnd(3)));
-      events.push({ type: 'narkJoints' });
-    }
-    if (!(yield* luckAtLeast(st.world.district * 40))) return events;
-    const found = (item: Extract<FightEvent, { type: 'found' }>['item']) =>
-      events.push({ type: 'found', item });
-    const weapon = (n: number) => {
-      st.player.damage.min = i16(st.player.damage.min + n);
-      st.player.damage.max = i16(st.player.damage.max + n);
-    };
-    const w = st.player.body.hands.weapons;
-    const group = ENEMIES[st.enemy.type].group;
-    if (st.enemy.type === 'nefor') {
-      const r = yield* rnd(3);
-      if (r === 0 && !st.player.body.neck.cross) {
-        st.player.stats.luck = i16(st.player.stats.luck + 2);
-        st.player.body.neck.cross = true;
-        found('cross');
-      } else if (r === 1 && !st.player.body.hands.rings.spasi) {
-        st.player.stats.luck = i16(st.player.stats.luck + 1);
-        st.player.body.hands.rings.spasi = true;
-        found('spasiRing');
-      } else if (r === 2 && !st.player.body.pockets.phone) {
-        st.player.body.pockets.phone = true;
-        found('phone');
-      }
-    } else if (group === 'lad') {
-      const r = yield* rnd(2);
-      if (r === 0 && !w.knuckles) {
-        w.knuckles = true;
-        found('knuckles');
-        if (noneOf(w, 'knife', 'club', 'cleaver')) weapon(2);
-        else events.push({ type: 'betterWeaponInHand' });
-      } else if (r === 1 && !w.club) {
-        w.club = true;
-        found('club');
-        if (noneOf(w, 'knife', 'cleaver')) weapon(w.knuckles ? 2 : 4);
-        else events.push({ type: 'betterWeaponInHand' });
-      }
-    } else if (group === 'thug') {
-      const r = yield* rnd(2);
-      if (r === 0 && !st.player.body.eyes.glasses) {
-        st.player.body.eyes.glasses = true;
-        found('glasses');
-      } else if (r === 1 && !st.player.body.pockets.phone) {
-        st.player.body.pockets.phone = true;
-        found('phone');
-      }
-    } else if (group === 'maniac') {
-      const r = yield* rnd(2);
-      if (r === 0 && !w.knife) {
-        w.knife = true;
-        found('knife');
-        // sic: the original's boolean arithmetic, stacking bonuses
-        if (!w.club === w.knuckles) weapon(4);
-        if (w.club) weapon(2);
-        if (noneOf(w, 'knuckles', 'club', 'cleaver')) weapon(6);
-        if (w.cleaver) events.push({ type: 'cleaverInHand' });
-      } else if (r === 1 && !w.cleaver) {
-        w.cleaver = true;
-        found('cleaver');
-        if ((!w.club && !w.knife) === w.knuckles) weapon(7);
-        if (w.club && !w.knife) weapon(5);
-        if (w.knife) weapon(3);
-        if (noneOf(w, 'knuckles', 'club', 'knife')) weapon(9);
-      }
-    }
-    return events;
-  });
-}
-
 // ------------------------------------------------------------------ conditions
 
 /** spectators gather one per turn; a full crowd starts shouting */
 const FULL_CROWD = 5;
-
-/** the third level of a district opens the den */
-const DEN_LEVEL = 3;
 
 /** called lads join the fight at this count (the phone brings them at once) */
 const BACKUP_ARRIVED = 3;
@@ -536,11 +389,6 @@ function alive(fighter: { readonly health: Health }): boolean {
 
 function fractured(injuries: Injuries): boolean {
   return injuries.jaw || injuries.leg;
-}
-
-/** the hero's level counted from the start of the current district (10 levels each) */
-function levelInDistrict(st: StartedGame): number {
-  return st.player.progression.level - (st.world.district - 1) * 10;
 }
 
 /** respected enough for the den lads to come and help */
@@ -559,9 +407,4 @@ function backupCalled(combat: Combat): boolean {
 
 function backupHere(combat: Combat): boolean {
   return combat.backup >= BACKUP_ARRIVED;
-}
-
-/** none of these weapons in hand (a new weapon only adds the difference to the best one) */
-function noneOf(weapons: Weapons, ...names: (keyof Weapons)[]): boolean {
-  return names.every((name) => !weapons[name]);
 }

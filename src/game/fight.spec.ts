@@ -4,6 +4,7 @@ import { Effect } from 'effect';
 import { i16 } from '../../src/tp/num';
 import { hero, play } from '../../test/game';
 import type { GameState as State } from '../state/state';
+import { claimVictory } from './aftermath';
 import { fight } from './fight';
 
 /** a sturdy Гопник of level 5 in front of the hero */
@@ -112,7 +113,10 @@ describe('fight (0000:3D11)', () => {
 
   it.effect('winning pays experience, loot and a beer', () =>
     Effect.gen(function* () {
-      const { st, lines } = yield* play(fight('street'), {
+      const won = Effect.flatMap(fight('street'), (outcome) =>
+        outcome === 'won' ? claimVictory : Effect.die(`not won: ${outcome}`)
+      );
+      const { st, lines } = yield* play(won, {
         seed: 2,
         keys: [...keys('k'), ...keys('k'), ...keys('k'), ...keys('k'), ...keys('k')],
         setup: (s) => {

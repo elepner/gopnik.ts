@@ -381,3 +381,11 @@ export function ringLines(ring: ChainRing, megaText: Text): Text[] {
   if (ring === 'mega') return [megaText];
   return [HERO.vaschePoleznoeKoltsoGospodi(), HERO.vosstZhizni35()];
 }
+
+/** the third level of a district opens the den */
+export const DEN_LEVEL = 3;
+
+/** the hero's level counted from the start of the current district (10 levels each) */
+export function levelInDistrict(st: StartedGame): number {
+  return st.player.progression.level - (st.world.district - 1) * 10;
+}
