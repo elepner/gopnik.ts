@@ -12,7 +12,7 @@ import { biosKey, EndOfInput, type IKeyboard, makeCrt } from '../src/crt/crt';
 import { Game } from '../src/game/prelude';
 import { gameLayer, program } from '../src/runtime';
 import { snapshot, snapshotState } from '../src/state/legacy';
-import type { GameState } from '../src/state/state';
+import { snapshot as current, type Store } from '../src/state/store';
 import { Seed } from '../src/tp/brands';
 import { CP866 as CP } from '../src/tp/cp866';
 import { Rng, type RandCall } from '../src/tp/rng';
@@ -85,7 +85,7 @@ export async function runPort(seed: number, keys: readonly string[], dir: string
   const crt = makeCrt();
   const queue = [...keys];
   const snaps: Snapshot[] = [];
-  let state: GameState | undefined;
+  let store: Store | undefined;
   let log: readonly RandCall[] = [];
   let prints: readonly PrintRecord[] = [];
   // a key seen by KeyPressed was already "in the buffer": reading it is not a new wait
@@ -95,7 +95,7 @@ export async function runPort(seed: number, keys: readonly string[], dir: string
       if (!polled)
         snaps.push({
           cells: crt.screen.cells.slice(),
-          state: snapshotState(state!),
+          state: snapshotState(current(store!)),
           rand: log.length,
         });
       polled = false;
@@ -109,7 +109,7 @@ export async function runPort(seed: number, keys: readonly string[], dir: string
   const exit = await Effect.runPromiseExit(
     Effect.gen(function* () {
       const game = yield* Game;
-      state = game.st;
+      store = game.state;
       prints = game.transcript;
       log = yield* (yield* Rng).log;
       yield* program;

@@ -1,7 +1,7 @@
 /** Run one piece of game logic with prepared state, a seed and scripted keys. */
 import { Effect, Exit } from 'effect';
 
-import { Game } from '../src/game/prelude';
+import { Game, state, transaction } from '../src/game/prelude';
 import { type GameState, playing, type StartedGame, startGame } from '../src/state/state';
 import { District } from '../src/tp/brands';
 import { type RandCall, Rng } from '../src/tp/rng';
@@ -26,11 +26,17 @@ export interface PlayOptions {
 export function play<A, E, R>(eff: Effect.Effect<A, E, R>, opts: PlayOptions = {}) {
   return Effect.gen(function* () {
     const game = yield* Game;
-    opts.setup?.(game.st);
     const rng = yield* Rng;
-    const exit = yield* Effect.exit(eff);
+    const exit = yield* Effect.exit(
+      transaction(
+        Effect.gen(function* () {
+          opts.setup?.(yield* state);
+          return yield* eff;
+        })
+      )
+    );
     const lines = game.transcript.map((p) => p.segments.map((s) => s.text).join(''));
-    return { exit, st: playing(game.st), lines, rand: yield* rng.log } as Played<A>;
+    return { exit, st: playing(game.state.committed), lines, rand: yield* rng.log } as Played<A>;
   }).pipe(Effect.provide(testGame({ seed: opts.seed, keys: opts.keys }).layer)) as Effect.Effect<
     Played<A>
   >;

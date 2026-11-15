@@ -12,52 +12,65 @@ import { setupRector, spawnEnemy } from './enemy';
 import { fight, smokeJoint } from './fight';
 import { drinkBeer, showStats } from './hero';
 import { club, dealers, den, girlfriend, gym, market, prompt, vet } from './places';
-import { Disk, halt, lowerCase, luckAtLeast, print, println, rnd, started } from './prelude';
+import {
+  Disk,
+  halt,
+  lowerCase,
+  luckAtLeast,
+  print,
+  println,
+  rnd,
+  started,
+  transaction,
+} from './prelude';
 import { help } from './screens';
 import { resetPlaces } from './start';
 import { MAIN } from './texts';
 
-/** 0000:AB75 */
+/** 0000:AB75 — every command is one transaction of the game state */
 export const mainLoop = Effect.gen(function* () {
+  for (;;) yield* transaction(turn);
+});
+
+/** one pass of the main loop: district change, the rector, then one command */
+const turn = Effect.gen(function* () {
   const st = yield* started;
-  for (;;) {
-    if (st.world.district * 10 <= st.player.progression.level && st.world.district < 5)
-      yield* nextDistrict;
-    if (st.world.rector) {
-      st.world.places.den = true;
-      yield* setupRector(0);
-      yield* fight(3);
-      yield* setupRector(1);
-      yield* fight(4);
-    }
-    yield* print('\\');
-    st.scratch.cmd = lowerCase(yield* readLine);
-    const cmd = st.scratch.cmd;
-    if (cmd === 'w' || cmd === 'run') yield* walk;
-    if (cmd === 'mar') yield* market;
-    if (cmd === 'bmar') yield* dealers;
-    if (cmd === 'rep') yield* vet;
-    if (cmd === 'girl') yield* girlfriend;
-    if (cmd === 'fight') yield* println(MAIN.perezhitkiProshlogoZhmiW);
-    if (cmd === 'pr') yield* den;
-    if (cmd === 'kl') yield* club;
-    if (cmd === 'trn') yield* gym;
-    yield* drinkBeer(cmd);
-    if (cmd === 'kos') yield* smokeJoint(10);
-    if (cmd === 'i') yield* commands;
-    if (cmd === 's') yield* showStats;
-    if (cmd === 'f' && st.player.body.pockets.pistol) yield* println(MAIN.tyChePsihMigom);
-    if (cmd === 'k') yield* println(MAIN.cheMasheshKopytamiIschi);
-    if (cmd === 'name') yield* rename;
-    if (cmd === 'version') yield* println(MAIN.gopnikVersion102);
-    if (cmd === 'help') yield* help;
-    if (cmd === 'exit' || cmd === 'e') {
-      yield* println(MAIN.blinNeBytTebe);
-      yield* println(MAIN.aRezultat);
-      yield* showStats;
-      yield* readKey;
-      return yield* halt;
-    }
+  if (st.world.district * 10 <= st.player.progression.level && st.world.district < 5)
+    yield* nextDistrict;
+  if (st.world.rector) {
+    st.world.places.den = true;
+    yield* setupRector(0);
+    yield* fight(3);
+    yield* setupRector(1);
+    yield* fight(4);
+  }
+  yield* print('\\');
+  st.scratch.cmd = lowerCase(yield* readLine);
+  const cmd = st.scratch.cmd;
+  if (cmd === 'w' || cmd === 'run') yield* walk;
+  if (cmd === 'mar') yield* market;
+  if (cmd === 'bmar') yield* dealers;
+  if (cmd === 'rep') yield* vet;
+  if (cmd === 'girl') yield* girlfriend;
+  if (cmd === 'fight') yield* println(MAIN.perezhitkiProshlogoZhmiW);
+  if (cmd === 'pr') yield* den;
+  if (cmd === 'kl') yield* club;
+  if (cmd === 'trn') yield* gym;
+  yield* drinkBeer(cmd);
+  if (cmd === 'kos') yield* smokeJoint(10);
+  if (cmd === 'i') yield* commands;
+  if (cmd === 's') yield* showStats;
+  if (cmd === 'f' && st.player.body.pockets.pistol) yield* println(MAIN.tyChePsihMigom);
+  if (cmd === 'k') yield* println(MAIN.cheMasheshKopytamiIschi);
+  if (cmd === 'name') yield* rename;
+  if (cmd === 'version') yield* println(MAIN.gopnikVersion102);
+  if (cmd === 'help') yield* help;
+  if (cmd === 'exit' || cmd === 'e') {
+    yield* println(MAIN.blinNeBytTebe);
+    yield* println(MAIN.aRezultat);
+    yield* showStats;
+    yield* readKey;
+    return yield* halt;
   }
 });
 

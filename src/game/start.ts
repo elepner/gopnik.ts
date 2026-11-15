@@ -7,13 +7,13 @@ import { decodeSave, decodePlaces } from '../state/legacy';
 import { startGame } from '../state/state';
 import { District, SaveName } from '../tp/brands';
 import { div, i16, u8, val } from '../tp/num';
-import { Disk, Game, println, print, started } from './prelude';
+import { Disk, println, print, started, state } from './prelude';
 import { titleScreen } from './screens';
 import { START } from './texts';
 
 /** 0000:6A0D */
 export const newGame = Effect.gen(function* () {
-  const { st } = yield* Game;
+  const st = yield* state;
   const disk = yield* Disk;
   yield* clrScr;
   st.scratch.dir = 'C:\\GOP\\';
@@ -189,7 +189,7 @@ const arrive = Effect.gen(function* () {
 
 /** the state while the character is being created */
 const creating = Effect.gen(function* () {
-  const { st } = yield* Game;
+  const st = yield* state;
   if (st.phase !== 'not-started') throw new Error('the character already exists');
   return st;
 });

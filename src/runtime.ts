@@ -6,14 +6,15 @@ import { Effect, Layer } from 'effect';
 
 import { Crt, type ICrt, type IKeyboard, Keyboard, makeCrt } from './crt/crt';
 import { mainLoop } from './game/main';
-import { Disk, Game } from './game/prelude';
+import { Disk, Game, transaction } from './game/prelude';
 import { newGame } from './game/start';
 import { createState } from './state/state';
+import { createStore } from './state/store';
 import { SaveName, type Seed } from './tp/brands';
 import { rngLayer } from './tp/rng';
 
 /** the whole program: G.EXE's main block */
-export const program = Effect.andThen(newGame, mainLoop);
+export const program = Effect.andThen(transaction(newGame), mainLoop);
 
 export interface GameOptions {
   readonly seed: Seed;
@@ -23,11 +24,11 @@ export interface GameOptions {
 }
 
 export function gameLayer(opts: GameOptions) {
-  const st = createState();
+  const state = createStore(createState());
   return Layer.mergeAll(
     Layer.succeed(Crt, opts.crt ?? makeCrt()),
     Layer.succeed(Keyboard, opts.keyboard),
-    Layer.succeed(Game, { st, printBuf: new Uint8Array(256), transcript: [] }),
+    Layer.succeed(Game, { state, printBuf: new Uint8Array(256), transcript: [] }),
     Layer.succeed(Disk, dirDisk(opts.dir)),
     rngLayer(opts.seed)
   );

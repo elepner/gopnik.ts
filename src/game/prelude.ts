@@ -6,6 +6,7 @@ import { Context, Effect } from 'effect';
 
 import { Crt, Halt, textColor, WHITE, write, writeLn } from '../crt/crt';
 import { type GameState, playing } from '../state/state';
+import { begin, commit, draft, type Store } from '../state/store';
 import { CrtColor, type SaveName } from '../tp/brands';
 import { CP866, encodeCp866 } from '../tp/cp866';
 import { i16, str } from '../tp/num';
@@ -129,10 +130,27 @@ export function rnd(n: number) {
 
 export const halt = Effect.fail(new Halt({ code: 0 }));
 
-/** the state of the running game (after the character was created or loaded) */
-export const started = Effect.gen(function* () {
-  return playing((yield* Game).st);
+/** the state inside the current transaction (any phase) — a draft: assign to it directly */
+export const state = Effect.gen(function* () {
+  return draft((yield* Game).state) as GameState;
 });
+
+/** the running game's state inside the current transaction */
+export const started = Effect.gen(function* () {
+  return playing(yield* state);
+});
+
+/**
+ * Runs `eff` as one transaction: all changes go to one immer draft and become one new frozen
+ * snapshot at the end (also when the game halts). Nested transactions join the open one.
+ */
+export function transaction<A, E, R>(eff: Effect.Effect<A, E, R>) {
+  return Effect.gen(function* () {
+    const store = (yield* Game).state;
+    if (!begin(store)) return yield* eff;
+    return yield* eff.pipe(Effect.ensuring(Effect.sync(() => commit(store))));
+  });
+}
 
 /**
  * `luck >= Random(n)`: the original compares Longints, but always calls Random first —
@@ -140,14 +158,15 @@ export const started = Effect.gen(function* () {
  */
 export function luckAtLeast(n: number) {
   return Effect.gen(function* () {
-    const { st } = yield* Game;
+    const st = yield* state;
     const r = yield* rnd(n);
     return st.player.stats.luck >= r;
   });
 }
 
 export interface IGame {
-  readonly st: GameState;
+  /** committed snapshots and the open transaction's draft */
+  readonly state: Store;
   /** stack buffer of Print, keeps bytes of earlier (longer) strings like the original */
   readonly printBuf: Uint8Array;
   /** every Print/PrintLn so far — the structured view of the game's output */
