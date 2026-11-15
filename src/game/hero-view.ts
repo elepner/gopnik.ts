@@ -14,16 +14,26 @@ import { HERO, PLACES } from './texts';
 import type { View } from './view';
 
 export type HeroEvent =
+  /** experience spent on this many level-ups (the level-40 cap may still keep the levels) */
+  | { readonly type: 'heroExpSpent'; readonly levels: number }
   /** a level, with the two stats it raised */
   | { readonly type: 'heroLevelGained'; readonly gains: readonly StatKey[] }
   /** the experience left after the level-ups */
   | { readonly type: 'heroExpLeft' }
-  /** experience earned in a place, before it counts */
-  | { readonly type: 'heroExpGained'; readonly exp: number };
+  /** experience earned in a place */
+  | { readonly type: 'heroExpGained'; readonly exp: number }
+  /** +1 strength from the temple */
+  | { readonly type: 'heroStrengthGained' };
 
 /** the hero as the player sees him */
 export const heroView: View<HeroEvent> = {
-  events: { heroLevelGained: true, heroExpLeft: true, heroExpGained: true },
+  events: {
+    heroExpSpent: true,
+    heroLevelGained: true,
+    heroExpLeft: true,
+    heroExpGained: true,
+    heroStrengthGained: true,
+  },
   show: (event) => showHero(event),
 };
 
@@ -41,6 +51,9 @@ function showHero(event: HeroEvent) {
         );
       case 'heroExpGained':
         return yield* println(PLACES.tyPoluchaeshKachkovOpyta2(event.exp));
+      case 'heroExpSpent':
+      case 'heroStrengthGained':
+        return;
     }
   });
 }
