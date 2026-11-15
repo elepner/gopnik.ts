@@ -110,3 +110,39 @@ each entry names the original code address and the place in the port.
 
     The port keeps what each weapon actually added (`boosts.weapons`), so it plays the same; a
     "fixed" mode could compute the weapons' boost as the best weapon in hand instead.
+
+## Weapon bugs reproduced on the original
+
+Bugs 5, 15 and 16 were played on the emulated G.EXE (`oracle/`, Random patched to the port's
+generator) and on the port with the same keys: both went step by step the same way (screen,
+state, Random). The hero is the `save5` golden session's one, moved to district 4, level 35,
+the dealers known and 1000 roubles; the state was written with the port's codec as
+`SAVE_R0.SAV` + `PLACES.SAV` and loaded with the menu key `0` (only save 0 loads the known
+places; a district 5 save starts the rector's fight at once). Damage starts at 57–102.
+
+| scenario | keys after `bmar` | damage in the original | money |
+| --- | --- | --- | --- |
+| 15/16: knuckles next to a club, three rounds of selling and buying them back | `wes` `y` `5` ×3 | 57–102 → 59–104 → 61–106 → 63–108 | 1000 → 971 |
+| 15: knuckles bought with a club in hand | `5` | 57–102 → 59–104 | −25 |
+| 16: a club bought next to a knife (knuckles kept), then sold and bought back three times | `6`, then `wes` `n` `y` `6` ×3 | 57–102 → 59–104 → … → 65–110 | 1000 → 895 |
+| 5: a club bought without knuckles | `6` | 57–102, unchanged | −50 |
+
+The original says "Ты продал кастет за #." and "Ты купил кастет смотри чтоб менты с ним не
+запалили." on every round, and the damage grows by 2 each time.
+
+The knife and cleaver come only from maniacs, so for bugs 6, 16 and 17 the save was rigged and
+the seed searched: the trail on (stronger enemies, more maniacs), luck 500 (both loot checks
+pass), damage 300–400 (one kick kills) and the weapons of the scenario in hand. The keys repeat
+`w` `y` `k` `k` (walk, pick on him, kick); seeds were tried on the port until a maniac dropped
+the wanted weapon with nothing else found before it, then the same seed and keys were played on
+the original:
+
+| scenario | seed, keys | damage in the original | should be |
+| --- | --- | --- | --- |
+| 6/17: a knife in hand, a maniac drops a cleaver | 35, `w y k k` ×3 | 300–400 → 310–410 (+10) | +3 (9 − 6) |
+| 17: a found club in hand, a maniac drops a knife | 9, `w y k k` | 300–400 → 306–406 (+6) | +2 (6 − 4) |
+| 16: a cleaver and knuckles, the knife sold, a maniac drops a knife again | 1, `w y k k` ×5 | 300–400 → 304–404 (+4) | 0 |
+
+Each time the original says "Ты нашел тесак(урон+9)!!! - ужасное оружие." or "Ты нашел
+ножик(урон+6).", and the port goes the same way step by step. (A club with knuckles, then a knife,
+adds a correct +2: the search first hit that one when a lad dropped knuckles before the maniac.)
