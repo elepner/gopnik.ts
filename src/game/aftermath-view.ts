@@ -11,6 +11,7 @@ import { ringLines, showStats } from './hero';
 import { println, started } from './prelude';
 import type { Text } from './text';
 import { FIGHT } from './texts';
+import type { View } from './view';
 
 export type AftermathEvent =
   | { readonly type: 'heroDied' }
@@ -41,25 +42,28 @@ export type AftermathEvent =
   | { readonly type: 'found'; readonly item: Item }
   | { readonly type: 'denHelped'; readonly respect: number; readonly exp: number };
 
-/** the aftermath's own events, to tell them from the others */
-export const AFTERMATH_EVENTS: Record<AftermathEvent['type'], true> = {
-  heroDied: true,
-  killedByRector: true,
-  rectorKilled: true,
-  fakeRectorKilled: true,
-  enemyDied: true,
-  levelEarned: true,
-  exp: true,
-  tooWeak: true,
-  spoils: true,
-  denOpened: true,
-  ringDropped: true,
-  joints: true,
-  found: true,
-  denHelped: true,
+/** the aftermath as the player sees it */
+export const aftermathView: View<AftermathEvent> = {
+  show: (event) => showAftermath(event),
+  events: {
+    heroDied: true,
+    killedByRector: true,
+    rectorKilled: true,
+    fakeRectorKilled: true,
+    enemyDied: true,
+    levelEarned: true,
+    exp: true,
+    tooWeak: true,
+    spoils: true,
+    denOpened: true,
+    ringDropped: true,
+    joints: true,
+    found: true,
+    denHelped: true,
+  },
 };
 
-export function showAftermath(event: AftermathEvent) {
+function showAftermath(event: AftermathEvent) {
   return Effect.gen(function* () {
     const st = yield* started;
     switch (event.type) {

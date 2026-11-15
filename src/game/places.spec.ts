@@ -6,7 +6,8 @@ import { i16 } from '../../src/tp/num';
 import { hero, play } from '../../test/game';
 import { PRICE } from '../data/tables';
 import { attr, set } from '../state/attributes';
-import { dealers, market } from './places';
+import { dealers } from './places/dealers';
+import { market } from './places/market';
 
 const keys = (...lines: string[]) => lines.flatMap((l) => [...l, 'enter']);
 

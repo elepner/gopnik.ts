@@ -12,14 +12,13 @@ import { type CharacterType, ENEMIES } from '../state/kinds';
 import { typeName } from '../state/names';
 import { battle, type StatKey } from '../state/state';
 import { div } from '../tp/num';
-import { type BeerEvent } from './beer';
-import { showBeer } from './beer-view';
 import { showEnemy } from './enemy';
 import { extraHits, hitBudget, KICK } from './fight';
 import { showStats } from './hero';
 import { print, println, started } from './prelude';
 import type { Text } from './text';
 import { FIGHT } from './texts';
+import type { View } from './view';
 
 export type Side = 'hero' | 'enemy';
 
@@ -68,8 +67,6 @@ export type FightEvent =
   | { readonly type: 'stats' }
   /** `sv`: a look at the enemy */
   | { readonly type: 'enemyInfo' }
-  /** `h`/`mh` in a fight */
-  | BeerEvent
   | {
       readonly type: 'smoked';
       /** healed to full by less than 10, or by 10 */
@@ -78,8 +75,40 @@ export type FightEvent =
       readonly inFight: boolean;
     };
 
-/** shows a fight's event (wired to `Events` by `view-layer.ts`) */
-export function showFight(event: FightEvent) {
+/** the fight as the player sees it */
+export const fightView: View<FightEvent> = {
+  events: {
+    greeting: true,
+    fightStarted: true,
+    crowdGathered: true,
+    crowdShout: true,
+    kick: true,
+    anotherKick: true,
+    cantRun: true,
+    fled: true,
+    fledUnranked: true,
+    backupArrived: true,
+    backupRefused: true,
+    backupComing: true,
+    backupAlreadyHere: true,
+    backupKicked: true,
+    backupBeaten: true,
+    backupFedUp: true,
+    shotForbidden: true,
+    outOfBullets: true,
+    shotMissed: true,
+    shotHit: true,
+    bailedOut: true,
+    stats: true,
+    enemyInfo: true,
+    jointRefused: true,
+    smoked: true,
+  },
+  show: (event) => showFight(event),
+};
+
+/** shows a fight's event */
+function showFight(event: FightEvent) {
   return Effect.gen(function* () {
     const st = yield* started;
     switch (event.type) {
@@ -164,13 +193,6 @@ export function showFight(event: FightEvent) {
         return yield* showStats;
       case 'enemyInfo':
         return yield* showEnemy;
-      case 'cantDrink':
-      case 'notThirsty':
-      case 'drank':
-      case 'noBeer':
-      case 'drankUntilHealthy':
-      case 'beerRanOut':
-        return yield* showBeer(event);
       case 'jointRefused':
         return yield* println(
           event.because === 'jaw'

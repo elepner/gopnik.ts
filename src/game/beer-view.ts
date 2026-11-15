@@ -7,8 +7,22 @@ import { type BeerEvent } from './beer';
 import { beerTenths } from './hero';
 import { print, println, started } from './prelude';
 import { HERO } from './texts';
+import type { View } from './view';
 
-export function showBeer(event: BeerEvent) {
+/** drinking as the player sees it */
+export const beerView: View<BeerEvent> = {
+  events: {
+    cantDrink: true,
+    notThirsty: true,
+    drank: true,
+    noBeer: true,
+    drankUntilHealthy: true,
+    beerRanOut: true,
+  },
+  show: (event) => showBeer(event),
+};
+
+function showBeer(event: BeerEvent) {
   return Effect.gen(function* () {
     const p = (yield* started).player;
     const left = () =>

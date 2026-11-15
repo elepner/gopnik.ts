@@ -10,7 +10,7 @@ import type { Game, StatKey } from '../state/state';
 import { div, i16, mod } from '../tp/num';
 import { print, println, rnd, started } from './prelude';
 import { type Color, text, type Text } from './text';
-import { HERO } from './texts';
+import { HERO, PLACES } from './texts';
 
 /** 0000:1A03 — `s`: look at yourself in a puddle */
 export const showStats = Effect.gen(function* () {
@@ -329,4 +329,14 @@ function loseStat(st: Game, stat: StatKey) {
   } else if (stat === 'luck') {
     dec(st.player, 'luck', 1);
   }
+}
+
+/** "Ты получаешь # качков опыта" + level-up */
+export function gainExp(n: number) {
+  return Effect.gen(function* () {
+    const st = yield* started;
+    yield* println(PLACES.tyPoluchaeshKachkovOpyta2(n));
+    st.player.progression.exp = i16(st.player.progression.exp + n);
+    yield* levelUp(false);
+  });
 }
