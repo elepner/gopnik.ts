@@ -103,6 +103,7 @@
   and compare (`parseCommand('den', st.session.lastAnswer) === CMD.den.borrow`), so a command
   of another context doesn't type-check. Places parse the last answer again on every check, not
   once into a local: the original re-reads it, and a fight inside a place overwrites it.
+  The main prompt has one local command, so it just looks it up in `MAIN_COMMANDS` (`main.ts`).
 - Working variables (the rolled event, a bet, sale flags, the save number…) are locals and
   parameters, not state: the only shared input in the state is `session.lastAnswer`. They still
   sit in the original's data segment, so `legacy.ts` lists them in `SCRATCH_FIELDS` and the

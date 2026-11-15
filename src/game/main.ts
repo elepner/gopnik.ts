@@ -48,33 +48,7 @@ const turn = Effect.gen(function* () {
   }
   yield* print(plain`\\`);
   const cmd = parseCommand('main', lowerCase(yield* readLine));
-  if (cmd === CMD.main.walk || cmd === CMD.main.run) yield* walk(cmd);
-  if (cmd === CMD.main.market) yield* market;
-  if (cmd === CMD.main.dealers) yield* dealers;
-  if (cmd === CMD.main.vet) yield* vet;
-  if (cmd === CMD.main.girlfriend) yield* girlfriend;
-  if (cmd === CMD.main.oldFight) yield* println(MAIN.perezhitkiProshlogoZhmiW());
-  if (cmd === CMD.main.den) yield* den;
-  if (cmd === CMD.main.club) yield* club;
-  if (cmd === CMD.main.gym) yield* gym;
-  if (cmd === CMD.main.beer) yield* drinkBeer('one');
-  if (cmd === CMD.main.beerUntilHealthy) yield* drinkBeer('untilHealthy');
-  if (cmd === CMD.main.joint) yield* smokeJoint(10);
-  if (cmd === CMD.main.commands) yield* commands;
-  if (cmd === CMD.main.stats) yield* showStats;
-  if (cmd === CMD.main.shoot && st.player.body.pockets.pistol)
-    yield* println(MAIN.tyChePsihMigom());
-  if (cmd === CMD.main.kick) yield* println(MAIN.cheMasheshKopytamiIschi());
-  if (cmd === CMD.main.rename) yield* rename;
-  if (cmd === CMD.main.version) yield* println(MAIN.gopnikVersion102());
-  if (cmd === CMD.main.help) yield* help;
-  if (cmd === CMD.main.exit || cmd === CMD.main.exitShort) {
-    yield* println(MAIN.blinNeBytTebe());
-    yield* println(MAIN.aRezultat());
-    yield* showStats;
-    yield* readKey;
-    return yield* halt;
-  }
+  if (cmd) yield* MAIN_COMMANDS[cmd];
 });
 
 /** 0000:AB92 — the district is done: move on, maybe save */
@@ -115,7 +89,7 @@ const nextDistrict = Effect.gen(function* () {
 });
 
 /** 0000:AEA1 — `w`/`run`: wander around looking for trouble */
-function walk(cmd: Command<'main'>) {
+function walk(running: boolean) {
   return Effect.gen(function* () {
     const st = yield* started;
     if (st.player.stoned > 0) {
@@ -127,7 +101,7 @@ function walk(cmd: Command<'main'>) {
         yield* println(MAIN.glyukiProshliSila2());
       }
     }
-    if (cmd === CMD.main.run) yield* println(MAIN.zabegalMudak());
+    if (running) yield* println(MAIN.zabegalMudak());
     if (st.world.den.loans < st.world.district * 10)
       st.world.den.loans = u8(st.world.den.loans + 1);
     if (st.world.places.dealers && st.player.body.pockets.pistol && st.world.dealerCalls < 25) {
@@ -348,3 +322,40 @@ const rename = Effect.gen(function* () {
   if (st.player.name === '') st.player.name = MAIN.razDolBay().format;
   st.player.name = MAIN.namePrefix().format + st.player.name;
 });
+
+/** `exit`/`e`: the results, then quit */
+const exit = Effect.gen(function* () {
+  yield* println(MAIN.blinNeBytTebe());
+  yield* println(MAIN.aRezultat());
+  yield* showStats;
+  yield* readKey;
+  return yield* halt;
+});
+
+/** what every command of the main prompt does (here, after everything it uses is defined) */
+const MAIN_COMMANDS = {
+  [CMD.main.walk]: walk(false),
+  [CMD.main.run]: walk(true),
+  [CMD.main.market]: market,
+  [CMD.main.dealers]: dealers,
+  [CMD.main.vet]: vet,
+  [CMD.main.girlfriend]: girlfriend,
+  [CMD.main.oldFight]: println(MAIN.perezhitkiProshlogoZhmiW()),
+  [CMD.main.den]: den,
+  [CMD.main.club]: club,
+  [CMD.main.gym]: gym,
+  [CMD.main.beer]: drinkBeer('one'),
+  [CMD.main.beerUntilHealthy]: drinkBeer('untilHealthy'),
+  [CMD.main.joint]: smokeJoint(10),
+  [CMD.main.commands]: commands,
+  [CMD.main.stats]: showStats,
+  [CMD.main.shoot]: Effect.gen(function* () {
+    if ((yield* started).player.body.pockets.pistol) yield* println(MAIN.tyChePsihMigom());
+  }),
+  [CMD.main.kick]: println(MAIN.cheMasheshKopytamiIschi()),
+  [CMD.main.rename]: rename,
+  [CMD.main.version]: println(MAIN.gopnikVersion102()),
+  [CMD.main.help]: help,
+  [CMD.main.exit]: exit,
+  [CMD.main.exitShort]: exit,
+} satisfies Record<Command<'main'>, unknown>;
