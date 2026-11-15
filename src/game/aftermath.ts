@@ -7,12 +7,12 @@
  */
 import { Effect } from 'effect';
 
-import { attr } from '../state/attributes';
+import { attr, inc, set } from '../state/attributes';
 import { ENEMY_DROPS } from '../state/enemy-drop';
 import { has, nextRing } from '../state/items';
 import { ENEMIES } from '../state/kinds';
 import { battle, type Game } from '../state/state';
-import { div, i16 } from '../tp/num';
+import { div } from '../tp/num';
 import { type AftermathEvent } from './aftermath-view';
 import { reporter } from './events';
 import type { FightOutcome } from './fight';
@@ -84,18 +84,16 @@ function apply(st: Game, event: AftermathEvent) {
   const p = st.player;
   switch (event.type) {
     case 'levelEarned':
-      p.progression.exp = p.progression.expNext;
-      return;
+      return set(p, 'exp', p.progression.expNext);
     case 'exp':
-      p.progression.exp = i16(p.progression.exp + event.exp);
-      return;
+      return inc(p, 'exp', event.exp);
     case 'spoils':
-      p.resources.beer = i16(p.resources.beer + event.beer);
-      p.resources.money = i16(p.resources.money + event.money);
-      p.resources.junk = i16(p.resources.junk + event.junk);
-      p.health.current = Math.min(i16(p.health.current + event.health), attr(p, 'healthMax'));
-      p.respect = i16(p.respect + event.respect);
-      return;
+      inc(p, 'beer', event.beer);
+      inc(p, 'money', event.money);
+      inc(p, 'junk', event.junk);
+      inc(p, 'health', event.health);
+      if (p.health.current > attr(p, 'healthMax')) set(p, 'health', attr(p, 'healthMax'));
+      return inc(p, 'respect', event.respect);
     case 'denOpened':
       st.world.places.den = true;
       return;
@@ -104,12 +102,10 @@ function apply(st: Game, event: AftermathEvent) {
     case 'found':
       return take(st, event.item);
     case 'joints':
-      p.resources.joints = i16(p.resources.joints + event.joints);
-      return;
+      return inc(p, 'joints', event.joints);
     case 'denHelped':
-      p.respect = i16(p.respect + event.respect);
-      p.progression.exp = i16(p.progression.exp + event.exp);
-      return;
+      inc(p, 'respect', event.respect);
+      return inc(p, 'exp', event.exp);
   }
 }
 

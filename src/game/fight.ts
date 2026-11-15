@@ -1,22 +1,24 @@
 /**
- * The fight (0000:3D11). The rules change the state and `emit` what happens (`events.ts`); they
- * don't know who shows it (`fight-view.ts`, wired as a layer). An event is shown the moment it
- * is emitted, before the next rule changes the state: the view reads the state. `FightRules`
- * hold what differs between fights.
+ * The fight (0000:3D11). The rules decide what happens and say it (`events.ts`): `apply` puts
+ * an event into the state (the hero's and the enemy's), then it is shown (`fight-view.ts`, wired
+ * as a layer), so the view reads the state the event made. `FightRules` hold what differs
+ * between fights.
  */
 import { Effect } from 'effect';
 
 import type { EndOfInput } from '../crt/crt';
-import { attr } from '../state/attributes';
-import { type Battle, battle, type Game, type Injuries } from '../state/state';
+import { attr, dec, inc, set } from '../state/attributes';
+import { type Battle, battle, type Game, type Injuries, type Player } from '../state/state';
 import { div, i16, round, u8 } from '../tp/num';
 import type { IRng } from '../tp/rng';
 import { drink } from './beer';
 import { CMD, promptCommand } from './commands';
-import { emit, type IEvents } from './events';
+import { emit, type IEvents, reporter } from './events';
 import { type FightEvent, type Hit, type Side } from './fight-view';
-import { DEN_LEVEL, levelDown, levelInDistrict } from './hero';
+import { DEN_LEVEL, levelDown, levelInDistrict, lostStats } from './hero';
 import { halt, rnd, started } from './prelude';
+
+const report = reporter(apply);
 
 /**
  * What makes one fight differ from another; the rest is the same in every fight. Who the enemy
@@ -105,26 +107,30 @@ export function fight(rules: FightRules) {
       }
       if (command === CMD.fight.run) {
         const fled = rules.flee(st);
-        yield* emit(fled);
+        yield* report(fled);
         if (fled.type !== 'cantRun') outcome = 'fled';
       }
       if (command === CMD.fight.beer) yield* drink('one');
       if (command === CMD.fight.beerUntilHealthy) yield* drink('untilHealthy');
-      if (command === CMD.fight.joint) yield* emit(smoke(st, 3));
+      if (command === CMD.fight.joint) yield* report(smoke(st, FIGHT_JOINT));
       if (command === CMD.fight.stats) yield* emit({ type: 'stats' });
       if (command === CMD.fight.inspectEnemy) yield* emit({ type: 'enemyInfo' });
       if (command === CMD.fight.exit) return yield* halt;
-      if (command === CMD.fight.kick && backupApproaches(battle(st), rules.backup))
-        yield* emit({ type: 'backupArrived', by: 'kicks' });
+      if (command === CMD.fight.kick && backupCalled(battle(st))) {
+        // every kick brings the called lads closer
+        yield* report({ type: 'backupApproached' });
+        if (battle(st).backup === rules.backup.arrivesAt)
+          yield* emit({ type: 'backupArrived', by: 'kicks' });
+      }
       if (command === CMD.fight.callBackup) yield* callBackup(st, rules.backup);
       if (alive(battle(st).enemy) && backupHere(battle(st), rules.backup))
         yield* backupKicks(st, rules.backup);
       if (command === CMD.fight.shoot && st.player.body.pockets.pistol)
-        yield* emit(yield* shoot(st));
+        yield* report(yield* shoot(st));
 
       if (!alive(st.player)) {
         if (rules.bailOut(st)) {
-          yield* emit(bailOut(st));
+          yield* report({ type: 'bailedOut' });
           outcome = 'bailedOut';
         } else return 'died';
       }
@@ -140,7 +146,7 @@ function kickSeries(st: Game, by: Side, hits: number) {
   return Effect.gen(function* () {
     let budget = hits;
     for (;;) {
-      yield* emit({ type: 'kick', by, hit: yield* kick(st, by, budget) });
+      yield* report({ type: 'kick', by, hit: yield* kick(st, by, budget) });
       budget -= KICK;
       if ((by === 'hero' && !alive(battle(st).enemy)) || budget <= 0) return;
       yield* emit({ type: 'anotherKick', by });
@@ -193,14 +199,13 @@ function breaksBone(attacker: number, defender: number) {
   return luckBeats(attacker * 3, defender * 3 + 200);
 }
 
-/** what a kick needs of a fighter; only the victim's health and injuries change during it */
+/** what a kick needs of a fighter */
 interface Fighter {
   readonly luck: number;
   readonly damageMin: number;
   readonly damageMax: number;
   readonly armor: number;
-  readonly health: { current: number };
-  readonly injuries: Injuries;
+  readonly injuries: Readonly<Injuries>;
 }
 
 function fighter(st: Game, side: Side): Fighter {
@@ -211,7 +216,6 @@ function fighter(st: Game, side: Side): Fighter {
       damageMin: attr(p, 'damageMin'),
       damageMax: attr(p, 'damageMax'),
       armor: attr(p, 'armor'),
-      health: p.health,
       injuries: p.injuries,
     };
   }
@@ -221,7 +225,6 @@ function fighter(st: Game, side: Side): Fighter {
     damageMin: e.damage.min,
     damageMax: e.damage.max,
     armor: e.armor,
-    health: e.health,
     injuries: e.injuries,
   };
 }
@@ -234,30 +237,24 @@ function kick(st: Game, by: Side, budget: number) {
     const guard = by === 'enemy' && st.player.body.mouth.guard;
     const roll = (yield* rnd(100)) + 1;
     if (!lands(budget, roll)) return undefined;
-    const prev = victim.health.current;
-    let dmg = attacker.damageMin + (yield* rnd(attacker.damageMax - attacker.damageMin)) + 1;
+    let damage = attacker.damageMin + (yield* rnd(attacker.damageMax - attacker.damageMin)) + 1;
     let critical: number | undefined;
     if (yield* criticalKick(attacker.luck)) {
-      dmg += attacker.damageMax;
+      damage += attacker.damageMax;
       critical = yield* rnd(3);
     }
-    dmg -= victim.armor;
-    if (dmg < 0) dmg = 0;
-    victim.health.current = i16(victim.health.current - dmg);
+    damage -= victim.armor;
+    if (damage < 0) damage = 0;
     let broke: Hit['broke'];
     if (yield* breaksBone(attacker.luck, victim.luck)) {
       if ((yield* rnd(2)) === 0) {
         if (!victim.injuries.jaw) {
           if (!guard) broke = 'jaw';
           else broke = (yield* rnd(4)) === 0 ? 'jawThroughGuard' : 'guardHeld';
-          if (broke !== 'guardHeld') victim.injuries.jaw = true;
         }
-      } else if (!victim.injuries.leg) {
-        broke = 'leg';
-        victim.injuries.leg = true;
-      }
+      } else if (!victim.injuries.leg) broke = 'leg';
     }
-    return { damage: prev - victim.health.current, critical, broke } satisfies Hit;
+    return { damage, critical, broke } satisfies Hit;
   });
 }
 
@@ -266,48 +263,38 @@ function flee(st: Game): FleeEvent {
   if (st.player.injuries.leg) return { type: 'cantRun', because: 'leg' };
   if (st.player.progression.level <= 0) return { type: 'fledUnranked' };
   const denRumour = st.player.type !== 'gopnik' && levelInDistrict(st) === DEN_LEVEL;
-  const lost = levelDown(st);
-  if (denRumour) st.world.places.den = true; // sic: the original grants access while saying the opposite
-  return { type: 'fled', lost, denRumour };
+  return { type: 'fled', lost: lostStats(st), denRumour };
 }
+
+/** a joint keeps the hero stoned for 3 turns of a fight */
+export const FIGHT_JOINT = 3;
 
 /** `kos` outside a fight */
 export function smokeJoint(turns: number) {
-  return Effect.flatMap(started, (st) => emit(smoke(st, turns)));
+  return Effect.flatMap(started, (st) => report(smoke(st, turns)));
 }
 
 /** `kos` — a joint: +2 strength for a while, heals up to 10 (fight: 3 turns, walking: 10) */
-export function smoke(st: Game, turns: number): FightEvent {
+export function smoke(st: Game, turns: number): JointEvent {
   if (st.player.injuries.jaw) return { type: 'jointRefused', because: 'jaw' };
   if (st.player.stoned !== 0) return { type: 'jointRefused', because: 'stoned' };
   if (st.player.resources.joints <= 0) return { type: 'jointRefused', because: 'none' };
-  st.player.resources.joints = i16(st.player.resources.joints - 1);
-  st.player.stoned = u8(turns);
-  const full = attr(st.player, 'healthMax') - st.player.health.current < 10;
-  const healed = full ? attr(st.player, 'healthMax') - st.player.health.current : 10;
-  st.player.health.current = full
-    ? attr(st.player, 'healthMax')
-    : i16(st.player.health.current + 10);
-  return { type: 'smoked', healed, full, inFight: turns === 3 };
+  const missing = attr(st.player, 'healthMax') - st.player.health.current;
+  const full = missing < 10;
+  return { type: 'smoked', healed: full ? missing : 10, full, turns };
 }
 
-/** every kick brings the called lads closer; true when they arrive */
-function backupApproaches(combat: Battle, backup: BackupRules): boolean {
-  if (!backupCalled(combat)) return false;
-  combat.backup = i16(combat.backup + 1);
-  return combat.backup === backup.arrivesAt;
-}
+type JointEvent = Extract<FightEvent, { type: 'jointRefused' | 'smoked' }>;
 
 /** `v`: call the den lads; the phone brings them at once */
 function callBackup(st: Game, backup: BackupRules) {
   return Effect.gen(function* () {
     const access = backup.access(st);
     if (access === 'granted') {
-      if (!backupCalled(battle(st))) battle(st).backup = 1;
       if (st.player.body.pockets.phone) {
-        battle(st).backup = backup.arrivesAt;
+        yield* report({ type: 'backupCalled', count: backup.arrivesAt });
         yield* emit({ type: 'backupArrived', by: 'phone' });
-      }
+      } else if (!backupCalled(battle(st))) yield* report({ type: 'backupCalled', count: 1 });
     } else yield* emit({ type: 'backupRefused', because: access });
     if (backupCalled(battle(st))) {
       if (!backupHere(battle(st), backup))
@@ -321,27 +308,16 @@ function callBackup(st: Game, backup: BackupRules) {
 /** the lads kick the enemy every turn, for respect, until they are beaten or fed up */
 function backupKicks(st: Game, backup: BackupRules) {
   return Effect.gen(function* () {
-    const prev = battle(st).enemy.health.current;
-    let dmg = st.world.district * 3 + (yield* rnd(st.world.district * 4));
-    dmg -= div(battle(st).enemy.armor, 3);
-    if (dmg < 0) dmg = 0;
-    battle(st).enemy.health.current = i16(battle(st).enemy.health.current - dmg);
-    yield* emit({ type: 'backupKicked', damage: prev - battle(st).enemy.health.current });
-    if ((yield* rnd(2)) === 0) {
-      battle(st).backup = i16(battle(st).backup + 1);
-      // sic: never true, the lads kick only once they have arrived
-      if (battle(st).backup === backup.arrivesAt)
-        yield* emit({ type: 'backupArrived', by: 'time' });
-    }
-    if (battle(st).backup === backup.beatenAt) {
-      battle(st).backup = 0;
-      yield* emit({ type: 'backupBeaten' });
-    }
-    st.player.respect = i16(st.player.respect - st.world.district * 5);
-    if (st.player.respect <= 0) {
-      battle(st).backup = 0;
-      yield* emit({ type: 'backupFedUp' });
-    }
+    let damage = st.world.district * 3 + (yield* rnd(st.world.district * 4));
+    damage -= div(battle(st).enemy.armor, 3);
+    if (damage < 0) damage = 0;
+    const hurt = (yield* rnd(2)) === 0;
+    yield* report({ type: 'backupKicked', damage, hurt });
+    // sic: never true, the lads kick only once they have arrived
+    if (hurt && battle(st).backup === backup.arrivesAt)
+      yield* emit({ type: 'backupArrived', by: 'time' });
+    if (battle(st).backup === backup.beatenAt) yield* report({ type: 'backupBeaten' });
+    if (st.player.respect <= 0) yield* report({ type: 'backupFedUp' });
   });
 }
 
@@ -351,34 +327,85 @@ function shoot(st: Game) {
     const pistol = st.player.body.pockets.pistol!;
     if (!st.world.trail && !pistol.silencer) return { type: 'shotForbidden' } satisfies FightEvent;
     if (pistol.bullets <= 0) return { type: 'outOfBullets' } satisfies FightEvent;
-    pistol.bullets = i16(pistol.bullets - 1);
     const aim = yield* rnd(50);
     if (attr(st.player, 'agility') <= aim) return { type: 'shotMissed' } satisfies FightEvent;
-    const prev = battle(st).enemy.health.current;
-    battle(st).enemy.health.current = i16(
-      battle(st).enemy.health.current - ((yield* rnd(10)) + 20)
-    );
-    return { type: 'shotHit', damage: prev - battle(st).enemy.health.current } satisfies FightEvent;
+    return { type: 'shotHit', damage: (yield* rnd(10)) + 20 } satisfies FightEvent;
   });
 }
 
+// ------------------------------------------------------------------ the state
+
+/** what happens in a fight goes into the state */
+function apply(st: Game, event: FightEvent) {
+  const p = st.player;
+  switch (event.type) {
+    case 'kick':
+      if (event.hit) kicked(st, event.by === 'hero' ? 'enemy' : 'hero', event.hit);
+      return;
+    case 'fled':
+      levelDown(st);
+      if (event.denRumour) st.world.places.den = true; // sic: the original grants access while saying the opposite
+      return;
+    case 'smoked':
+      dec(p, 'joints', 1);
+      p.stoned = u8(event.turns);
+      return inc(p, 'health', event.healed);
+    case 'backupCalled':
+      battle(st).backup = event.count;
+      return;
+    case 'backupApproached':
+      battle(st).backup = i16(battle(st).backup + 1);
+      return;
+    case 'backupKicked': {
+      const combat = battle(st);
+      combat.enemy.health.current = i16(combat.enemy.health.current - event.damage);
+      if (event.hurt) combat.backup = i16(combat.backup + 1);
+      return dec(p, 'respect', st.world.district * 5);
+    }
+    case 'backupBeaten':
+    case 'backupFedUp':
+      battle(st).backup = 0;
+      return;
+    case 'shotMissed':
+    case 'shotHit': {
+      const pistol = p.body.pockets.pistol!;
+      pistol.bullets = i16(pistol.bullets - 1);
+      if (event.type === 'shotHit') hurtEnemy(st, event.damage);
+      return;
+    }
+    case 'bailedOut':
+      return bailOut(p);
+  }
+}
+
+/** the victim of a kick that landed takes its damage and maybe a broken bone */
+function kicked(st: Game, victim: Side, hit: Hit) {
+  const injuries = victim === 'hero' ? st.player.injuries : battle(st).enemy.injuries;
+  if (victim === 'hero') dec(st.player, 'health', hit.damage);
+  else hurtEnemy(st, hit.damage);
+  if (hit.broke === 'jaw' || hit.broke === 'jawThroughGuard') injuries.jaw = true;
+  if (hit.broke === 'leg') injuries.leg = true;
+}
+
+function hurtEnemy(st: Game, damage: number) {
+  const { health } = battle(st).enemy;
+  health.current = i16(health.current - damage);
+}
+
 /** the den lads pick up a beaten hero: respect, money for the treatment, full health */
-function bailOut(st: Game): FightEvent {
-  st.player.respect = i16(st.player.respect - 10);
-  st.player.resources.money = i16(
-    st.player.resources.money - round((attr(st.player, 'healthMax') / 5) * 3)
-  );
-  st.player.health.current = attr(st.player, 'healthMax');
-  if (fractured(st.player.injuries)) {
-    st.player.resources.money = i16(st.player.resources.money - 7);
-    st.player.injuries.jaw = false;
-    st.player.injuries.leg = false;
+function bailOut(p: Player) {
+  dec(p, 'respect', 10);
+  dec(p, 'money', round((attr(p, 'healthMax') / 5) * 3));
+  set(p, 'health', attr(p, 'healthMax'));
+  if (fractured(p.injuries)) {
+    dec(p, 'money', 7);
+    p.injuries.jaw = false;
+    p.injuries.leg = false;
   }
-  if (st.player.resources.money < 0) {
-    st.player.respect = i16(st.player.respect + st.player.resources.money);
-    st.player.resources.money = 0;
+  if (p.resources.money < 0) {
+    inc(p, 'respect', p.resources.money);
+    set(p, 'money', 0);
   }
-  return { type: 'bailedOut' };
 }
 
 // ------------------------------------------------------------------ conditions

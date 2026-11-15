@@ -13,7 +13,7 @@ import { typeName } from '../state/names';
 import { battle, type StatKey } from '../state/state';
 import { div } from '../tp/num';
 import { showEnemy } from './enemy';
-import { extraHits, hitBudget, KICK } from './fight';
+import { extraHits, FIGHT_JOINT, hitBudget, KICK } from './fight';
 import { showStats } from './hero';
 import { print, println, started } from './prelude';
 import type { Text } from './text';
@@ -50,11 +50,16 @@ export type FightEvent =
   | { readonly type: 'fled'; readonly lost: readonly StatKey[]; readonly denRumour: boolean }
   /** ran away at level 0: nothing to lose */
   | { readonly type: 'fledUnranked' }
+  /** the den lads are called: they come at this count (`BackupRules`) */
+  | { readonly type: 'backupCalled'; readonly count: number }
+  /** a kick brings the called lads one step closer */
+  | { readonly type: 'backupApproached' }
   | { readonly type: 'backupArrived'; readonly by: 'kicks' | 'phone' | 'time' }
   | { readonly type: 'backupRefused'; readonly because: 'respect' | 'den' }
   | { readonly type: 'backupComing'; readonly turns: number }
   | { readonly type: 'backupAlreadyHere' }
-  | { readonly type: 'backupKicked'; readonly damage: number }
+  /** the lads kicked the enemy, for respect; `hurt`: they took a hit too */
+  | { readonly type: 'backupKicked'; readonly damage: number; readonly hurt: boolean }
   | { readonly type: 'backupBeaten' }
   | { readonly type: 'backupFedUp' }
   | { readonly type: 'shotForbidden' }
@@ -72,7 +77,8 @@ export type FightEvent =
       /** healed to full by less than 10, or by 10 */
       readonly healed: number;
       readonly full: boolean;
-      readonly inFight: boolean;
+      /** how long the hero stays stoned: a fight's turns or a walk's steps */
+      readonly turns: number;
     };
 
 /** the fight as the player sees it */
@@ -87,6 +93,8 @@ export const fightView: View<FightEvent> = {
     cantRun: true,
     fled: true,
     fledUnranked: true,
+    backupCalled: true,
+    backupApproached: true,
     backupArrived: true,
     backupRefused: true,
     backupComing: true,
@@ -149,6 +157,9 @@ function showFight(event: FightEvent) {
         return;
       case 'fledUnranked':
         return yield* println(FIGHT.vragZasranets());
+      case 'backupCalled':
+      case 'backupApproached':
+        return;
       case 'backupArrived':
         return yield* println(
           event.by === 'kicks'
@@ -212,9 +223,10 @@ function showFight(event: FightEvent) {
             )
           );
         } else {
-          const healed = event.inFight
-            ? FIGHT.kolesaPribavlyayutZZdorovya
-            : FIGHT.kolesaPribavlyayutZZdorovya2;
+          const healed =
+            event.turns === FIGHT_JOINT
+              ? FIGHT.kolesaPribavlyayutZZdorovya
+              : FIGHT.kolesaPribavlyayutZZdorovya2;
           yield* println(
             healed(
               event.healed,
