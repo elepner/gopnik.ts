@@ -33,7 +33,10 @@
 - `analysis/` — generated `g.asm`, `g.lift.txt`, `data.txt`. Regenerate, don't edit.
 - `src/tp/` — Turbo Pascal runtime semantics: `rng.ts` (LCG), `num.ts` (Integer wrap, div/mod,
   Round, Str/Val), `cp866.ts`, `brands.ts`.
-- `src/state/layout.ts` — game state as the original data segment (`Memory` + typed fields).
+- `src/state/` — `state.ts` (game state as plain grouped objects: not-started vs started game,
+  world, player with body slots, enemy, scratch), `kinds.ts` (character classes and enemy kinds),
+  `store.ts` (immutable snapshots + immer transactions), `legacy.ts` (the original's byte layout:
+  saves and comparison snapshots), `names.ts`.
 - `src/crt/` — CRT unit: `screen.ts` (80×25 B800 cells), `crt.ts` (ReadKey, CrtRead line editor,
   services `Crt`, `Keyboard`).
 - `src/game/` — the game: `prelude` (services `Game`, `Disk`, Print/PrintLn, luck checks),
@@ -112,6 +115,11 @@
 - `test/regression.spec.ts` replays `test/fixtures/*.keys` (bot logs) and random scenarios on
   the emulated original and the port. To pin a new behaviour, copy a log from `logs/` into
   `test/fixtures/`.
+- `test/golden.spec.ts` (e2e, no emulator): whole sessions from `test/fixtures/` must match
+  `test/golden/*.jsonl` — per key read: the key, Random count and the printed `[colour, text]`
+  segments; last line = final state in the original's field names. Goldens were recorded on the
+  pre-refactor port `069ac2b` (verified against the original). Re-record only on purpose:
+  `bun test/golden.ts record`. A failure shows the first differing step as readable text.
 - No tests for screen rendering / CRT output: the display layer will be replaced.
 - Type-level tests (`expectTypeOf`, `@ts-expect-error`) are checked by `tsc`, not by vitest.
 
