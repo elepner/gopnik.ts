@@ -11,24 +11,14 @@ import { SaveName } from '../tp/brands';
 import { i16, str, u8 } from '../tp/num';
 import { beatFakeRector, beatRector, killedByRector, settle } from './aftermath';
 import { drink } from './beer';
-import { CMD, type Command, parseCommand } from './commands';
+import { CMD, type Command, promptCommand, readAnswer } from './commands';
 import { saveMage, temple } from './encounters';
 import { encounter, setupRector, spawnEnemy } from './enemy';
 import { emit } from './events';
 import { fight, RECTOR_FIGHT, smokeJoint, STREET_FIGHT } from './fight';
 import { showStats } from './hero';
-import { club, dealers, den, girlfriend, gym, market, prompt, vet } from './places';
-import {
-  Disk,
-  halt,
-  lowerCase,
-  luckAtLeast,
-  print,
-  println,
-  rnd,
-  started,
-  transaction,
-} from './prelude';
+import { club, dealers, den, girlfriend, gym, market, vet } from './places';
+import { Disk, halt, luckAtLeast, print, println, rnd, started, transaction } from './prelude';
 import { help } from './screens';
 import { resetPlaces } from './start';
 import { plain } from './text';
@@ -64,8 +54,7 @@ const turn = Effect.gen(function* () {
       })
     );
   }
-  yield* print(plain`\\`);
-  const cmd = parseCommand('main', lowerCase(yield* readLine));
+  const cmd = yield* promptCommand('main');
   if (cmd) yield* MAIN_COMMANDS[cmd];
 });
 
@@ -78,7 +67,8 @@ const nextDistrict = Effect.gen(function* () {
   st.world.heat.club = 0;
   yield* println(MAIN.tyDokazalChtoTy());
   yield* println(MAIN.hocheshSohranitSvoiDostizheniya());
-  if (parseCommand('answer', yield* prompt(plain`\\`)) === CMD.answer.yes) {
+  yield* print(plain`\\`);
+  if ((yield* readAnswer) === CMD.answer.yes) {
     const slot = str(st.world.district);
     yield* (yield* Disk).write(SaveName(`save_r${slot}.sav`), encodeSave(st));
     yield* println(MAIN.sohranenoVSaveR(slot));
@@ -241,8 +231,7 @@ const prettyGirl = Effect.gen(function* () {
   const st = yield* started;
   if (st.world.places.girlfriend) return yield* println(MAIN.sovsemNicheNeProishodit());
   yield* println(MAIN.idetTipaKlevayaTsypa());
-  st.session.lastAnswer = lowerCase(yield* readLine);
-  if (parseCommand('answer', st.session.lastAnswer) !== CMD.answer.yes) return;
+  if ((yield* readAnswer) !== CMD.answer.yes) return;
   if ((yield* rnd(2)) === 0) {
     yield* println(MAIN.tyTakoyPodkatyvaeshA());
     st.world.places.girlfriend = true;
@@ -266,12 +255,10 @@ const meetSomeone = encounter(
       const type = typeName(battle(st).enemy.type);
       if (calm) {
         yield* println(MAIN.idetUrovnyaHocheshNaehat(type, battle(st).enemy.level));
-        st.session.lastAnswer = lowerCase(yield* readLine);
-        if (parseCommand('answer', st.session.lastAnswer) === CMD.answer.yes) engaged = true;
+        if ((yield* readAnswer) === CMD.answer.yes) engaged = true;
       } else {
         yield* println(MAIN.idetUrovnyaIschuschiyKogo(type, battle(st).enemy.level));
-        st.session.lastAnswer = lowerCase(yield* readLine);
-        if (parseCommand('answer', st.session.lastAnswer) === CMD.answer.yes) engaged = true;
+        if ((yield* readAnswer) === CMD.answer.yes) engaged = true;
         else if ((yield* rnd(2)) === 0) {
           yield* println(MAIN.onTebyaZametil());
           engaged = true;
@@ -302,7 +289,7 @@ const nothingHappens = Effect.gen(function* () {
   if (st.player.stoned > 0 && (yield* rnd(7)) === 0) {
     const type = typeName(enemyAt(yield* rnd(7)));
     yield* println(MAIN.idetUrovnyaHocheshNaehat(type, yield* rnd(st.world.district * 10 + 1)));
-    st.session.lastAnswer = yield* readLine;
+    yield* readLine; // the answer to a glitch goes nowhere
     yield* println(MAIN.cheZaBotvaNi());
   } else yield* println(MAIN.nicheNeProishodit());
 });

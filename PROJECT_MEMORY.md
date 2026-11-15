@@ -103,13 +103,15 @@
 - `print(text)`/`println(text)` take a `Text`; never build texts by string concatenation.
 - Everything the player types lives in `CMD` (`src/game/commands.ts`), one dictionary per prompt
   (`CMD.main.walk`, `CMD.den.borrow`, `CMD.market.beer`, …): the same letter means different
-  things in different places. Each context is a schema of its literals: parse the input with it
-  and compare (`parseCommand('den', st.session.lastAnswer) === CMD.den.borrow`), so a command
-  of another context doesn't type-check. Places parse the last answer again on every check, not
-  once into a local: the original re-reads it, and a fight inside a place overwrites it.
-  The main prompt has one local command, so it just looks it up in `MAIN_COMMANDS` (`main.ts`).
+  things in different places. Each context is a schema of its literals. Every prompt reads its
+  own command into a local: `const command = yield* promptCommand('den')` (emits the prompt,
+  reads, parses), then `command === CMD.den.borrow`, so a command of another context doesn't
+  type-check; yes/no questions use `readAnswer`. Nothing typed is kept in the state (the
+  original's shared input string let a fight answer for a place, BUGS.md #2). A place loop ends
+  with `break` on `leave`, or when a step says the hero has to go (`pickpocket`, `playCards`).
+  The main prompt looks its command up in `MAIN_COMMANDS` (`main.ts`).
 - Working variables (the rolled event, a bet, sale flags, the save number…) are locals and
-  parameters, not state: the only shared input in the state is `session.lastAnswer`. They still
+  parameters, not state; so is the player's input. They still
   sit in the original's data segment, so `legacy.ts` lists them in `SCRATCH_FIELDS` and the
   comparison snapshots skip them (`snapshot(..., true)` keeps them for the bots).
 - Rules `emit` what happens (`src/game/events.ts`: the `Events` service, `GameEvent`) and don't
@@ -120,7 +122,8 @@
   into events, and emit what happens in the game, not what to show (`fightStarted`: the view
   works out itself whether to say the opponent's agility takes kicks away). Tests pass `events: []` to `play`/`testGame` to keep the events instead
   of showing them. Commands are asked with `promptCommand(context)` (`commands.ts`): it emits the
-  prompt, reads the line, keeps it as `session.lastAnswer` and returns the parsed command.
+  prompt (the view knows what each prompt looks like), reads the line and returns the parsed
+  command.
 - The hero's stats, damage, armor and maximum health are a projection (`src/state/attributes.ts`):
   `player.base` (start, levels, training, steroids, the temple) plus what the things in the body
   slots give (`src/state/items.ts`: `GEAR`, within a slot only the best counts — suit, jacket,

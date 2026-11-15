@@ -6,11 +6,20 @@ import type { Context } from './commands';
 import { Events, type GameEvent } from './events';
 import { showFight } from './fight-view';
 import { print } from './prelude';
-import type { Text } from './text';
-import { FIGHT } from './texts';
+import { plain, type Text } from './text';
+import { FIGHT, PLACES } from './texts';
 
 /** what each prompt looks like */
-const PROMPTS: Partial<Record<Context, Text>> = { fight: FIGHT.bitva() };
+const PROMPTS: Partial<Record<Context, Text>> = {
+  main: plain`\\`,
+  fight: FIGHT.bitva(),
+  market: PLACES.bazar(),
+  dealers: PLACES.barygi(),
+  vet: PLACES.veterenar(),
+  den: PLACES.priton(),
+  club: PLACES.klub(),
+  gym: PLACES.kachalka(),
+};
 
 function show(event: GameEvent) {
   if (event.type === 'prompt') {

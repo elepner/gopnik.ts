@@ -65,7 +65,6 @@ export function createState(): GameState {
         pockets: { phone: false, pistol: null },
       },
     },
-    session: { lastAnswer: '' },
   };
 }
 
@@ -110,7 +109,6 @@ interface CommonState {
   /** version banner stored at the start of every save */
   version: string;
   readonly world: World;
-  readonly session: Session;
 }
 
 // ------------------------------------------------------------------ world
@@ -295,14 +293,4 @@ export function newEnemy(): Enemy {
     injuries: { jaw: false, leg: false },
     loot: { beer: 0, money: 0, junk: 0 },
   };
-}
-
-/** the conversation with the player */
-export interface Session {
-  /**
-   * The last answer typed in a place, a fight or to a question. One string shared by all of them,
-   * like in the original: a fight started inside a place leaves its last command here, and the
-   * place's loop goes on checking it.
-   */
-  lastAnswer: string;
 }

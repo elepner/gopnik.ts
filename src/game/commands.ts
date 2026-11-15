@@ -1,15 +1,15 @@
 /**
  * Everything the player types, by context. The same letter means different things in different
  * places (`h` drinks a beer in the street but patches you up at the vet), so every prompt has
- * its own set of literals, and the input is parsed with the schema of its context. The original
- * keeps the typed string and re-checks it after every action (a fight inside a place overwrites
- * it), so places parse the last answer again on every check.
+ * its own set of literals, and the input is parsed with the schema of its context. (The original
+ * kept one input string for every prompt, so a fight inside a place could answer for the place:
+ * BUGS.md #2; here every prompt has its own answer.)
  */
 import { Effect, Option, Schema } from 'effect';
 
 import { readLine } from '../crt/crt';
 import { emit } from './events';
-import { lowerCase, started } from './prelude';
+import { lowerCase } from './prelude';
 
 export const CMD = {
   /** the main prompt `\` */
@@ -114,9 +114,6 @@ export const CMD = {
   },
 } as const;
 
-/** what the dealers leave in the input after selling spare things: no command at all */
-export const NO_ANSWER = ' ';
-
 export type Context = keyof typeof CMD;
 
 /** the raw input of a command of a context */
@@ -135,16 +132,14 @@ export function parseCommand<C extends Context>(context: C, input: string): Comm
   return Option.getOrUndefined(SCHEMAS[context](input));
 }
 
-/**
- * Asks the player for a command of a context: shows the context's prompt, reads the line and
- * parses it. The line is also kept as the last answer, shared by every prompt like the
- * original's input string (places check it again after a fight, BUGS.md #2).
- */
+/** asks the player for a command of a context: shows the context's prompt, reads, parses */
 export function promptCommand<C extends Context>(context: C) {
-  return Effect.gen(function* () {
-    yield* emit({ type: 'prompt', context });
-    const line = lowerCase(yield* readLine);
-    (yield* started).session.lastAnswer = line;
-    return parseCommand(context, line);
-  });
+  return Effect.andThen(emit({ type: 'prompt', context }), readCommand(context));
+}
+
+/** a yes/no answer to the question just asked */
+export const readAnswer = readCommand('answer');
+
+function readCommand<C extends Context>(context: C) {
+  return Effect.map(readLine, (line) => parseCommand(context, lowerCase(line)));
 }

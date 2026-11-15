@@ -11,11 +11,13 @@ names the original code address and the place in the port.
    exactly 3 when you flee, the game prints "Такого конявого непустят в местный притон!" but sets
    `denAccess := 1` (granting access) instead of `0`.
 
-2. **Fight commands overwrite the place's input** — `0000:3D11` reads fight commands into the same
+2. **Fixed in the port.** **Fight commands overwrite the place's input** — `0000:3D11` reads fight commands into the same
    string (`DS:3A72`) the den/market/club loops test. After a fight started inside the den
    (`hp`, `d`), the remaining checks of that loop iteration (`s`, `a`, `d`, and the `w` exit test)
    see the last fight command, e.g. finishing a fight with `run` leaves the den loop running with
    `run` as input.
+   The port keeps no input in the state: every prompt reads its own command into a local
+   (`promptCommand`), so the place's checks see the place's command.
 
 3. **Hidden shop items are buyable everywhere** — market `0000:C142`: item 7 (Adidas suit) has no
    district check, so it can be bought in district 1 although it is not listed. Dealers

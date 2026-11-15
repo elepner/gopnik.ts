@@ -95,6 +95,7 @@ const CODE_STAT: Record<string, StatKey> = {
  * as locals of its procedures; they are not part of the game state and not compared.
  */
 export const SCRATCH_FIELDS = [
+  'input',
   'event',
   'eventRoll',
   'cmd',
@@ -208,7 +209,6 @@ const BINDINGS: Record<StateField, Binding> = {
   eBeer: num((s) => foe(s).loot, 'beer'),
   eMoney: num((s) => foe(s).loot, 'money'),
   eJunk: num((s) => foe(s).loot, 'junk'),
-  input: text((s) => s.session, 'lastAnswer'),
   marketHeat: num((s) => s.world.heat, 'market'),
   clubHeat: num((s) => s.world.heat, 'club'),
   denQuestHelp: flag((s) => s.world.den, 'helpQuest'),
@@ -240,12 +240,6 @@ function flag(obj: Holder, key: string): Binding {
   return [
     (s) => (obj(s) as Record<string, boolean>)[key],
     (s, v) => ((obj(s) as Record<string, boolean>)[key] = v !== 0),
-  ];
-}
-function text(obj: Holder, key: string): Binding {
-  return [
-    (s) => (obj(s) as Record<string, string>)[key],
-    (s, v) => ((obj(s) as Record<string, string>)[key] = String(v)),
   ];
 }
 
