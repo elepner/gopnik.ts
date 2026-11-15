@@ -8,6 +8,7 @@ import { createInterface } from 'node:readline';
 import chalk, { type ChalkInstance } from 'chalk';
 import { Effect } from 'effect';
 
+import { dirDisk } from './dir-disk';
 import { EndOfInput, type ITerminal } from './game/terminal';
 import { gameLayer, program } from './runtime';
 import { Cp866Byte, Seed } from './tp/brands';
@@ -15,7 +16,9 @@ import { encodeCp866 } from './tp/cp866';
 
 export async function playInConsole(seed: Seed, dir: string) {
   await Effect.runPromiseExit(
-    program.pipe(Effect.provide(gameLayer({ seed, dir, terminal: consoleTerminal() })))
+    program.pipe(
+      Effect.provide(gameLayer({ seed, disk: dirDisk(dir), terminal: consoleTerminal() }))
+    )
   );
   process.stdout.write('\n');
   process.exit(0);

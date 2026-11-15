@@ -53,6 +53,10 @@
   per place, `shop.ts` the shop lines), `encounters`, `screens`; each with a `-view.ts`. Each function names its original address (`0000:3D11`).
 - `src/runtime.ts` (layers, `program`), `src/main.ts` (the 80×25 CRT screen in a terminal),
   `src/console.ts` (a plain console: text scrolls, every input is a line; piped input works).
+- `web/` — the browser shell: React + xterm.js (`xterm-terminal.ts` is the `Terminal`, 80×25,
+  single keys and a line editor), saves in localStorage (`browser-disk.ts`). `bun run web` (dev
+  server), `bun run web:build` (into `dist/web`). `gameLayer` takes a ready `disk` (`dirDisk(dir)`
+  in `src/dir-disk.ts` for the terminal runners and the tests).
 - The game never touches the CRT: it reads and writes through the `Terminal` service
   (`src/game/terminal.ts`: write, textColor, clrScr, readKey, readLine, keyPressed, delay).
   `crtTerminal` (`src/crt/terminal.ts`) puts it on the emulated CRT — what the goldens and the
@@ -61,7 +65,7 @@
 
 ## High-value commands
 
-- Play: `bun run play [--seed N] [--dir saves]` (CRT screen) or `bun run console` (plain console)
+- Play: `bun run play [--seed N] [--dir saves]` (CRT screen), `bun run console` (plain console), `bun run web` (browser)
 - Run the original: `bun run original -- [--seed N] [-v] [-r] key1 key2 ...`
   (`-v` screen after every key, `-r` Random log; keys: chars, `enter`, `space`, `esc`, `bs`, `up`…)
 - Compare one script: `bun run compare -- --seed 1 space 1 2 3 4 5 6 7 0/ vasya/ w/`

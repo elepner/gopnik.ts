@@ -7,6 +7,7 @@ import { Effect, Layer } from 'effect';
 
 import { keyCode } from '../oracle/dos';
 import { biosKey, type IKeyboard, makeCrt } from '../src/crt/crt';
+import { dirDisk } from '../src/dir-disk';
 import { Events, type GameEvent } from '../src/game/events';
 import { EndOfInput } from '../src/game/terminal';
 import { gameLayer } from '../src/runtime';
@@ -37,5 +38,8 @@ export function testGame(opts: TestGameOptions = {}) {
   const events = kept
     ? Layer.succeed(Events, { emit: (event) => Effect.sync(() => void kept.push(event)) })
     : undefined;
-  return { crt, layer: gameLayer({ seed: Seed(opts.seed ?? 0), dir, keyboard, crt, events }) };
+  return {
+    crt,
+    layer: gameLayer({ seed: Seed(opts.seed ?? 0), disk: dirDisk(dir), keyboard, crt, events }),
+  };
 }

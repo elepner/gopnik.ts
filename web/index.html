@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Гопник</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #111;
+      }
+      #root,
+      .shell {
+        height: 100%;
+      }
+      .shell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+      }
+      .screen {
+        padding: 12px;
+        background: #000;
+        border-radius: 6px;
+        box-shadow: 0 0 24px rgba(0, 0, 0, 0.8);
+      }
+      .again {
+        font: 16px monospace;
+        padding: 8px 20px;
+        color: #ffff55;
+        background: #0000aa;
+        border: 2px solid #aaaaaa;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

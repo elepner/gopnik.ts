@@ -4,6 +4,7 @@ import { Effect } from 'effect';
 
 import { biosKey, type IKeyboard, type Key, makeCrt } from './crt/crt';
 import { COLS, ROWS } from './crt/screen';
+import { dirDisk } from './dir-disk';
 import type { EndOfInput } from './game/terminal';
 import { gameLayer, program } from './runtime';
 import { Seed } from './tp/brands';
@@ -17,7 +18,7 @@ export async function play(seed: Seed, dir: string) {
   );
   const kb: IKeyboard = { ...keyboard, read: Effect.andThen(render, keyboard.read) };
   await Effect.runPromiseExit(
-    program.pipe(Effect.provide(gameLayer({ seed, dir, keyboard: kb, crt })))
+    program.pipe(Effect.provide(gameLayer({ seed, disk: dirDisk(dir), keyboard: kb, crt })))
   );
   process.stdin.setRawMode?.(false);
   process.stdout.write('\x1b[0m\x1b[2J\x1b[H');
