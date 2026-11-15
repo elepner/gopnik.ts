@@ -16,9 +16,10 @@ import { join } from 'node:path';
 import { Effect } from 'effect';
 
 import { keyCode } from '../oracle/dos';
-import { biosKey, EndOfInput, type IKeyboard, makeCrt } from '../src/crt/crt';
+import { biosKey, type IKeyboard, makeCrt } from '../src/crt/crt';
 import { mainLoop } from '../src/game/main';
 import { Engine, type PrintCall } from '../src/game/prelude';
+import { EndOfInput } from '../src/game/terminal';
 import { gameLayer, program } from '../src/runtime';
 import { denormalize, normalize, type NormalizedState } from '../src/state/normalized';
 import { snapshot } from '../src/state/store';

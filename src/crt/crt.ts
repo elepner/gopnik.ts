@@ -2,9 +2,10 @@
  * The CRT unit as Effect services: screen output plus keyboard input with
  * Turbo Pascal 7 semantics (ReadKey extended-key protocol, CrtRead line editor).
  */
-import { Context, Data, Effect } from 'effect';
+import { Context, Effect } from 'effect';
 
-import { Cp866Byte, CrtColor, ScanCode } from '../tp/brands';
+import type { EndOfInput } from '../game/terminal';
+import { Cp866Byte, ScanCode } from '../tp/brands';
 import { decodeCp866 } from '../tp/cp866';
 import { Screen } from './screen';
 
@@ -80,30 +81,6 @@ export const keyPressed = Effect.gen(function* () {
   return yield* (yield* Keyboard).peek;
 });
 
-export function write(s: string) {
-  return Effect.gen(function* () {
-    (yield* Crt).screen.write(s);
-  });
-}
-
-export const writeLn = write('\r\n');
-
-export function textColor(color: CrtColor) {
-  return Effect.gen(function* () {
-    (yield* Crt).screen.textColor(color);
-  });
-}
-
-export const clrScr = Effect.gen(function* () {
-  (yield* Crt).screen.clrScr();
-});
-
-export function delay(ms: number) {
-  return Effect.gen(function* () {
-    yield* (yield* Keyboard).delay(ms);
-  });
-}
-
 export interface ICrt {
   readonly screen: Screen;
   /** CRT's pending scan code after ReadKey returned #0 */
@@ -135,9 +112,6 @@ export function biosKey(ax: number): Key {
   return { ascii: Cp866Byte(ax & 0xff), scan: ScanCode(ax >> 8) };
 }
 
-export const WHITE = CrtColor(15);
-export const BLACK = CrtColor(0);
-
 export interface IKeyboard {
   /** INT 16h AH=0 — blocks until a key is available */
   readonly read: Effect.Effect<Key, EndOfInput>;
@@ -147,9 +121,3 @@ export interface IKeyboard {
 }
 
 export const Keyboard = Context.Service<IKeyboard>('Keyboard');
-
-/** scripted input ran out (tests / replays) */
-export class EndOfInput extends Data.TaggedError('EndOfInput')<{}> {}
-
-/** System.Halt */
-export class Halt extends Data.TaggedError('Halt')<{ readonly code: number }> {}

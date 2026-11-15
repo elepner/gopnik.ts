@@ -4,11 +4,11 @@
  */
 import { Effect } from 'effect';
 
-import { readKey } from '../crt/crt';
 import { type ChainRing, type Item, outclassed } from '../state/items';
 import { pausedLines } from './fight-view';
 import { ringLines, showStats } from './hero-view';
 import { println, started } from './prelude';
+import { readKey } from './terminal';
 import type { Text } from './text';
 import { FIGHT } from './texts';
 import type { View } from './view';

@@ -1,12 +1,12 @@
 /** What the player sees of the rare encounters (`encounters.ts`): the mage and the temple. */
 import { Effect } from 'effect';
 
-import { readKey, writeLn } from '../crt/crt';
 import type { ChainRing } from '../state/items';
 import { rankName, typeName } from '../state/names';
 import { pausedLines } from './fight-view';
 import { ringLines } from './hero-view';
 import { println, started } from './prelude';
+import { readKey, writeLn } from './terminal';
 import { ENCOUNTERS } from './texts';
 import type { View } from './view';
 

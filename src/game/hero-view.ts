@@ -1,7 +1,6 @@
 /** What the player sees of the hero: stats, level-ups, experience (`hero.ts`). */
 import { Effect } from 'effect';
 
-import { writeLn } from '../crt/crt';
 import { attr } from '../state/attributes';
 import type { ChainRing } from '../state/items';
 import { rankName, typeName } from '../state/names';
@@ -9,6 +8,7 @@ import type { Game, StatKey } from '../state/state';
 import { div } from '../tp/num';
 import { beerTenths, healthColor } from './hero';
 import { print, println, started } from './prelude';
+import { writeLn } from './terminal';
 import { type Color, text, type Text } from './text';
 import { HERO, PLACES } from './texts';
 import type { View } from './view';

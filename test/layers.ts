@@ -6,8 +6,9 @@ import { join } from 'node:path';
 import { Effect, Layer } from 'effect';
 
 import { keyCode } from '../oracle/dos';
-import { biosKey, EndOfInput, type IKeyboard, makeCrt } from '../src/crt/crt';
+import { biosKey, type IKeyboard, makeCrt } from '../src/crt/crt';
 import { Events, type GameEvent } from '../src/game/events';
+import { EndOfInput } from '../src/game/terminal';
 import { gameLayer } from '../src/runtime';
 import { Seed } from '../src/tp/brands';
 

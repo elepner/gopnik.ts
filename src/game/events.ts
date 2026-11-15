@@ -7,7 +7,6 @@
  */
 import { Context, Effect } from 'effect';
 
-import type { EndOfInput } from '../crt/crt';
 import type { AftermathEvent } from './aftermath-view';
 import type { BeerEvent } from './beer';
 import type { Context as CommandContext } from './commands';
@@ -24,6 +23,7 @@ import type { MarketEvent } from './places/market-view';
 import type { VetEvent } from './places/vet-view';
 import { started } from './prelude';
 import type { StartEvent } from './start-view';
+import type { EndOfInput } from './terminal';
 import type { WalkEvent } from './walk-view';
 
 /** the prompt of a context before the player types a command */

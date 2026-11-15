@@ -7,9 +7,9 @@
  */
 import { Effect, Option, Schema } from 'effect';
 
-import { readLine } from '../crt/crt';
 import { emit } from './events';
 import { lowerCase } from './prelude';
+import { readLine } from './terminal';
 
 export const CMD = {
   /** the main prompt `\` */

@@ -6,7 +6,6 @@
  */
 import { Effect } from 'effect';
 
-import { readKey, writeLn } from '../crt/crt';
 import { attr } from '../state/attributes';
 import { type CharacterType, ENEMIES } from '../state/kinds';
 import { typeName } from '../state/names';
@@ -16,6 +15,7 @@ import { showEnemy } from './enemy-view';
 import { extraHits, FIGHT_JOINT, hitBudget, KICK } from './fight';
 import { showStats } from './hero-view';
 import { print, println, started } from './prelude';
+import { readKey, writeLn } from './terminal';
 import type { Text } from './text';
 import { FIGHT } from './texts';
 import type { View } from './view';

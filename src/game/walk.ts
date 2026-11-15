@@ -1,7 +1,6 @@
 /** 0000:AEA1 — `w`/`run`: walking around and what happens on the way. */
 import { Effect } from 'effect';
 
-import { readLine } from '../crt/crt';
 import { attr, inc, set } from '../state/attributes';
 import { ENEMIES, enemyAt } from '../state/kinds';
 import { battle, type Game } from '../state/state';
@@ -13,6 +12,7 @@ import { encounter, spawnEnemy } from './enemy';
 import { emit, reporter } from './events';
 import { fight, STREET_FIGHT } from './fight';
 import { luckAtLeast, rnd, started } from './prelude';
+import { readLine } from './terminal';
 import type { WalkEvent } from './walk-view';
 
 const report = reporter(apply);

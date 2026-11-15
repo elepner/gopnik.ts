@@ -2,8 +2,9 @@
 import chalk from 'chalk';
 import { Effect } from 'effect';
 
-import { biosKey, EndOfInput, type IKeyboard, type Key, makeCrt } from './crt/crt';
+import { biosKey, type IKeyboard, type Key, makeCrt } from './crt/crt';
 import { COLS, ROWS } from './crt/screen';
+import type { EndOfInput } from './game/terminal';
 import { gameLayer, program } from './runtime';
 import { Seed } from './tp/brands';
 import { CP866, encodeCp866 } from './tp/cp866';

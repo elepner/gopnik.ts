@@ -8,8 +8,9 @@ import { join } from 'node:path';
 import { Cause, Effect, Exit } from 'effect';
 
 import { Dos, IMG, keyCode, LOAD_SEG, VIDEO } from '../oracle/dos';
-import { biosKey, EndOfInput, type IKeyboard, makeCrt } from '../src/crt/crt';
+import { biosKey, type IKeyboard, makeCrt } from '../src/crt/crt';
 import { Engine } from '../src/game/prelude';
+import { EndOfInput } from '../src/game/terminal';
 import { gameLayer, program } from '../src/runtime';
 import { snapshot, snapshotState } from '../src/state/legacy';
 import { snapshot as current, type Store } from '../src/state/store';

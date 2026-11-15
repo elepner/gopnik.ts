@@ -1,7 +1,6 @@
 /** The main command loop of G.EXE (0000:AB59). */
 import { Effect } from 'effect';
 
-import { readLine } from '../crt/crt';
 import { encodeSave } from '../state/legacy';
 import type { Game } from '../state/state';
 import { SaveName } from '../tp/brands';
@@ -24,6 +23,7 @@ import { Disk, halt, started, transaction } from './prelude';
 import { help } from './screens';
 import { resetPlaces } from './start';
 import { heroName } from './stored-texts';
+import { readLine } from './terminal';
 import { walk } from './walk';
 
 const report = reporter(apply);

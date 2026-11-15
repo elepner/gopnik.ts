@@ -51,12 +51,17 @@
   `texts` (all texts), `events`/`view-layer`/`view` (events and their views), `start`, `main`
   (command loop), `walk`, `fight`, `aftermath`, `beer`, `enemy`, `hero`, `places/*` (one file
   per place, `shop.ts` the shop lines), `encounters`, `screens`; each with a `-view.ts`. Each function names its original address (`0000:3D11`).
-- `src/runtime.ts` (layers, `program`), `src/main.ts` (terminal runner).
+- `src/runtime.ts` (layers, `program`), `src/main.ts` (the 80×25 CRT screen in a terminal),
+  `src/console.ts` (a plain console: text scrolls, every input is a line; piped input works).
+- The game never touches the CRT: it reads and writes through the `Terminal` service
+  (`src/game/terminal.ts`: write, textColor, clrScr, readKey, readLine, keyPressed, delay).
+  `crtTerminal` (`src/crt/terminal.ts`) puts it on the emulated CRT — what the goldens and the
+  harness use — `gameLayer` takes either `{ terminal }` or `{ keyboard, crt? }`.
 - `test/` — harness (original vs port), fuzzer, bots, replay, fixtures, helpers.
 
 ## High-value commands
 
-- Play: `bun run play [--seed N] [--dir saves]`
+- Play: `bun run play [--seed N] [--dir saves]` (CRT screen) or `bun run console` (plain console)
 - Run the original: `bun run original -- [--seed N] [-v] [-r] key1 key2 ...`
   (`-v` screen after every key, `-r` Random log; keys: chars, `enter`, `space`, `esc`, `bs`, `up`…)
 - Compare one script: `bun run compare -- --seed 1 space 1 2 3 4 5 6 7 0/ vasya/ w/`

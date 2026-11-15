@@ -1,7 +1,6 @@
 /** Game start: save selection, intro story, character creation; `start-view.ts` shows it. */
 import { Effect } from 'effect';
 
-import { readKey, readLine } from '../crt/crt';
 import { attr, set } from '../state/attributes';
 import { CHARACTER_CLASSES, CHARACTER_TYPES, type CharacterType } from '../state/kinds';
 import { decodeSave, decodePlaces } from '../state/legacy';
@@ -13,6 +12,7 @@ import { Disk, started, state } from './prelude';
 import { titleScreen } from './screens';
 import type { StartEvent } from './start-view';
 import { heroName, VERSION } from './stored-texts';
+import { readKey, readLine } from './terminal';
 
 const report = reporterOn(state)(apply);
 

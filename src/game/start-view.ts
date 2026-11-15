@@ -5,6 +5,9 @@
  */
 import { Effect } from 'effect';
 
+import { CHARACTER_CLASSES, type CharacterType } from '../state/kinds';
+import { typeName } from '../state/names';
+import { print, println, started } from './prelude';
 import {
   BLACK,
   clrScr,
@@ -15,10 +18,7 @@ import {
   write,
   writeLn,
   WHITE,
-} from '../crt/crt';
-import { CHARACTER_CLASSES, type CharacterType } from '../state/kinds';
-import { typeName } from '../state/names';
-import { print, println, started } from './prelude';
+} from './terminal';
 import { type Color, COLORS } from './text';
 import { SCREENS, START } from './texts';
 import type { View } from './view';

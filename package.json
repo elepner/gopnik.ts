@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "play": "bun src/main.ts",
+    "console": "bun src/console.ts",
     "original": "bun oracle/cli.ts",
     "compare": "bun test/compare.ts",
     "fuzz": "bun test/fuzz.ts",

@@ -4,7 +4,6 @@
  */
 import { Context, Effect } from 'effect';
 
-import { Crt, Halt, textColor, WHITE, write, writeLn } from '../crt/crt';
 import { attr } from '../state/attributes';
 import { type GameState, playing } from '../state/state';
 import { begin, commit, draft, type Store } from '../state/store';
@@ -12,6 +11,7 @@ import { CrtColor, type SaveName } from '../tp/brands';
 import { CP866, encodeCp866 } from '../tp/cp866';
 import { i16, str } from '../tp/num';
 import { Rng } from '../tp/rng';
+import { Halt, textColor, WHITE, write, writeLn } from './terminal';
 import type { Text } from './text';
 
 /**
@@ -45,7 +45,6 @@ export interface Segment {
 function printf(text: string, ints: readonly number[], newline: boolean) {
   return Effect.gen(function* () {
     const game = yield* Engine;
-    const crt = yield* Crt;
     // the original copies the text into a 256-byte stack buffer and may read past its end
     const buf = game.printBuf;
     const bytes = encodeCp866(text);
@@ -67,9 +66,9 @@ function printf(text: string, ints: readonly number[], newline: boolean) {
     do {
       i++;
       while (buf[i] === 0x5e && len > i && buf[i + 1] >= 0x30 && buf[i + 1] <= 0x37) {
-        crt.screen.textColor(WHITE);
+        yield* textColor(WHITE);
         color = CrtColor(buf[i + 1] - 0x30 + 8);
-        crt.screen.textColor(color);
+        yield* textColor(color);
         i += 2;
       }
       if (buf[i] === 0x23) {
@@ -78,7 +77,7 @@ function printf(text: string, ints: readonly number[], newline: boolean) {
         yield* write(v);
       } else if (len >= i) {
         emit(CP866[buf[i]]);
-        crt.screen.putByte(buf[i]);
+        yield* write(CP866[buf[i]]);
       }
     } while (len > i);
     yield* textColor(WHITE);

@@ -4,11 +4,13 @@ import { join } from 'node:path';
 
 import { Effect, Layer } from 'effect';
 
-import { Crt, type ICrt, type IKeyboard, Keyboard, makeCrt } from './crt/crt';
+import { type ICrt, type IKeyboard, makeCrt } from './crt/crt';
+import { crtTerminal } from './crt/terminal';
 import type { IEvents } from './game/events';
 import { mainLoop } from './game/main';
 import { Disk, Engine, transaction } from './game/prelude';
 import { newGame } from './game/start';
+import { type ITerminal, Terminal } from './game/terminal';
 import { viewLayer } from './game/view-layer';
 import { createState, type GameState } from './state/state';
 import { createStore } from './state/store';
@@ -18,22 +20,35 @@ import { rngLayer } from './tp/rng';
 /** the whole program: G.EXE's main block */
 export const program = Effect.andThen(transaction(newGame), mainLoop);
 
-export interface GameOptions {
+export type GameOptions = GameSetup & (PlainIo | CrtIo);
+
+export interface GameSetup {
   readonly seed: Seed;
   /** the state to start from (a fresh, not started game by default) */
   readonly state?: GameState;
   readonly dir: string;
-  readonly keyboard: IKeyboard;
-  readonly crt?: ICrt;
   /** who listens to the game's events: the screen by default */
   readonly events?: Layer.Layer<IEvents, never, never>;
+}
+
+/** any terminal, e.g. a plain console */
+interface PlainIo {
+  readonly terminal: ITerminal;
+}
+
+/** the emulated CRT (a fresh one by default) with these keys */
+interface CrtIo {
+  readonly keyboard: IKeyboard;
+  readonly crt?: ICrt;
 }
 
 export function gameLayer(opts: GameOptions) {
   const state = createStore(opts.state ?? createState());
   const services = Layer.mergeAll(
-    Layer.succeed(Crt, opts.crt ?? makeCrt()),
-    Layer.succeed(Keyboard, opts.keyboard),
+    Layer.succeed(
+      Terminal,
+      'terminal' in opts ? opts.terminal : crtTerminal(opts.crt ?? makeCrt(), opts.keyboard)
+    ),
     Layer.succeed(Engine, { state, printBuf: new Uint8Array(256), transcript: [] }),
     Layer.succeed(Disk, dirDisk(opts.dir)),
     rngLayer(opts.seed)

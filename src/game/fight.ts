@@ -6,7 +6,6 @@
  */
 import { Effect } from 'effect';
 
-import type { EndOfInput } from '../crt/crt';
 import { attr, dec, inc, set } from '../state/attributes';
 import { type Battle, battle, type Game, type Injuries, type Player } from '../state/state';
 import { div, i16, round, u8 } from '../tp/num';
@@ -17,6 +16,7 @@ import { emit, type IEvents, reporter } from './events';
 import { type FightEvent, type Hit, type Side } from './fight-view';
 import { DEN_LEVEL, levelDown, levelInDistrict, lostStats } from './hero';
 import { halt, rnd, started } from './prelude';
+import type { EndOfInput } from './terminal';
 
 const report = reporter(apply);
 

@@ -1,10 +1,10 @@
 /** What the player sees of the den (`den.ts`). */
 import { Effect } from 'effect';
 
-import { writeLn } from '../../crt/crt';
 import { typeName } from '../../state/names';
 import { battle } from '../../state/state';
 import { print, println, started } from '../prelude';
+import { writeLn } from '../terminal';
 import { PLACES } from '../texts';
 import type { View } from '../view';
 import { asksAbout, jobOffered } from './den';
