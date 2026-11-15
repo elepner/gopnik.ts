@@ -6,6 +6,7 @@ import { CHARACTER_CLASSES } from '../state/kinds';
 import { typeName, rankName } from '../state/names';
 import type { StatKey } from '../state/state';
 import { div, i16, mod } from '../tp/num';
+import { CMD } from './commands';
 import { print, println, rnd, started } from './prelude';
 import { type Color, text, type Text } from './text';
 import { HERO } from './texts';
@@ -266,9 +267,9 @@ export function levelUp(rector: boolean) {
 export function drinkBeer(cmd: string) {
   return Effect.gen(function* () {
     const st = yield* started;
-    if (cmd !== 'h' && cmd !== 'mh') return;
+    if (cmd !== CMD.beer.one && cmd !== CMD.beer.untilHealthy) return;
     const start = st.player.health.current;
-    const h = cmd === 'h';
+    const h = cmd === CMD.beer.one;
     for (;;) {
       if (st.player.injuries.jaw) {
         yield* println(HERO.tyNeMozheshPit());
@@ -308,7 +309,7 @@ export function drinkBeer(cmd: string) {
       if (h || st.player.health.current >= st.player.health.max || st.player.resources.beer <= 0)
         break;
     }
-    if (cmd !== 'mh') return;
+    if (cmd !== CMD.beer.untilHealthy) return;
     if (st.player.health.current !== start)
       yield* println(
         HERO.pivoPribavlyaetZZdorovya(

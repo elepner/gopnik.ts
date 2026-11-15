@@ -90,6 +90,11 @@
   own codes), nested texts bring their arguments. A `Text` compiles to the exact Pascal string the
   original printed — keep it that way (the regression compares it byte for byte).
 - `print(text)`/`println(text)` take a `Text`; never build texts by string concatenation.
+- Everything the player types lives in `CMD` (`src/game/commands.ts`), one dictionary per prompt
+  (`CMD.main.walk`, `CMD.den.borrow`, `CMD.market.beer`, …): the same letter means different
+  things in different places. Compare the raw input from the state with these constants on every
+  check (`st.scratch.input === CMD.den.borrow`) — don't parse it once into a local: the original
+  re-reads it, and a fight inside a place overwrites it.
 - Every Print/PrintLn lands in `Game.transcript` (`{ text, args, newline, segments }`).
 - Never edit `original/`; never hand-edit generated files (`analysis/`, `src/data/*`).
 - When editing files from scripts, don't use `String.replace` with replacement text containing

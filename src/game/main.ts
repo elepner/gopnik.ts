@@ -7,6 +7,7 @@ import { encodeSave } from '../state/legacy';
 import { typeName } from '../state/names';
 import { SaveName } from '../tp/brands';
 import { i16, str, u8 } from '../tp/num';
+import { CMD } from './commands';
 import { saveMage, temple } from './encounters';
 import { setupRector, spawnEnemy } from './enemy';
 import { fight, smokeJoint } from './fight';
@@ -48,25 +49,26 @@ const turn = Effect.gen(function* () {
   yield* print(plain`\\`);
   st.scratch.cmd = lowerCase(yield* readLine);
   const cmd = st.scratch.cmd;
-  if (cmd === 'w' || cmd === 'run') yield* walk;
-  if (cmd === 'mar') yield* market;
-  if (cmd === 'bmar') yield* dealers;
-  if (cmd === 'rep') yield* vet;
-  if (cmd === 'girl') yield* girlfriend;
-  if (cmd === 'fight') yield* println(MAIN.perezhitkiProshlogoZhmiW());
-  if (cmd === 'pr') yield* den;
-  if (cmd === 'kl') yield* club;
-  if (cmd === 'trn') yield* gym;
+  if (cmd === CMD.main.walk || cmd === CMD.main.run) yield* walk;
+  if (cmd === CMD.main.market) yield* market;
+  if (cmd === CMD.main.dealers) yield* dealers;
+  if (cmd === CMD.main.vet) yield* vet;
+  if (cmd === CMD.main.girlfriend) yield* girlfriend;
+  if (cmd === CMD.main.oldFight) yield* println(MAIN.perezhitkiProshlogoZhmiW());
+  if (cmd === CMD.main.den) yield* den;
+  if (cmd === CMD.main.club) yield* club;
+  if (cmd === CMD.main.gym) yield* gym;
   yield* drinkBeer(cmd);
-  if (cmd === 'kos') yield* smokeJoint(10);
-  if (cmd === 'i') yield* commands;
-  if (cmd === 's') yield* showStats;
-  if (cmd === 'f' && st.player.body.pockets.pistol) yield* println(MAIN.tyChePsihMigom());
-  if (cmd === 'k') yield* println(MAIN.cheMasheshKopytamiIschi());
-  if (cmd === 'name') yield* rename;
-  if (cmd === 'version') yield* println(MAIN.gopnikVersion102());
-  if (cmd === 'help') yield* help;
-  if (cmd === 'exit' || cmd === 'e') {
+  if (cmd === CMD.main.joint) yield* smokeJoint(10);
+  if (cmd === CMD.main.commands) yield* commands;
+  if (cmd === CMD.main.stats) yield* showStats;
+  if (cmd === CMD.main.shoot && st.player.body.pockets.pistol)
+    yield* println(MAIN.tyChePsihMigom());
+  if (cmd === CMD.main.kick) yield* println(MAIN.cheMasheshKopytamiIschi());
+  if (cmd === CMD.main.rename) yield* rename;
+  if (cmd === CMD.main.version) yield* println(MAIN.gopnikVersion102());
+  if (cmd === CMD.main.help) yield* help;
+  if (cmd === CMD.main.exit || cmd === CMD.main.exitShort) {
     yield* println(MAIN.blinNeBytTebe());
     yield* println(MAIN.aRezultat());
     yield* showStats;
@@ -84,7 +86,7 @@ const nextDistrict = Effect.gen(function* () {
   st.world.heat.club = 0;
   yield* println(MAIN.tyDokazalChtoTy());
   yield* println(MAIN.hocheshSohranitSvoiDostizheniya());
-  if ((yield* prompt(plain`\\`)) === 'y') {
+  if ((yield* prompt(plain`\\`)) === CMD.answer.yes) {
     st.scratch.tmp = str(st.world.district);
     yield* (yield* Disk).write(SaveName(`save_r${st.scratch.tmp}.sav`), encodeSave(st));
     yield* println(MAIN.sohranenoVSaveR(st.scratch.tmp));
@@ -124,7 +126,7 @@ const walk = Effect.gen(function* () {
       yield* println(MAIN.glyukiProshliSila2());
     }
   }
-  if (st.scratch.cmd === 'run') yield* println(MAIN.zabegalMudak());
+  if (st.scratch.cmd === CMD.main.run) yield* println(MAIN.zabegalMudak());
   if (st.world.den.loans < st.world.district * 10) st.world.den.loans = u8(st.world.den.loans + 1);
   if (st.world.places.dealers && st.player.body.pockets.pistol && st.world.dealerCalls < 25) {
     st.world.dealerCalls = u8(st.world.dealerCalls + 1);
@@ -247,7 +249,7 @@ const prettyGirl = Effect.gen(function* () {
   if (st.world.places.girlfriend) return yield* println(MAIN.sovsemNicheNeProishodit());
   yield* println(MAIN.idetTipaKlevayaTsypa());
   st.scratch.input = lowerCase(yield* readLine);
-  if (st.scratch.input !== 'y') return;
+  if (st.scratch.input !== CMD.answer.yes) return;
   if ((yield* rnd(2)) === 0) {
     yield* println(MAIN.tyTakoyPodkatyvaeshA());
     st.world.places.girlfriend = true;
@@ -270,11 +272,11 @@ const meetSomeone = Effect.gen(function* () {
     if (calm) {
       yield* println(MAIN.idetUrovnyaHocheshNaehat(type, st.enemy.level));
       st.scratch.input = lowerCase(yield* readLine);
-      if (st.scratch.input === 'y') st.scratch.engaged = true;
+      if (st.scratch.input === CMD.answer.yes) st.scratch.engaged = true;
     } else {
       yield* println(MAIN.idetUrovnyaIschuschiyKogo(type, st.enemy.level));
       st.scratch.input = lowerCase(yield* readLine);
-      if (st.scratch.input === 'y') st.scratch.engaged = true;
+      if (st.scratch.input === CMD.answer.yes) st.scratch.engaged = true;
       else if ((yield* rnd(2)) === 0) {
         yield* println(MAIN.onTebyaZametil());
         st.scratch.engaged = true;

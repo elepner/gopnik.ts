@@ -6,6 +6,7 @@ import { readKey, readLine, writeLn } from '../crt/crt';
 import { encodeSave, encodePlaces } from '../state/legacy';
 import { typeName, rankName } from '../state/names';
 import { SaveName } from '../tp/brands';
+import { CMD } from './commands';
 import { gainRing, levelUp, strengthUp } from './hero';
 import { Disk, lowerCase, println, rnd, started } from './prelude';
 import type { Text } from './text';
@@ -23,7 +24,7 @@ export const saveMage = Effect.gen(function* () {
   yield* readKey;
   yield* println(ENCOUNTERS.tyHocheshSohranitsya());
   const answer = lowerCase(yield* readLine);
-  if (answer !== 'y') return yield* println(ENCOUNTERS.nehotiteKakHotiteMoe());
+  if (answer !== CMD.answer.yes) return yield* println(ENCOUNTERS.nehotiteKakHotiteMoe());
   if (st.world.district * 50 > st.player.resources.money)
     return yield* println(ENCOUNTERS.parenVseStoitBabok());
   st.player.resources.money = i16(st.player.resources.money - st.world.district * 50);

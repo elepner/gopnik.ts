@@ -6,6 +6,7 @@ import { ENEMIES } from '../state/kinds';
 import { typeName } from '../state/names';
 import { type StatKey } from '../state/state';
 import { div, i16, mod, round, u8 } from '../tp/num';
+import { CMD } from './commands';
 import { showEnemy } from './enemy';
 import { drinkBeer, gainRing, levelUp, showStats } from './hero';
 import { halt, lowerCase, luckAtLeast, print, println, rnd, started } from './prelude';
@@ -59,12 +60,12 @@ export function fight(kind: FightKind) {
       st.scratch.input = lowerCase(yield* readLine);
       const input = st.scratch.input;
 
-      if (input === 'k') {
+      if (input === CMD.fight.kick) {
         yield* playerKicks(playerHits);
         if (st.enemy.health.current > 0) yield* enemyKicks(enemyHits);
       }
 
-      if (input === 'run') {
+      if (input === CMD.fight.run) {
         if (st.world.rector) yield* println(FIGHT.rektorKudaStoyatBeysya());
         else if (st.player.injuries.leg) yield* println(FIGHT.tyNeMozheshUbezhat());
         else {
@@ -92,17 +93,17 @@ export function fight(kind: FightKind) {
       }
 
       yield* drinkBeer(input);
-      if (input === 'kos') yield* smokeJoint(3);
-      if (input === 's') yield* showStats;
-      if (input === 'sv') yield* showEnemy;
-      if (input === 'e') return yield* halt;
-      if (st.combat.backup >= 1 && input === 'k') {
+      if (input === CMD.fight.joint) yield* smokeJoint(3);
+      if (input === CMD.fight.stats) yield* showStats;
+      if (input === CMD.fight.inspectEnemy) yield* showEnemy;
+      if (input === CMD.fight.exit) return yield* halt;
+      if (st.combat.backup >= 1 && input === CMD.fight.kick) {
         st.combat.backup = i16(st.combat.backup + 1);
         if (st.combat.backup === 3) yield* println(FIGHT.podoshliPatsanySchaNachnetsya());
       }
-      if (input === 'v') yield* callBackup;
+      if (input === CMD.fight.callBackup) yield* callBackup;
       if (st.enemy.health.current > 0 && st.combat.backup >= 3) yield* backupKicks;
-      if (input === 'f' && st.player.body.pockets.pistol) yield* shoot;
+      if (input === CMD.fight.shoot && st.player.body.pockets.pistol) yield* shoot;
 
       if (st.player.health.current <= 0) {
         if (st.world.rector) {
