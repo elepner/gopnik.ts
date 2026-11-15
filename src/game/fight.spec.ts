@@ -25,7 +25,7 @@ const keys = (line: string) => [...line, 'enter'];
 describe('fight (0000:3D11)', () => {
   it.effect('running away takes back the last level-up', () =>
     Effect.gen(function* () {
-      const { st, lines } = yield* play(fight(0), {
+      const { st, lines } = yield* play(fight('street'), {
         keys: keys('run'),
         setup: (s) => {
           hero(s);
@@ -56,12 +56,12 @@ describe('fight (0000:3D11)', () => {
 
   it.effect('no running on a broken leg or from the rector', () =>
     Effect.gen(function* () {
-      const leg = yield* play(fight(0), {
+      const leg = yield* play(fight('street'), {
         keys: keys('run'),
         setup: (s) => (hero(s), enemy(s), (s.player.injuries.leg = true)),
       });
       expect(leg.lines).toContain('Ты не можешь убежать на сломаной ноге.');
-      const rector = yield* play(fight(3), {
+      const rector = yield* play(fight('fakeRector'), {
         keys: [' ', ' ', ' ', ' ', ...keys('run')],
         setup: (s) => (hero(s), enemy(s), (s.world.rector = true)),
       });
@@ -71,7 +71,7 @@ describe('fight (0000:3D11)', () => {
 
   it.effect('a joint in a fight: 3 turns stoned, +2 strength, up to 10 health', () =>
     Effect.gen(function* () {
-      const { st } = yield* play(fight(0), {
+      const { st } = yield* play(fight('street'), {
         keys: [...keys('kos'), ...keys('run')],
         setup: (s) => (
           hero(s),
@@ -94,7 +94,7 @@ describe('fight (0000:3D11)', () => {
   it.effect('the crit check calls Random(100) after the damage roll, even with negative luck', () =>
     Effect.gen(function* () {
       for (const luck of [3, -642]) {
-        const { rand } = yield* play(fight(0), {
+        const { rand } = yield* play(fight('street'), {
           seed: 5,
           keys: keys('k'),
           setup: (s) => (
@@ -112,7 +112,7 @@ describe('fight (0000:3D11)', () => {
 
   it.effect('winning pays experience, loot and a beer', () =>
     Effect.gen(function* () {
-      const { st, lines } = yield* play(fight(0), {
+      const { st, lines } = yield* play(fight('street'), {
         seed: 2,
         keys: [...keys('k'), ...keys('k'), ...keys('k'), ...keys('k'), ...keys('k')],
         setup: (s) => {

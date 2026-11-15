@@ -42,9 +42,9 @@ const turn = Effect.gen(function* () {
   if (st.world.rector) {
     st.world.places.den = true;
     yield* setupRector(0);
-    yield* fight(3);
+    yield* fight('fakeRector');
     yield* setupRector(1);
-    yield* fight(4);
+    yield* fight('rector');
   }
   yield* print(plain`\\`);
   const cmd = parseCommand('main', lowerCase(yield* readLine));
@@ -273,7 +273,7 @@ const meetSomeone = Effect.gen(function* () {
       engaged = true;
     }
   }
-  if (engaged) yield* fight(0);
+  if (engaged) yield* fight('street');
 });
 
 const nothingHappens = Effect.gen(function* () {
