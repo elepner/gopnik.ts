@@ -4,5 +4,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [react()],
+  // relative asset paths: GitHub Pages serves the site under /gopnik.ts/
+  base: './',
   build: { outDir: '../dist/web', emptyOutDir: true },
 });
