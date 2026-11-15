@@ -43,7 +43,7 @@ export interface Segment {
 /** the original Print algorithm, byte for byte: a Pascal string with codes and its integers */
 function printf(text: string, ints: readonly number[], newline: boolean) {
   return Effect.gen(function* () {
-    const game = yield* Game;
+    const game = yield* Engine;
     const crt = yield* Crt;
     // the original copies the text into a 256-byte stack buffer and may read past its end
     const buf = game.printBuf;
@@ -99,7 +99,7 @@ export const halt = Effect.fail(new Halt({ code: 0 }));
 
 /** the state inside the current transaction (any phase) — a draft: assign to it directly */
 export const state = Effect.gen(function* () {
-  return draft((yield* Game).state) as GameState;
+  return draft((yield* Engine).state) as GameState;
 });
 
 /** the running game's state inside the current transaction */
@@ -113,7 +113,7 @@ export const started = Effect.gen(function* () {
  */
 export function transaction<A, E, R>(eff: Effect.Effect<A, E, R>) {
   return Effect.gen(function* () {
-    const store = (yield* Game).state;
+    const store = (yield* Engine).state;
     if (!begin(store)) return yield* eff;
     return yield* eff.pipe(Effect.ensuring(Effect.sync(() => commit(store))));
   });
@@ -131,7 +131,7 @@ export function luckAtLeast(n: number) {
   });
 }
 
-export interface IGame {
+export interface IEngine {
   /** committed snapshots and the open transaction's draft */
   readonly state: Store;
   /** stack buffer of Print, keeps bytes of earlier (longer) strings like the original */
@@ -140,7 +140,7 @@ export interface IGame {
   readonly transcript: PrintCall[];
 }
 
-export const Game = Context.Service<IGame>('Game');
+export const Engine = Context.Service<IEngine>('Engine');
 
 export interface IDisk {
   /** Dos.FindFirst/FindNext over the game directory, in directory order */

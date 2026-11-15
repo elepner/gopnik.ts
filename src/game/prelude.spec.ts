@@ -3,11 +3,11 @@ import { Effect } from 'effect';
 
 import { check } from '../../test/check';
 import { testGame } from '../../test/layers';
-import { Game, print, println } from './prelude';
+import { Engine, print, println } from './prelude';
 import { blue, type Color, green, paint, plain, red, text, type Text, white } from './text';
 import { FIGHT, HERO } from './texts';
 
-const transcript = Effect.map(Game, (g) => g.transcript);
+const transcript = Effect.map(Engine, (g) => g.transcript);
 
 function run<A, E, R>(eff: Effect.Effect<A, E, R>) {
   return eff.pipe(Effect.provide(testGame().layer)) as Effect.Effect<A, E>;

@@ -37,13 +37,13 @@
 - `analysis/` — generated `g.asm`, `g.lift.txt`, `data.txt`. Regenerate, don't edit.
 - `src/tp/` — Turbo Pascal runtime semantics: `rng.ts` (LCG), `num.ts` (Integer wrap, div/mod,
   Round, Str/Val), `cp866.ts`, `brands.ts`.
-- `src/state/` — `state.ts` (game state as plain grouped objects: not-started vs started game,
+- `src/state/` — `state.ts` (game state as plain grouped objects: not-started game vs `Game`,
   world, player with body slots, enemy, session), `kinds.ts` (character classes and enemy kinds),
   `store.ts` (immutable snapshots + immer transactions), `legacy.ts` (the original's byte layout:
   saves and comparison snapshots), `names.ts`.
 - `src/crt/` — CRT unit: `screen.ts` (80×25 B800 cells), `crt.ts` (ReadKey, CrtRead line editor,
   services `Crt`, `Keyboard`).
-- `src/game/` — the game: `prelude` (services `Game`, `Disk`, Print/PrintLn, luck checks),
+- `src/game/` — the game: `prelude` (services `Engine`, `Disk`, Print/PrintLn, luck checks),
   `texts` (all texts), `start`, `main` (command loop, walking), `fight`, `enemy`, `hero`,
   `places`, `encounters`, `screens`. Each function names its original address (`0000:3D11`).
 - `src/runtime.ts` (layers, `program`), `src/main.ts` (terminal runner).
@@ -121,7 +121,7 @@
   the game; the rector's fights use `beatFakeRector`/`beatRector`/`killedByRector`, the den adds
   `denHelpReward`. After a win or a death `fight` leaves `combat.backup` alone: the original
   resets it after the rewards (and never after a death), and snapshots compare it at key reads.
-- Every Print/PrintLn lands in `Game.transcript` (`{ text, args, newline, segments }`).
+- Every Print/PrintLn lands in `Engine.transcript` (`{ text, args, newline, segments }`).
 - Never edit `original/`; never hand-edit generated files (`analysis/`, `src/data/*`).
 - When editing files from scripts, don't use `String.replace` with replacement text containing
   `$` (`` $` `` and `$&` are special) — use a replacer function or `split/join`.
@@ -164,7 +164,7 @@
 ## LLM ideas (not started)
 
 - Keep the 1:1 core; add an `Npc`/`Narrator` service as a separate mode, with state fields and
-  `Game.transcript` as context.
+  `Engine.transcript` as context.
 - Start with pure narration (no mechanics risk): a chronicle/rumours of the district from the
   transcript, generated phone calls and temple scenes.
 - Then: street encounters as free dialogue mapped back to engage/leave/noticed; the den as a

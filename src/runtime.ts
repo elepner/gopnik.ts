@@ -6,7 +6,7 @@ import { Effect, Layer } from 'effect';
 
 import { Crt, type ICrt, type IKeyboard, Keyboard, makeCrt } from './crt/crt';
 import { mainLoop } from './game/main';
-import { Disk, Game, transaction } from './game/prelude';
+import { Disk, Engine, transaction } from './game/prelude';
 import { newGame } from './game/start';
 import { createState } from './state/state';
 import { createStore } from './state/store';
@@ -28,7 +28,7 @@ export function gameLayer(opts: GameOptions) {
   return Layer.mergeAll(
     Layer.succeed(Crt, opts.crt ?? makeCrt()),
     Layer.succeed(Keyboard, opts.keyboard),
-    Layer.succeed(Game, { state, printBuf: new Uint8Array(256), transcript: [] }),
+    Layer.succeed(Engine, { state, printBuf: new Uint8Array(256), transcript: [] }),
     Layer.succeed(Disk, dirDisk(opts.dir)),
     rngLayer(opts.seed)
   );

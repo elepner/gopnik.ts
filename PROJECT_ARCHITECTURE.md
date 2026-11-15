@@ -41,7 +41,7 @@ Entry point for assistants is `PROJECT_MEMORY.md`.
   `CrtRead` line editor.
 - `game/`: one module per original procedure group; each function documents the original
   address it was translated from (e.g. `fight` ← `0000:3D11`).
-- Services (Effect `Context.Service`, functional style): `Crt`, `Keyboard`, `Rng`, `Game`,
+- Services (Effect `Context.Service`, functional style): `Crt`, `Keyboard`, `Rng`, `Engine`,
   `Disk`. Runners provide them: terminal (chalk) for play, scripted for tests.
 
 ## Fidelity Rules

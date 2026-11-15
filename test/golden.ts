@@ -15,7 +15,7 @@ import { Effect } from 'effect';
 
 import { keyCode } from '../oracle/dos';
 import { biosKey, EndOfInput, type IKeyboard, makeCrt } from '../src/crt/crt';
-import { Game, type PrintCall } from '../src/game/prelude';
+import { Engine, type PrintCall } from '../src/game/prelude';
 import { gameLayer, program } from '../src/runtime';
 import { snapshotState } from '../src/state/legacy';
 import { snapshot } from '../src/state/store';
@@ -63,7 +63,7 @@ export async function recordSession(seed: number, keys: readonly string[]): Prom
   let final = () => ({}) as Record<string, number | string>;
   await Effect.runPromiseExit(
     Effect.gen(function* () {
-      const game = yield* Game;
+      const game = yield* Engine;
       const log = yield* (yield* Rng).log;
       let printed = 0;
       read = () => {

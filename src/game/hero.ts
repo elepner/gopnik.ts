@@ -4,7 +4,7 @@ import { Effect } from 'effect';
 import { writeLn } from '../crt/crt';
 import { CHARACTER_CLASSES } from '../state/kinds';
 import { typeName, rankName } from '../state/names';
-import type { StartedGame, StatKey } from '../state/state';
+import type { Game, StatKey } from '../state/state';
 import { div, i16, mod } from '../tp/num';
 import { print, println, rnd, started } from './prelude';
 import { type Color, text, type Text } from './text';
@@ -342,7 +342,7 @@ export const strengthUp = Effect.gen(function* () {
 export type ChainRing = 'pomogi' | 'mega' | 'pomiluy';
 
 /** puts on the next ring of the chain; nothing when the chain is complete */
-export function nextRing(st: StartedGame): ChainRing | undefined {
+export function nextRing(st: Game): ChainRing | undefined {
   const rings = st.player.body.hands.rings;
   if (!rings.pomogi) {
     st.player.stats.strength = i16(st.player.stats.strength + 1);
@@ -386,6 +386,6 @@ export function ringLines(ring: ChainRing, megaText: Text): Text[] {
 export const DEN_LEVEL = 3;
 
 /** the hero's level counted from the start of the current district (10 levels each) */
-export function levelInDistrict(st: StartedGame): number {
+export function levelInDistrict(st: Game): number {
   return st.player.progression.level - (st.world.district - 1) * 10;
 }

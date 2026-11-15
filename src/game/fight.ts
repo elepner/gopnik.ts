@@ -12,7 +12,7 @@ import {
   type Enemy,
   type Health,
   type Injuries,
-  type StartedGame,
+  type Game,
   type StatKey,
 } from '../state/state';
 import { div, i16, mod, round, u8 } from '../tp/num';
@@ -197,7 +197,7 @@ function breaksBone(attacker: number, defender: number) {
 type Fighter = Pick<Enemy, 'stats' | 'health' | 'damage' | 'armor' | 'injuries'>;
 
 /** one kick with what is left of the budget; no hit is a miss */
-function kick(st: StartedGame, by: Side, budget: number) {
+function kick(st: Game, by: Side, budget: number) {
   return Effect.gen(function* () {
     const [attacker, victim]: [Fighter, Fighter] =
       by === 'hero' ? [st.player, st.enemy] : [st.enemy, st.player];
@@ -232,7 +232,7 @@ function kick(st: StartedGame, by: Side, budget: number) {
 }
 
 /** `run`: running away costs the stats of the last level-up and the level itself */
-function flee(st: StartedGame): FightEvent & { type: 'cantRun' | 'fled' | 'fledUnranked' } {
+function flee(st: Game): FightEvent & { type: 'cantRun' | 'fled' | 'fledUnranked' } {
   if (st.world.rector) return { type: 'cantRun', because: 'rector' };
   if (st.player.injuries.leg) return { type: 'cantRun', because: 'leg' };
   const progression = st.player.progression;
@@ -249,7 +249,7 @@ function flee(st: StartedGame): FightEvent & { type: 'cantRun' | 'fled' | 'fledU
 }
 
 /** running away takes back the stats of the last level-up */
-function loseStat(st: StartedGame, stat: StatKey) {
+function loseStat(st: Game, stat: StatKey) {
   if (stat === 'strength') {
     st.player.stats.strength = i16(st.player.stats.strength - 1);
     st.player.damage.max = i16(st.player.damage.max - 1);
@@ -270,7 +270,7 @@ function loseStat(st: StartedGame, stat: StatKey) {
   }
 }
 
-function smoke(st: StartedGame, turns: number): FightEvent {
+function smoke(st: Game, turns: number): FightEvent {
   if (st.player.injuries.jaw) return { type: 'jointRefused', because: 'jaw' };
   if (st.player.stoned !== 0) return { type: 'jointRefused', because: 'stoned' };
   if (st.player.resources.joints <= 0) return { type: 'jointRefused', because: 'none' };
@@ -293,7 +293,7 @@ function backupApproaches(combat: Combat): boolean {
 }
 
 /** `v`: call the den lads; the phone brings them at once */
-function callBackup(st: StartedGame): FightEvent[] {
+function callBackup(st: Game): FightEvent[] {
   const events: FightEvent[] = [];
   if (st.world.places.den && respected(st)) {
     if (!backupCalled(st.combat)) st.combat.backup = 1;
@@ -312,7 +312,7 @@ function callBackup(st: StartedGame): FightEvent[] {
 }
 
 /** the lads kick the enemy every turn, for respect, until they are beaten or fed up */
-function backupKicks(st: StartedGame) {
+function backupKicks(st: Game) {
   return Effect.gen(function* () {
     const events: FightEvent[] = [];
     const prev = st.enemy.health.current;
@@ -339,7 +339,7 @@ function backupKicks(st: StartedGame) {
 }
 
 /** `f`: only reached with a pistol in the pocket */
-function shoot(st: StartedGame) {
+function shoot(st: Game) {
   return Effect.gen(function* () {
     const pistol = st.player.body.pockets.pistol!;
     if (!st.world.trail && !pistol.silencer) return { type: 'shotForbidden' } satisfies FightEvent;
@@ -354,7 +354,7 @@ function shoot(st: StartedGame) {
 }
 
 /** the den lads pick up a beaten hero: respect, money for the treatment, full health */
-function bailOut(st: StartedGame): FightEvent {
+function bailOut(st: Game): FightEvent {
   st.player.respect = i16(st.player.respect - 10);
   st.player.resources.money = i16(
     st.player.resources.money - round((st.player.health.max / 5) * 3)
@@ -392,12 +392,12 @@ function fractured(injuries: Injuries): boolean {
 }
 
 /** respected enough for the den lads to come and help */
-function respected(st: StartedGame): boolean {
+function respected(st: Game): boolean {
   return st.world.district * 10 + 10 <= st.player.respect;
 }
 
 /** a beaten hero is picked up by the den lads, for 10 respect */
-function ladsBailOut(st: StartedGame): boolean {
+function ladsBailOut(st: Game): boolean {
   return st.world.places.den && st.player.respect >= 10;
 }
 

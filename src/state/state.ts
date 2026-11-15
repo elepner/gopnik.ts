@@ -73,7 +73,7 @@ export function createState(): GameState {
   };
 }
 
-export type GameState = NotStartedGame | StartedGame;
+export type GameState = NotStartedGame | Game;
 
 /** before the character exists: title, save menu, story, choosing a type */
 export interface NotStartedGame extends CommonState {
@@ -82,21 +82,21 @@ export interface NotStartedGame extends CommonState {
 }
 
 /** a created (or loaded) character walks the districts */
-export interface StartedGame extends CommonState {
+export interface Game extends CommonState {
   readonly phase: 'started';
   readonly player: Player;
 }
 
 /** the only transition between the phases: the character got its type */
-export function startGame(st: GameState, type: CharacterType): StartedGame {
+export function startGame(st: GameState, type: CharacterType): Game {
   const started = st as unknown as { phase: string; player: Player };
   started.phase = 'started';
   started.player.type = type;
-  return st as StartedGame;
+  return st as Game;
 }
 
 /** the state of a running game; the game never asks for it before the start */
-export function playing(st: GameState): StartedGame {
+export function playing(st: GameState): Game {
   if (st.phase !== 'started') throw new Error('the game has not started yet');
   return st;
 }

@@ -6,7 +6,7 @@
 import { Effect } from 'effect';
 
 import { ENEMIES } from '../state/kinds';
-import { type StartedGame, type Weapons } from '../state/state';
+import { type Game, type Weapons } from '../state/state';
 import { div, i16 } from '../tp/num';
 import type { FightOutcome } from './fight';
 import { type FightEvent, tell } from './fight-view';
@@ -75,12 +75,12 @@ const spoils = Effect.gen(function* () {
 
 // ------------------------------------------------------------------ rules
 
-function levelReached(st: StartedGame): boolean {
+function levelReached(st: Game): boolean {
   return st.player.progression.exp >= st.player.progression.expNext;
 }
 
 /** experience for an enemy: the sum of its stats */
-function gainEnemyExp(st: StartedGame): FightEvent {
+function gainEnemyExp(st: Game): FightEvent {
   const { strength, agility, vitality, luck } = st.enemy.stats;
   const exp = strength + agility + vitality + luck;
   st.player.progression.exp = i16(st.player.progression.exp + exp);
@@ -88,7 +88,7 @@ function gainEnemyExp(st: StartedGame): FightEvent {
 }
 
 /** the enemy's beer, money and junk, 5 health and respect by its tier and level */
-function takeSpoils(st: StartedGame): FightEvent {
+function takeSpoils(st: Game): FightEvent {
   st.player.resources.beer = i16(st.player.resources.beer + st.enemy.loot.beer);
   st.player.resources.money = i16(st.player.resources.money + st.enemy.loot.money);
   st.player.resources.junk = i16(st.player.resources.junk + st.enemy.loot.junk);
@@ -102,13 +102,13 @@ function takeSpoils(st: StartedGame): FightEvent {
 }
 
 /** true when the den opens now */
-function openDen(st: StartedGame): boolean {
+function openDen(st: Game): boolean {
   if (st.world.places.den || levelInDistrict(st) < DEN_LEVEL) return false;
   st.world.places.den = true;
   return true;
 }
 
-function rewardDenHelp(st: StartedGame): FightEvent {
+function rewardDenHelp(st: Game): FightEvent {
   const respect = st.world.district * 20;
   const exp = st.world.district * 10;
   st.player.respect = i16(st.player.respect + respect);
@@ -117,7 +117,7 @@ function rewardDenHelp(st: StartedGame): FightEvent {
 }
 
 /** what a lucky hero finds on the enemy, by its kind */
-function loot(st: StartedGame) {
+function loot(st: Game) {
   return Effect.gen(function* () {
     const events: FightEvent[] = [];
     if ((yield* luckAtLeast(st.world.district * 25)) && st.enemy.type === 'nark') {
