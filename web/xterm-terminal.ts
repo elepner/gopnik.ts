@@ -9,12 +9,16 @@ import type { ITerminal } from '../src/game/terminal';
 import { Cp866Byte } from '../src/tp/brands';
 import { encodeCp866 } from '../src/tp/cp866';
 
-export function xtermTerminal(term: Xterm): ITerminal {
+/** `changed`: the screen changed or waits for a key */
+export function xtermTerminal(term: Xterm, changed: () => void = () => {}): ITerminal {
   const keys = keyQueue(term);
   let sgr = sgrOf(7);
   /** the scan code ReadKey returns after #0 */
   let pendingScan: number | undefined;
-  const write = (s: string) => term.write(sgr + s);
+  const write = (s: string) => {
+    term.write(sgr + s);
+    changed();
+  };
   return {
     write: (s) => Effect.sync(() => write(s)),
     textColor: (color) =>
@@ -23,6 +27,7 @@ export function xtermTerminal(term: Xterm): ITerminal {
       }),
     clrScr: Effect.sync(() => term.write('\x1b[2J\x1b[H')),
     readKey: Effect.suspend(() => {
+      changed();
       if (pendingScan !== undefined) {
         const scan = pendingScan;
         pendingScan = undefined;
@@ -36,6 +41,7 @@ export function xtermTerminal(term: Xterm): ITerminal {
       });
     }),
     readLine: Effect.gen(function* () {
+      changed();
       let line = '';
       for (;;) {
         const key = yield* keys.read;
@@ -81,7 +87,8 @@ function keyQueue(term: Xterm) {
   const queue: string[] = [];
   let waiter: (() => void) | undefined;
   term.onData((data) => {
-    queue.push(...(SCANS[data] !== undefined ? [data] : Array.from(data)));
+    // an escape sequence (arrows, Delete, F-keys) is one key; typed or pasted text is a key a character
+    queue.push(...(data.startsWith('\x1b') && data.length > 1 ? [data] : Array.from(data)));
     const w = waiter;
     waiter = undefined;
     w?.();

@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Гопник</title>
     <style>
+      :root {
+        --red: #ff5555;
+        --yellow: #ffff55;
+        --green: #55ff55;
+        --cyan: #55ffff;
+        --gray: #aaaaaa;
+        --dim: #555555;
+      }
       html,
       body {
         margin: 0;
@@ -21,6 +29,92 @@
         align-items: center;
         justify-content: center;
         gap: 16px;
+      }
+      .game {
+        display: grid;
+        grid-template-columns: auto auto;
+        gap: 12px;
+      }
+      .panel {
+        /* as high as the screen: the panel scrolls instead of pushing the screen */
+        height: 0;
+        min-height: 100%;
+        box-sizing: border-box;
+        display: flex;
+        gap: 18px;
+        padding: 12px 14px;
+        background: #000;
+        border-radius: 6px;
+        box-shadow: 0 0 24px rgba(0, 0, 0, 0.8);
+        font:
+          14px ui-monospace,
+          Menlo,
+          Consolas,
+          'Courier New',
+          monospace;
+        color: var(--gray);
+        overflow: auto;
+      }
+      .panel .column {
+        width: 220px;
+      }
+      .panel .column + .column {
+        padding-left: 18px;
+        border-left: 1px dashed var(--dim);
+      }
+      .panel h2 {
+        margin: 0;
+        font-size: 16px;
+        color: #ffffff;
+      }
+      .panel .enemy h2 {
+        color: var(--red);
+      }
+      .panel .sub {
+        margin: 2px 0 8px;
+        color: var(--dim);
+      }
+      .panel dl {
+        margin: 8px 0 0;
+      }
+      .panel dl div {
+        display: flex;
+        justify-content: space-between;
+        line-height: 1.45;
+      }
+      .panel dd {
+        margin: 0;
+        color: #ffffff;
+      }
+      .bar {
+        margin-bottom: 6px;
+      }
+      .bar-label {
+        display: flex;
+        justify-content: space-between;
+      }
+      .bar-track {
+        height: 6px;
+        margin-top: 2px;
+        background: #222;
+      }
+      .bar-fill {
+        height: 100%;
+      }
+      .things {
+        margin-top: 10px;
+        line-height: 1.4;
+        color: #ffffff;
+      }
+      .things h3 {
+        margin: 0 0 2px;
+        font-size: 14px;
+        font-weight: normal;
+        color: var(--gray);
+      }
+      .hurt {
+        margin-top: 8px;
+        color: var(--red);
       }
       .screen {
         padding: 12px;

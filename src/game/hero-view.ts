@@ -223,18 +223,28 @@ export const showStats = Effect.gen(function* () {
 /** "Точность" lines shared by the stats of the hero and of the enemy */
 export function accuracy(agility: number) {
   return Effect.gen(function* () {
-    let a = agility;
-    if (a <= 14) return yield* println(HERO.tochnost(a * 5 + 20));
+    const { chance, hits, extra } = hitChance(agility);
+    if (hits === 0) return yield* println(HERO.tochnost(chance));
     yield* print(HERO.tochnost90());
-    a -= 14;
-    let hits = 1;
-    while (a > 18) {
-      a -= 18;
-      hits++;
-    }
-    if (hits === 1) yield* println(HERO.vtoroyUdar(a * 5));
-    if (hits > 1) yield* println(HERO.udarovTochnostUdara(hits, hits + 1, a * 5));
+    if (hits === 1) yield* println(HERO.vtoroyUdar(extra));
+    if (hits > 1) yield* println(HERO.udarovTochnostUdara(hits, hits + 1, extra));
   });
+}
+
+/**
+ * The chance of a hit in %; past 14 agility it stays at 90 and the agility above buys more
+ * hits: `hits` sure ones beyond the first, the next one with `extra` %.
+ */
+export function hitChance(agility: number) {
+  let a = agility;
+  if (a <= 14) return { chance: a * 5 + 20, hits: 0, extra: 0 };
+  a -= 14;
+  let hits = 1;
+  while (a > 18) {
+    a -= 18;
+    hits++;
+  }
+  return { chance: 90, hits, extra: a * 5 };
 }
 
 /** what is wrong with the hero, after the health */
