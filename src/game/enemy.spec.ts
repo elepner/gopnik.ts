@@ -4,7 +4,7 @@ import { Effect } from 'effect';
 import { hero, play } from '../../test/game';
 import { STAT_WEIGHTS } from '../data/tables';
 import { District } from '../tp/brands';
-import { div } from '../tp/num';
+import { div, i16 } from '../tp/num';
 import { setupRector, spawnEnemy } from './enemy';
 
 describe('spawnEnemy (0000:0D14)', () => {
@@ -15,21 +15,29 @@ describe('spawnEnemy (0000:0D14)', () => {
           seed,
           setup: (s) => {
             hero(s);
-            s.district = District((seed % 4) + 1);
-            s.level = seed % 40;
+            s.world.district = District((seed % 4) + 1);
+            s.player.progression.level = i16(seed % 40);
           },
         });
-        const [w0, w1, w2, w3] = STAT_WEIGHTS[st.eType];
-        expect(st.eType).toBeGreaterThanOrEqual(0);
-        expect(st.eType).toBeLessThanOrEqual(9);
-        expect(st.eStr + st.eAgi + st.eVit + st.eLuck).toBe(
-          (w0 + w1 + w2 + w3 + st.eLevel * 2) & 0xff
+        const [w0, w1, w2, w3] = STAT_WEIGHTS[st.enemy.type];
+        expect(st.enemy.type).toBeGreaterThanOrEqual(0);
+        expect(st.enemy.type).toBeLessThanOrEqual(9);
+        expect(
+          st.enemy.stats.strength +
+            st.enemy.stats.agility +
+            st.enemy.stats.vitality +
+            st.enemy.stats.luck
+        ).toBe((w0 + w1 + w2 + w3 + st.enemy.level * 2) & 0xff);
+        expect(st.enemy.health.max).toBe(
+          st.enemy.stats.vitality * 5 + st.enemy.stats.strength + 10
         );
-        expect(st.eHpMax).toBe(st.eVit * 5 + st.eStr + 10);
-        expect(st.eHp).toBe(st.eHpMax);
-        expect([st.eDmgMin, st.eDmgMax]).toEqual([div(st.eStr, 2), st.eStr]);
-        expect(st.eMoney).toBeGreaterThanOrEqual(0);
-        expect(st.eJunk).toBeGreaterThanOrEqual(0);
+        expect(st.enemy.health.current).toBe(st.enemy.health.max);
+        expect([st.enemy.damage.min, st.enemy.damage.max]).toEqual([
+          div(st.enemy.stats.strength, 2),
+          st.enemy.stats.strength,
+        ]);
+        expect(st.enemy.loot.money).toBeGreaterThanOrEqual(0);
+        expect(st.enemy.loot.junk).toBeGreaterThanOrEqual(0);
       }
     })
   );
@@ -41,11 +49,11 @@ describe('spawnEnemy (0000:0D14)', () => {
         for (let seed = 1; seed <= 60; seed++) {
           const caught = yield* play(spawnEnemy(1), {
             seed,
-            setup: (s) => (hero(s), (s.district = District(4)), (s.trail = 1)),
+            setup: (s) => (hero(s), (s.world.district = District(4)), (s.world.trail = true)),
           });
-          expect(caught.st.eType).toBeLessThanOrEqual(7);
+          expect(caught.st.enemy.type).toBeLessThanOrEqual(7);
           const job = yield* play(spawnEnemy(2), { seed, setup: hero });
-          expect(job.st.eType).toBe(8);
+          expect(job.st.enemy.type).toBe(8);
         }
       })
   );
@@ -54,7 +62,7 @@ describe('spawnEnemy (0000:0D14)', () => {
     Effect.gen(function* () {
       const { rand } = yield* play(spawnEnemy(0), {
         seed: 3,
-        setup: (s) => (hero(s), (s.district = District(2))),
+        setup: (s) => (hero(s), (s.world.district = District(2))),
       });
       expect(rand.slice(0, 6).map((r) => r.n)).toEqual([51, 2, 2, 5, 2, 2]);
     })
@@ -64,20 +72,20 @@ describe('spawnEnemy (0000:0D14)', () => {
 describe('setupRector (0000:11C2)', () => {
   it.effect('the fake and the real rector have fixed stats', () =>
     Effect.gen(function* () {
-      const fake = yield* play(setupRector(0));
-      expect([fake.st.eType, fake.st.eLevel, fake.st.eHpMax, fake.st.eArmor]).toEqual([
-        10,
-        125,
-        41 + 123 * 5 + 10,
-        60,
-      ]);
-      const real = yield* play(setupRector(1));
-      expect([real.st.eLevel, real.st.eStr, real.st.eHpMax, real.st.eArmor]).toEqual([
-        160,
-        50,
-        50 + 188 * 5 + 10,
-        80,
-      ]);
+      const fake = yield* play(setupRector(0), { setup: hero });
+      expect([
+        fake.st.enemy.type,
+        fake.st.enemy.level,
+        fake.st.enemy.health.max,
+        fake.st.enemy.armor,
+      ]).toEqual([10, 125, 41 + 123 * 5 + 10, 60]);
+      const real = yield* play(setupRector(1), { setup: hero });
+      expect([
+        real.st.enemy.level,
+        real.st.enemy.stats.strength,
+        real.st.enemy.health.max,
+        real.st.enemy.armor,
+      ]).toEqual([160, 50, 50 + 188 * 5 + 10, 80]);
       expect(real.rand).toHaveLength(0);
     })
   );

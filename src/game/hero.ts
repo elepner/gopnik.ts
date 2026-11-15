@@ -3,91 +3,167 @@ import { Effect } from 'effect';
 
 import { writeLn } from '../crt/crt';
 import { STAT_WEIGHTS } from '../data/tables';
-import { div, mod } from '../tp/num';
-import { Game, print, println, rnd } from './prelude';
+import { typeName, rankName } from '../state/names';
+import { TYPE_ID, type StatKey } from '../state/state';
+import { div, i16, mod } from '../tp/num';
+import { print, println, rnd, started } from './prelude';
 import { HERO } from './texts';
 
 /** 0000:1A03 — `s`: look at yourself in a puddle */
 export const showStats = Effect.gen(function* () {
-  const { st, mem } = yield* Game;
+  const st = yield* started;
   const c = ['7', '7', '7', '7'];
-  yield* println(HERO.tyUrovnya, mem.typeName(st.charType), st.level, mem.rankName(st.level));
-  yield* println(HERO.aZovutTebya, st.name);
-  if (st.level <= 39) yield* println(HERO.seychasUTebyaOpyta, st.exp, st.expNext);
-  if (st.stoned > 0 || st.ringPg || st.megaRing) c[0] = '1';
-  if (st.ringPg || st.megaRing) c[1] = c[2] = '1';
-  if (st.cross || st.ringGs || st.ringPg || st.megaRing) c[3] = '1';
-  yield* println(HERO.slLvZhvUd, c[0], st.str, c[1], st.agi, c[2], st.vit, c[3], st.luck);
-  if (st.cross || st.ringGs) {
+  yield* println(
+    HERO.tyUrovnya,
+    typeName(st.player.type),
+    st.player.progression.level,
+    rankName(st.player.progression.level)
+  );
+  yield* println(HERO.aZovutTebya, st.player.name);
+  if (st.player.progression.level <= 39)
+    yield* println(
+      HERO.seychasUTebyaOpyta,
+      st.player.progression.exp,
+      st.player.progression.expNext
+    );
+  if (st.player.stoned > 0 || st.player.body.hands.rings.pomogi || st.player.body.hands.rings.mega)
+    c[0] = '1';
+  if (st.player.body.hands.rings.pomogi || st.player.body.hands.rings.mega) c[1] = c[2] = '1';
+  if (
+    st.player.body.neck.cross ||
+    st.player.body.hands.rings.spasi ||
+    st.player.body.hands.rings.pomogi ||
+    st.player.body.hands.rings.mega
+  )
+    c[3] = '1';
+  yield* println(
+    HERO.slLvZhvUd,
+    c[0],
+    st.player.stats.strength,
+    c[1],
+    st.player.stats.agility,
+    c[2],
+    st.player.stats.vitality,
+    c[3],
+    st.player.stats.luck
+  );
+  if (st.player.body.neck.cross || st.player.body.hands.rings.spasi) {
     yield* print(HERO.fenki);
-    if (st.cross) yield* print(HERO.krestikUdacha2);
-    if (st.ringGs) yield* print(HERO.koltsoGsUdacha1);
+    if (st.player.body.neck.cross) yield* print(HERO.krestikUdacha2);
+    if (st.player.body.hands.rings.spasi) yield* print(HERO.koltsoGsUdacha1);
     yield* writeLn;
   }
-  if (st.ringPg || st.megaRing || st.ringGp) {
+  if (
+    st.player.body.hands.rings.pomogi ||
+    st.player.body.hands.rings.mega ||
+    st.player.body.hands.rings.pomiluy
+  ) {
     yield* print(HERO.moschnyeFenki);
-    if (st.ringPg) yield* print(HERO.koltsoPgVse1);
-    if (st.megaRing) yield* print(HERO.megaKoltsoVse4);
-    if (st.ringGp) yield* print(HERO.koltsoGpSamolechenie);
+    if (st.player.body.hands.rings.pomogi) yield* print(HERO.koltsoPgVse1);
+    if (st.player.body.hands.rings.mega) yield* print(HERO.megaKoltsoVse4);
+    if (st.player.body.hands.rings.pomiluy) yield* print(HERO.koltsoGpSamolechenie);
     yield* writeLn;
   }
-  if (st.phone) yield* println(HERO.uTebyaEstMobilnik);
-  if (st.glasses) yield* println(HERO.uTebyaEstTemnye);
-  if (st.tattoo) yield* println(HERO.naTebeZonovskayaNakolka);
-  if (st.pistol) {
+  if (st.player.body.pockets.phone) yield* println(HERO.uTebyaEstMobilnik);
+  if (st.player.body.eyes.glasses) yield* println(HERO.uTebyaEstTemnye);
+  if (st.player.body.skin.tattoo) yield* println(HERO.naTebeZonovskayaNakolka);
+  const pistol = st.player.body.pockets.pistol;
+  if (pistol) {
     yield* writeLn;
     yield* print(HERO.uTebyaEstPistolet);
-    if (st.silencer) yield* print(HERO.sGushitelem);
-    if (st.bullets > 0) yield* println(HERO.patronov, st.bullets);
-    if (st.bullets <= 2 && st.bullets > 0) yield* println(HERO.aPtronovToMalo);
-    if (st.bullets <= 0) yield* println(HERO.pravdaBezPatronov);
+    if (pistol.silencer) yield* print(HERO.sGushitelem);
+    if (pistol.bullets > 0) yield* println(HERO.patronov, pistol.bullets);
+    if (pistol.bullets <= 2 && pistol.bullets > 0) yield* println(HERO.aPtronovToMalo);
+    if (pistol.bullets <= 0) yield* println(HERO.pravdaBezPatronov);
     yield* writeLn;
   }
   const armed =
-    st.stoned > 0 || st.boots || st.boots2 || st.knuckles || st.club || st.knife || st.cleaver;
-  yield* print(HERO.uron, armed ? '1' : '7', st.dmgMin, st.dmgMax);
-  if (st.boots && !st.boots2) yield* print(HERO.butsy1);
-  if (st.boots && st.boots2) yield* print(HERO.butsy);
-  if (st.boots2) yield* print(HERO.pontovyeButsyUron2);
-  if (st.knuckles && !st.knife && !st.club && !st.cleaver) yield* print(HERO.kastet2);
-  if (st.knuckles && (st.knife || st.club || st.cleaver)) yield* print(HERO.kastet);
-  if (st.club && !st.knife && !st.cleaver) yield* print(HERO.dubinka4);
-  if (st.club && (st.knife || st.cleaver)) yield* print(HERO.dubinka);
-  if (st.knife && !st.cleaver) yield* print(HERO.nozh6);
-  if (st.knife && st.cleaver) yield* print(HERO.nozh);
-  if (st.cleaver) yield* print(HERO.tesakUron9);
+    st.player.stoned > 0 ||
+    st.player.body.feet.boots ||
+    st.player.body.feet.coolBoots ||
+    st.player.body.hands.weapons.knuckles ||
+    st.player.body.hands.weapons.club ||
+    st.player.body.hands.weapons.knife ||
+    st.player.body.hands.weapons.cleaver;
+  yield* print(HERO.uron, armed ? '1' : '7', st.player.damage.min, st.player.damage.max);
+  if (st.player.body.feet.boots && !st.player.body.feet.coolBoots) yield* print(HERO.butsy1);
+  if (st.player.body.feet.boots && st.player.body.feet.coolBoots) yield* print(HERO.butsy);
+  if (st.player.body.feet.coolBoots) yield* print(HERO.pontovyeButsyUron2);
+  if (
+    st.player.body.hands.weapons.knuckles &&
+    !st.player.body.hands.weapons.knife &&
+    !st.player.body.hands.weapons.club &&
+    !st.player.body.hands.weapons.cleaver
+  )
+    yield* print(HERO.kastet2);
+  if (
+    st.player.body.hands.weapons.knuckles &&
+    (st.player.body.hands.weapons.knife ||
+      st.player.body.hands.weapons.club ||
+      st.player.body.hands.weapons.cleaver)
+  )
+    yield* print(HERO.kastet);
+  if (
+    st.player.body.hands.weapons.club &&
+    !st.player.body.hands.weapons.knife &&
+    !st.player.body.hands.weapons.cleaver
+  )
+    yield* print(HERO.dubinka4);
+  if (
+    st.player.body.hands.weapons.club &&
+    (st.player.body.hands.weapons.knife || st.player.body.hands.weapons.cleaver)
+  )
+    yield* print(HERO.dubinka);
+  if (st.player.body.hands.weapons.knife && !st.player.body.hands.weapons.cleaver)
+    yield* print(HERO.nozh6);
+  if (st.player.body.hands.weapons.knife && st.player.body.hands.weapons.cleaver)
+    yield* print(HERO.nozh);
+  if (st.player.body.hands.weapons.cleaver) yield* print(HERO.tesakUron9);
   yield* writeLn;
   let injuries = '';
-  if (st.jawBroken === 1) injuries += HERO.slomanaChelyust;
-  if (st.mouthGuard === 1) injuries += HERO.zubnayaZaschita;
-  if (st.legBroken === 1) injuries += HERO.slomanaNoga;
-  if (st.stoned > 0) injuries += HERO.obdolbanyy;
-  yield* println(HERO.zdorove, healthColor(st.hp, st.hpMax), st.hp, st.hpMax, injuries);
-  yield* accuracy(st.agi);
-  if (st.armor > 0) {
-    yield* print(HERO.bronya, st.armor);
-    if (st.abibas) {
-      if (st.adidas) {
+  if (st.player.injuries.jaw) injuries += HERO.slomanaChelyust;
+  if (st.player.body.mouth.guard) injuries += HERO.zubnayaZaschita;
+  if (st.player.injuries.leg) injuries += HERO.slomanaNoga;
+  if (st.player.stoned > 0) injuries += HERO.obdolbanyy;
+  yield* println(
+    HERO.zdorove,
+    healthColor(st.player.health.current, st.player.health.max),
+    st.player.health.current,
+    st.player.health.max,
+    injuries
+  );
+  yield* accuracy(st.player.stats.agility);
+  if (st.player.armor > 0) {
+    yield* print(HERO.bronya, st.player.armor);
+    if (st.player.body.torso.abibas) {
+      if (st.player.body.torso.adidas) {
         yield* print(HERO.abibas);
         yield* print(HERO.kostyumAdidas2);
       } else yield* print(HERO.kostyumAbibas1);
     }
-    if (st.adidas && !st.abibas) yield* print(HERO.kostyumAdidas2);
-    if (st.leather) {
-      if (st.leather2) {
+    if (st.player.body.torso.adidas && !st.player.body.torso.abibas)
+      yield* print(HERO.kostyumAdidas2);
+    if (st.player.body.torso.leather) {
+      if (st.player.body.torso.coolLeather) {
         yield* print(HERO.kozhanka);
         yield* print(HERO.krutayaKozhanka4);
       } else yield* print(HERO.kozhanka2);
     }
-    if (st.leather2 && !st.leather) yield* print(HERO.krutayaKozhanka4);
+    if (st.player.body.torso.coolLeather && !st.player.body.torso.leather)
+      yield* print(HERO.krutayaKozhanka4);
     yield* writeLn;
   }
-  if (st.joints > 0) yield* println(HERO.kosyaki, st.joints);
-  if (st.beer > 0) yield* println(HERO.pivoL, div(st.beer, 2), beerTenths(st.beer));
+  if (st.player.resources.joints > 0) yield* println(HERO.kosyaki, st.player.resources.joints);
+  if (st.player.resources.beer > 0)
+    yield* println(
+      HERO.pivoL,
+      div(st.player.resources.beer, 2),
+      beerTenths(st.player.resources.beer)
+    );
   else yield* println(HERO.pivaNet);
-  if (st.money > 0) yield* println(HERO.babki, st.money);
+  if (st.player.resources.money > 0) yield* println(HERO.babki, st.player.resources.money);
   else yield* println(HERO.netuBabok);
-  if (st.junk > 0) yield* println(HERO.hlam, st.junk);
+  if (st.player.resources.junk > 0) yield* println(HERO.hlam, st.player.resources.junk);
 });
 
 /** health colour: red up to 25%, yellow up to 50%, green above (Real division) */
@@ -123,151 +199,166 @@ export function beerTenths(beer: number): number {
 /** 0000:2526 — spend experience on level-ups; `rector` lifts the level-40 cap and the summary */
 export function levelUp(rector: boolean) {
   return Effect.gen(function* () {
-    const { st, mem } = yield* Game;
-    if (st.exp < st.expNext) return;
+    const st = yield* started;
+    if (st.player.progression.exp < st.player.progression.expNext) return;
     let count = 0;
     do {
-      st.exp -= st.expNext;
-      st.expNext += 10;
+      st.player.progression.exp = i16(st.player.progression.exp - st.player.progression.expNext);
+      st.player.progression.expNext = i16(st.player.progression.expNext + 10);
       count++;
-    } while (st.exp >= st.expNext);
+    } while (st.player.progression.exp >= st.player.progression.expNext);
     for (let k = 1; k <= count; k++) {
-      if (!rector && st.level === 40) break;
-      st.level++;
+      if (!rector && st.player.progression.level === 40) break;
+      st.player.progression.level = i16(st.player.progression.level + 1);
       yield* print(HERO.pontovostUvelichivaetsya);
-      const [w0, w1, w2, w3] = STAT_WEIGHTS[st.charType];
+      const [w0, w1, w2, w3] = STAT_WEIGHTS[TYPE_ID[st.player.type]];
       const total = w0 + w1 + w2 + w3;
-      const history = (d: string) => {
-        if (st.level <= 40) mem.setHistory(st.level, mem.history(st.level) + d);
+      // the original keeps a string[2] per level for levels 1..40
+      const history = (stat: StatKey) => {
+        const level = st.player.progression.level;
+        if (level > 40) return;
+        const gains = st.player.progression.history[level] ?? [];
+        st.player.progression.history[level] = [...gains, stat].slice(0, 2);
       };
       for (let j = 1; j <= 2; j++) {
         const r = (yield* rnd(total)) + 1;
         if (w0 >= r) {
-          st.str++;
+          st.player.stats.strength = i16(st.player.stats.strength + 1);
           yield* print(HERO.sila1);
-          history('1');
-          st.dmgMax++;
-          if (mod(st.str, 2) === 0) st.dmgMin++;
-          st.hpMax++;
-          st.hp++;
+          history('strength');
+          st.player.damage.max = i16(st.player.damage.max + 1);
+          if (mod(st.player.stats.strength, 2) === 0)
+            st.player.damage.min = i16(st.player.damage.min + 1);
+          st.player.health.max = i16(st.player.health.max + 1);
+          st.player.health.current = i16(st.player.health.current + 1);
         } else if (w1 + w0 >= r) {
-          st.agi++;
+          st.player.stats.agility = i16(st.player.stats.agility + 1);
           yield* print(HERO.lovkost1);
-          history('2');
+          history('agility');
         } else if (w2 + w1 + w0 >= r) {
-          st.vit++;
+          st.player.stats.vitality = i16(st.player.stats.vitality + 1);
           yield* print(HERO.zhivuchest1);
-          history('3');
-          st.hpMax += 5;
-          st.hp += 5;
+          history('vitality');
+          st.player.health.max = i16(st.player.health.max + 5);
+          st.player.health.current = i16(st.player.health.current + 5);
         } else if (w3 + w2 + w1 + w0 >= r) {
-          st.luck++;
+          st.player.stats.luck = i16(st.player.stats.luck + 1);
           yield* print(HERO.udacha1);
-          history('4');
+          history('luck');
         }
       }
       yield* writeLn;
     }
-    if (!rector) yield* println(HERO.seychasUTebyaKachkov, st.exp, st.expNext);
+    if (!rector)
+      yield* println(
+        HERO.seychasUTebyaKachkov,
+        st.player.progression.exp,
+        st.player.progression.expNext
+      );
   });
 }
 
 /** 0000:29C4 — `h` drinks one beer, `mh` drinks until healthy */
 export function drinkBeer(cmd: string) {
   return Effect.gen(function* () {
-    const { st } = yield* Game;
+    const st = yield* started;
     if (cmd !== 'h' && cmd !== 'mh') return;
-    const start = st.hp;
+    const start = st.player.health.current;
     const h = cmd === 'h';
     for (;;) {
-      if (st.jawBroken === 1) {
+      if (st.player.injuries.jaw) {
         yield* println(HERO.tyNeMozheshPit);
         break;
       }
-      if (st.hp >= st.hpMax) return yield* println(HERO.blinTolkoTupitNe);
-      if (st.beer > 0) {
-        st.beer--;
-        if (st.hpMax - st.hp < 5) {
-          if (h) yield* print(HERO.pivoPribavlyaetZ, st.hpMax - st.hp);
-          st.hp = st.hpMax;
+      if (st.player.health.current >= st.player.health.max)
+        return yield* println(HERO.blinTolkoTupitNe);
+      if (st.player.resources.beer > 0) {
+        st.player.resources.beer = i16(st.player.resources.beer - 1);
+        if (st.player.health.max - st.player.health.current < 5) {
+          if (h)
+            yield* print(HERO.pivoPribavlyaetZ, st.player.health.max - st.player.health.current);
+          st.player.health.current = st.player.health.max;
           if (h)
             yield* println(
               HERO.zdorovyaOstalosLPiva,
-              st.hp,
-              st.hpMax,
-              div(st.beer, 2),
-              beerTenths(st.beer)
+              st.player.health.current,
+              st.player.health.max,
+              div(st.player.resources.beer, 2),
+              beerTenths(st.player.resources.beer)
             );
         } else {
-          st.hp += 5;
+          st.player.health.current = i16(st.player.health.current + 5);
           if (h)
             yield* println(
               HERO.pivoPribavlyaetZZdorovya,
               5,
-              st.hp,
-              st.hpMax,
-              div(st.beer, 2),
-              beerTenths(st.beer)
+              st.player.health.current,
+              st.player.health.max,
+              div(st.player.resources.beer, 2),
+              beerTenths(st.player.resources.beer)
             );
         }
       } else if (h) yield* println(HERO.pivaNetu);
-      if (h || st.hp >= st.hpMax || st.beer <= 0) break;
+      if (h || st.player.health.current >= st.player.health.max || st.player.resources.beer <= 0)
+        break;
     }
     if (cmd !== 'mh') return;
-    if (st.hp !== start)
+    if (st.player.health.current !== start)
       yield* println(
         HERO.pivoPribavlyaetZZdorovya,
-        st.hp - start,
-        st.hp,
-        st.hpMax,
-        div(st.beer, 2),
-        beerTenths(st.beer)
+        st.player.health.current - start,
+        st.player.health.current,
+        st.player.health.max,
+        div(st.player.resources.beer, 2),
+        beerTenths(st.player.resources.beer)
       );
-    if (st.hp !== start && st.beer <= 0) yield* println(HERO.konchilosPivo);
-    if (st.hp === start && st.beer <= 0) yield* println(HERO.pivaNetu);
+    if (st.player.health.current !== start && st.player.resources.beer <= 0)
+      yield* println(HERO.konchilosPivo);
+    if (st.player.health.current === start && st.player.resources.beer <= 0)
+      yield* println(HERO.pivaNetu);
   });
 }
 
 /** +1 strength with its derived stats (temple blessing) */
 export const strengthUp = Effect.gen(function* () {
-  const { st } = yield* Game;
-  st.str++;
-  st.hpMax++;
-  st.hp++;
-  st.dmgMax++;
-  st.dmgMin += 1 - mod(st.str, 2);
+  const st = yield* started;
+  st.player.stats.strength = i16(st.player.stats.strength + 1);
+  st.player.health.max = i16(st.player.health.max + 1);
+  st.player.health.current = i16(st.player.health.current + 1);
+  st.player.damage.max = i16(st.player.damage.max + 1);
+  st.player.damage.min = i16(st.player.damage.min + (1 - mod(st.player.stats.strength, 2)));
 });
 
 /** next ring of the Пг → Мега → Гп chain; the Мега message differs between callers */
 export function gainRing(megaText: string) {
   return Effect.gen(function* () {
-    const { st } = yield* Game;
-    if (!st.ringPg) {
+    const st = yield* started;
+    if (!st.player.body.hands.rings.pomogi) {
       yield* println(HERO.koltsoPomogiGospodi);
-      st.str++;
-      st.agi++;
-      st.vit++;
-      st.luck++;
-      st.hpMax += 6;
-      st.hp += 6;
-      st.dmgMax++;
-      st.dmgMin += 1 - mod(st.str, 2);
-      st.ringPg = 1;
-    } else if (!st.megaRing) {
+      st.player.stats.strength = i16(st.player.stats.strength + 1);
+      st.player.stats.agility = i16(st.player.stats.agility + 1);
+      st.player.stats.vitality = i16(st.player.stats.vitality + 1);
+      st.player.stats.luck = i16(st.player.stats.luck + 1);
+      st.player.health.max = i16(st.player.health.max + 6);
+      st.player.health.current = i16(st.player.health.current + 6);
+      st.player.damage.max = i16(st.player.damage.max + 1);
+      st.player.damage.min = i16(st.player.damage.min + (1 - mod(st.player.stats.strength, 2)));
+      st.player.body.hands.rings.pomogi = true;
+    } else if (!st.player.body.hands.rings.mega) {
       yield* println(megaText);
-      st.str += 4;
-      st.agi += 4;
-      st.vit += 4;
-      st.luck += 4;
-      st.hpMax += 24;
-      st.hp += 24;
-      st.dmgMax += 4;
-      st.dmgMin += 2;
-      st.megaRing = 1;
-    } else if (!st.ringGp) {
+      st.player.stats.strength = i16(st.player.stats.strength + 4);
+      st.player.stats.agility = i16(st.player.stats.agility + 4);
+      st.player.stats.vitality = i16(st.player.stats.vitality + 4);
+      st.player.stats.luck = i16(st.player.stats.luck + 4);
+      st.player.health.max = i16(st.player.health.max + 24);
+      st.player.health.current = i16(st.player.health.current + 24);
+      st.player.damage.max = i16(st.player.damage.max + 4);
+      st.player.damage.min = i16(st.player.damage.min + 2);
+      st.player.body.hands.rings.mega = true;
+    } else if (!st.player.body.hands.rings.pomiluy) {
       yield* println(HERO.vaschePoleznoeKoltsoGospodi);
       yield* println(HERO.vosstZhizni35);
-      st.ringGp = 1;
+      st.player.body.hands.rings.pomiluy = true;
     }
   });
 }

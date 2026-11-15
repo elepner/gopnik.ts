@@ -13,7 +13,9 @@ import {
   WHITE,
 } from '../crt/crt';
 import { STAT_WEIGHTS } from '../data/tables';
-import { Game, halt, println } from './prelude';
+import { typeName } from '../state/names';
+import { TYPE_ID } from '../state/state';
+import { halt, println, started } from './prelude';
 import { SCREENS } from './texts';
 
 /** 0000:02C2 */
@@ -90,16 +92,16 @@ export const victoryAnimation = Effect.gen(function* () {
 
 /** 0000:5F55 — `help` */
 export const help = Effect.gen(function* () {
-  const { st, mem } = yield* Game;
-  const type = mem.typeName(st.charType);
-  yield* println(SCREENS.nuSlushayVChem, type, st.name);
+  const st = yield* started;
+  const type = typeName(st.player.type);
+  yield* println(SCREENS.nuSlushayVChem, type, st.player.name);
   yield* println(SCREENS.vnachaleTyDolzhenVybrat);
   yield* println(SCREENS.naprimer, type);
-  const w = STAT_WEIGHTS[st.charType][0];
+  const w = STAT_WEIGHTS[TYPE_ID[st.player.type]][0];
   yield* println(SCREENS.vsegoNavykiVSumme, w);
   yield* println(SCREENS.novogoUrovnyaPontovostiIz, w);
   for (const line of HELP_1) yield* println(line);
-  if (st.district > 1) yield* println(SCREENS.pridyaVNovyyRayon);
+  if (st.world.district > 1) yield* println(SCREENS.pridyaVNovyyRayon);
   for (const line of HELP_2) yield* println(line);
 });
 

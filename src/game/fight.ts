@@ -2,10 +2,12 @@
 import { Effect } from 'effect';
 
 import { readKey, readLine, writeLn } from '../crt/crt';
-import { div, mod, round } from '../tp/num';
+import { typeName } from '../state/names';
+import { type StatKey } from '../state/state';
+import { div, i16, mod, round, u8 } from '../tp/num';
 import { showEnemy } from './enemy';
 import { drinkBeer, gainRing, levelUp, showStats } from './hero';
-import { fmt, Game, halt, lowerCase, luckAtLeast, print, println, rnd } from './prelude';
+import { fmt, halt, lowerCase, luckAtLeast, print, println, rnd, started } from './prelude';
 import { gameOver, victoryAnimation } from './screens';
 import { FIGHT } from './texts';
 
@@ -19,21 +21,24 @@ export type FightKind = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 /** 0000:3D11 */
 export function fight(kind: FightKind) {
   return Effect.gen(function* () {
-    const { st, mem } = yield* Game;
+    const st = yield* started;
     yield* greeting(kind);
-    const enemyHits = extraHits(st.eAgi + 4, st.agi + 4);
-    if (st.eAgi + 4 > 18 && div(enemyHits, 18) < div(st.eAgi + 4, 18))
+    const enemyHits = extraHits(st.enemy.stats.agility + 4, st.player.stats.agility + 4);
+    if (st.enemy.stats.agility + 4 > 18 && div(enemyHits, 18) < div(st.enemy.stats.agility + 4, 18))
       yield* println(
         FIGHT.izZaTvoeyHoroshey,
         div(enemyHits - 1, 18) + 1,
-        div(st.eAgi + 4 - 1, 18) + 1
+        div(st.enemy.stats.agility + 4 - 1, 18) + 1
       );
-    const playerHits = extraHits(st.agi + 4, st.eAgi + 4);
-    if (st.agi + 4 > 18 && div(playerHits, 18) < div(st.agi + 4, 18))
+    const playerHits = extraHits(st.player.stats.agility + 4, st.enemy.stats.agility + 4);
+    if (
+      st.player.stats.agility + 4 > 18 &&
+      div(playerHits, 18) < div(st.player.stats.agility + 4, 18)
+    )
       yield* println(
         FIGHT.izZaHorosheyLovkosti,
         div(playerHits - 1, 18) + 1,
-        div(st.agi + 4 - 1, 18) + 1
+        div(st.player.stats.agility + 4 - 1, 18) + 1
       );
 
     let spectators = 0;
@@ -43,35 +48,40 @@ export function fight(kind: FightKind) {
         spectators++;
         if (spectators === 5) yield* println(FIGHT.nachinayutSobiratsyaZriteli);
       }
-      if (st.rector === 0 && spectators === 5 && (yield* rnd(10)) === 0)
+      if (!st.world.rector && spectators === 5 && (yield* rnd(10)) === 0)
         for (const line of yield* crowdShout) yield* println(line);
 
       yield* print(FIGHT.bitva);
-      st.input = lowerCase(yield* readLine);
-      const input = st.input;
+      st.scratch.input = lowerCase(yield* readLine);
+      const input = st.scratch.input;
 
       if (input === 'k') {
         yield* playerKicks(playerHits);
-        if (st.eHp > 0) yield* enemyKicks(enemyHits);
+        if (st.enemy.health.current > 0) yield* enemyKicks(enemyHits);
       }
 
       if (input === 'run') {
-        if (st.rector === 1) yield* println(FIGHT.rektorKudaStoyatBeysya);
-        else if (st.legBroken === 1) yield* println(FIGHT.tyNeMozheshUbezhat);
+        if (st.world.rector) yield* println(FIGHT.rektorKudaStoyatBeysya);
+        else if (st.player.injuries.leg) yield* println(FIGHT.tyNeMozheshUbezhat);
         else {
-          if (st.level > 0) {
+          if (st.player.progression.level > 0) {
             yield* print(FIGHT.vragTruslivyyZasranets);
-            const lost = mem.history(st.level);
-            mem.setHistory(st.level, '');
-            for (const c of lost) yield* loseStat(c);
+            const level = st.player.progression.level;
+            const lost = st.player.progression.history[level] ?? [];
+            st.player.progression.history[level] = [];
+            for (const stat of lost) yield* loseStat(stat);
             yield* writeLn;
-            if (st.charType !== 5 && st.level - (st.district - 1) * 10 === 3) {
-              st.denAccess = 1; // sic: the original grants access while saying the opposite
+            if (
+              st.player.type !== 'gopnik' &&
+              st.player.progression.level - (st.world.district - 1) * 10 === 3
+            ) {
+              st.world.places.den = true; // sic: the original grants access while saying the opposite
               yield* println(FIGHT.takogoKonyavogoNepustyatV);
             }
-            st.level--;
-            st.expNext -= 10;
-            if (st.exp >= st.expNext) st.exp = st.expNext - 1;
+            st.player.progression.level = i16(st.player.progression.level - 1);
+            st.player.progression.expNext = i16(st.player.progression.expNext - 10);
+            if (st.player.progression.exp >= st.player.progression.expNext)
+              st.player.progression.exp = i16(st.player.progression.expNext - 1);
           } else yield* println(FIGHT.vragZasranets);
           over = true;
         }
@@ -82,32 +92,34 @@ export function fight(kind: FightKind) {
       if (input === 's') yield* showStats;
       if (input === 'sv') yield* showEnemy;
       if (input === 'e') return yield* halt;
-      if (st.backup >= 1 && input === 'k') {
-        st.backup++;
-        if (st.backup === 3) yield* println(FIGHT.podoshliPatsanySchaNachnetsya);
+      if (st.combat.backup >= 1 && input === 'k') {
+        st.combat.backup = i16(st.combat.backup + 1);
+        if (st.combat.backup === 3) yield* println(FIGHT.podoshliPatsanySchaNachnetsya);
       }
       if (input === 'v') yield* callBackup;
-      if (st.eHp > 0 && st.backup >= 3) yield* backupKicks;
-      if (input === 'f' && st.pistol) yield* shoot;
+      if (st.enemy.health.current > 0 && st.combat.backup >= 3) yield* backupKicks;
+      if (input === 'f' && st.player.body.pockets.pistol) yield* shoot;
 
-      if (st.hp <= 0) {
-        if (st.rector === 1) {
+      if (st.player.health.current <= 0) {
+        if (st.world.rector) {
           yield* println(FIGHT.tySdohRektorTebya);
           yield* readKey;
           yield* gameOver(false);
-        } else if (st.denAccess === 1 && st.respect >= 10) {
+        } else if (st.world.places.den && st.player.respect >= 10) {
           yield* println(FIGHT.tebePovezloZnakomyePatsany);
-          st.respect -= 10;
-          st.money -= round((st.hpMax / 5) * 3);
-          st.hp = st.hpMax;
-          if (st.jawBroken === 1 || st.legBroken === 1) {
-            st.money -= 7;
-            st.jawBroken = 0;
-            st.legBroken = 0;
+          st.player.respect = i16(st.player.respect - 10);
+          st.player.resources.money = i16(
+            st.player.resources.money - round((st.player.health.max / 5) * 3)
+          );
+          st.player.health.current = st.player.health.max;
+          if (st.player.injuries.jaw || st.player.injuries.leg) {
+            st.player.resources.money = i16(st.player.resources.money - 7);
+            st.player.injuries.jaw = false;
+            st.player.injuries.leg = false;
           }
-          if (st.money < 0) {
-            st.respect += st.money;
-            st.money = 0;
+          if (st.player.resources.money < 0) {
+            st.player.respect = i16(st.player.respect + st.player.resources.money);
+            st.player.resources.money = 0;
           }
           over = true;
         } else {
@@ -117,29 +129,29 @@ export function fight(kind: FightKind) {
         }
       }
 
-      if (st.eHp <= 0) {
+      if (st.enemy.health.current <= 0) {
         yield* enemyDied(kind);
         over = true;
       }
     }
-    st.backup = 0;
+    st.combat.backup = 0;
   });
 }
 
 function greeting(kind: FightKind) {
   return Effect.gen(function* () {
-    const { st, mem } = yield* Game;
-    const type = mem.typeName(st.charType);
+    const st = yield* started;
+    const type = typeName(st.player.type);
     if (kind === 0 || kind === 6) {
-      if (st.eType <= 2) {
+      if (st.enemy.type <= 2) {
         yield* println(FIGHT.slyshVas);
         yield* println(FIGHT.aCheVasche);
-      } else if (st.eType <= 6) {
+      } else if (st.enemy.type <= 6) {
         yield* println(FIGHT.patsanTyIzKakogo);
         yield* println(FIGHT.aTyPoPinkam);
-      } else if (st.eType === 7) yield* println(FIGHT.eyMudak);
-      else if (st.eType === 8) yield* println(FIGHT.blinEtoZheIzvestnyy, st.name, type);
-      else if (st.eType === 9) {
+      } else if (st.enemy.type === 7) yield* println(FIGHT.eyMudak);
+      else if (st.enemy.type === 8) yield* println(FIGHT.blinEtoZheIzvestnyy, st.player.name, type);
+      else if (st.enemy.type === 9) {
         yield* println(FIGHT.yaManyak);
         yield* println(FIGHT.radPoznakomitsya, type);
       }
@@ -180,10 +192,10 @@ function extraHits(attacker: number, defender: number): number {
 }
 
 const crowdShout = Effect.gen(function* () {
-  const { st, mem } = yield* Game;
+  const st = yield* started;
   const r = yield* rnd(18);
-  if (r === 4) return [fmt(FIGHT.zriteliNePodkachayYa, mem.typeName(st.charType))];
-  if (r === 17) return [fmt(FIGHT.zriteliNuIKogo, st.name)];
+  if (r === 4) return [fmt(FIGHT.zriteliNePodkachayYa, typeName(st.player.type))];
+  if (r === 17) return [fmt(FIGHT.zriteliNuIKogo, st.player.name)];
   if (r === 8) return [FIGHT.zriteliDermovoDeretesPridurki, FIGHT.aTyZatknisMudak];
   return [CROWD[r]];
 });
@@ -216,109 +228,121 @@ function luckBeats(x: number, n: number) {
 
 function playerKicks(hits: number) {
   return Effect.gen(function* () {
-    const { st } = yield* Game;
+    const st = yield* started;
     let a = hits;
     for (;;) {
       const r = (yield* rnd(100)) + 1;
       if (a * 5 >= r && r <= 90) {
-        const prev = st.eHp;
-        let dmg = st.dmgMin + (yield* rnd(st.dmgMax - st.dmgMin)) + 1;
-        if (yield* luckBeats(st.luck * 3, 100)) {
-          dmg += st.dmgMax;
+        const prev = st.enemy.health.current;
+        let dmg =
+          st.player.damage.min + (yield* rnd(st.player.damage.max - st.player.damage.min)) + 1;
+        if (yield* luckBeats(st.player.stats.luck * 3, 100)) {
+          dmg += st.player.damage.max;
           const shout = yield* rnd(3);
           if (shout === 0) yield* println(FIGHT.tochnyyUdar);
           else if (shout === 1) yield* println(FIGHT.neHiloPrilozhil);
           else if (shout === 2) yield* println(FIGHT.dvoynoyUron);
         }
-        dmg -= st.eArmor;
+        dmg -= st.enemy.armor;
         if (dmg < 0) dmg = 0;
-        st.eHp -= dmg;
-        if (yield* luckBeats(st.luck * 3, st.eLuck * 3 + 200)) {
+        st.enemy.health.current = i16(st.enemy.health.current - dmg);
+        if (yield* luckBeats(st.player.stats.luck * 3, st.enemy.stats.luck * 3 + 200)) {
           if ((yield* rnd(2)) === 0) {
-            if (!st.eJawBroken) {
+            if (!st.enemy.injuries.jaw) {
               yield* println(FIGHT.tySlomalVraguChelyust);
-              st.eJawBroken = 1;
+              st.enemy.injuries.jaw = true;
             }
-          } else if (!st.eLegBroken) {
+          } else if (!st.enemy.injuries.leg) {
             yield* println(FIGHT.tySlomalVraguNogu);
-            st.eLegBroken = 1;
+            st.enemy.injuries.leg = true;
           }
         }
-        yield* println(FIGHT.tyPnulVragaNa, prev - st.eHp, st.eHp);
+        yield* println(
+          FIGHT.tyPnulVragaNa,
+          prev - st.enemy.health.current,
+          st.enemy.health.current
+        );
       } else yield* println(FIGHT.tyPromazal);
       a -= 18;
-      if (st.eHp <= 0) return;
+      if (st.enemy.health.current <= 0) return;
       if (a > 0) yield* println(FIGHT.izZaBolshoyLovkosti);
-      if (!(a > 0 && st.eHp >= 0)) return;
+      if (!(a > 0 && st.enemy.health.current >= 0)) return;
     }
   });
 }
 
 function enemyKicks(hits: number) {
   return Effect.gen(function* () {
-    const { st } = yield* Game;
+    const st = yield* started;
     let a = hits;
     for (;;) {
       const r = (yield* rnd(100)) + 1;
       if (a * 5 >= r && r <= 90) {
-        const prev = st.hp;
-        let dmg = st.eDmgMin + (yield* rnd(st.eDmgMax - st.eDmgMin)) + 1;
-        if (yield* luckBeats(st.eLuck * 3, 100)) {
-          dmg += st.eDmgMax;
+        const prev = st.player.health.current;
+        let dmg = st.enemy.damage.min + (yield* rnd(st.enemy.damage.max - st.enemy.damage.min)) + 1;
+        if (yield* luckBeats(st.enemy.stats.luck * 3, 100)) {
+          dmg += st.enemy.damage.max;
           const shout = yield* rnd(3);
           if (shout === 0) yield* println(FIGHT.vragSdohniUrod);
           else if (shout === 1) yield* println(FIGHT.tebeNeHiloVrezali);
           else if (shout === 2) yield* println(FIGHT.vragPoluchiGnida);
         }
-        dmg -= st.armor;
+        dmg -= st.player.armor;
         if (dmg < 0) dmg = 0;
-        st.hp -= dmg;
-        if (yield* luckBeats(st.eLuck * 3, st.luck * 3 + 200)) {
+        st.player.health.current = i16(st.player.health.current - dmg);
+        if (yield* luckBeats(st.enemy.stats.luck * 3, st.player.stats.luck * 3 + 200)) {
           if ((yield* rnd(2)) === 0) {
-            if (!st.jawBroken) {
-              if (!st.mouthGuard) {
+            if (!st.player.injuries.jaw) {
+              if (!st.player.body.mouth.guard) {
                 yield* println(FIGHT.vragSlomalTebeChelyust);
-                st.jawBroken = 1;
+                st.player.injuries.jaw = true;
               } else if ((yield* rnd(4)) === 0) {
                 yield* println(FIGHT.vragSlomalTebeChelyust2);
-                st.jawBroken = 1;
+                st.player.injuries.jaw = true;
               } else yield* println(FIGHT.zaschitaSpaslaTvoiKrivye);
             }
-          } else if (!st.legBroken) {
+          } else if (!st.player.injuries.leg) {
             yield* println(FIGHT.vragSlomalTebeNogu);
-            st.legBroken = 1;
+            st.player.injuries.leg = true;
           }
         }
-        yield* println(FIGHT.onPnulTebyaNa, prev - st.hp, st.hp);
+        yield* println(
+          FIGHT.onPnulTebyaNa,
+          prev - st.player.health.current,
+          st.player.health.current
+        );
       } else yield* println(FIGHT.vragPromazal);
       a -= 18;
       if (a > 0) yield* println(FIGHT.izZaBolshoyLovkosti2);
-      if (!(a > 0 && st.hp >= 0)) return;
+      if (!(a > 0 && st.player.health.current >= 0)) return;
     }
   });
 }
 
-/** running away takes back the stats of the last level-up ('1'..'4' = str/agi/vit/luck) */
-function loseStat(c: string) {
+/** running away takes back the stats of the last level-up */
+function loseStat(stat: StatKey) {
   return Effect.gen(function* () {
-    const { st } = yield* Game;
-    if (c === '1') {
-      st.str--;
+    const st = yield* started;
+    if (stat === 'strength') {
+      st.player.stats.strength = i16(st.player.stats.strength - 1);
       yield* print(FIGHT.sila1);
-      st.dmgMax--;
-      if (mod(st.str, 2) === 1) st.dmgMin--;
-      st.hpMax--;
-      if (st.hp > st.hpMax) st.hp = st.hpMax;
-    } else if (c === '2') {
-      st.agi--;
+      st.player.damage.max = i16(st.player.damage.max - 1);
+      if (mod(st.player.stats.strength, 2) === 1)
+        st.player.damage.min = i16(st.player.damage.min - 1);
+      st.player.health.max = i16(st.player.health.max - 1);
+      if (st.player.health.current > st.player.health.max)
+        st.player.health.current = st.player.health.max;
+    } else if (stat === 'agility') {
+      st.player.stats.agility = i16(st.player.stats.agility - 1);
       yield* print(FIGHT.lovkost1);
-    } else if (c === '3') {
-      st.vit--;
+    } else if (stat === 'vitality') {
+      st.player.stats.vitality = i16(st.player.stats.vitality - 1);
       yield* print(FIGHT.zhivuchest1);
-      st.hpMax -= 5;
-      if (st.hp > st.hpMax) st.hp = st.hpMax;
-    } else if (c === '4') {
-      st.luck--;
+      st.player.health.max = i16(st.player.health.max - 5);
+      if (st.player.health.current > st.player.health.max)
+        st.player.health.current = st.player.health.max;
+    } else if (stat === 'luck') {
+      st.player.stats.luck = i16(st.player.stats.luck - 1);
       yield* print(FIGHT.udacha1);
     }
   });
@@ -327,27 +351,32 @@ function loseStat(c: string) {
 /** `kos` — a joint: +2 strength for a while, heals up to 10 (fight: 3 turns, walking: 10) */
 export function smokeJoint(turns: number) {
   return Effect.gen(function* () {
-    const { st } = yield* Game;
-    if (st.jawBroken === 1) return yield* println(FIGHT.tyNeShavatKolesa);
-    if (st.stoned !== 0) return yield* println(FIGHT.tyNemozheshShavatEsche);
-    if (st.joints <= 0) return yield* println(FIGHT.uTebyaNetKosyakov);
-    st.joints--;
-    st.stoned = turns;
-    st.str += 2;
-    st.dmgMin++;
-    st.dmgMax += 2;
-    if (st.hpMax - st.hp < 10) {
-      yield* print(FIGHT.kolesaPribavlyayutZ, st.hpMax - st.hp);
-      st.hp = st.hpMax;
-      yield* println(FIGHT.zdorovyaOstalosKosyakov, st.hp, st.hpMax, st.joints);
+    const st = yield* started;
+    if (st.player.injuries.jaw) return yield* println(FIGHT.tyNeShavatKolesa);
+    if (st.player.stoned !== 0) return yield* println(FIGHT.tyNemozheshShavatEsche);
+    if (st.player.resources.joints <= 0) return yield* println(FIGHT.uTebyaNetKosyakov);
+    st.player.resources.joints = i16(st.player.resources.joints - 1);
+    st.player.stoned = u8(turns);
+    st.player.stats.strength = i16(st.player.stats.strength + 2);
+    st.player.damage.min = i16(st.player.damage.min + 1);
+    st.player.damage.max = i16(st.player.damage.max + 2);
+    if (st.player.health.max - st.player.health.current < 10) {
+      yield* print(FIGHT.kolesaPribavlyayutZ, st.player.health.max - st.player.health.current);
+      st.player.health.current = st.player.health.max;
+      yield* println(
+        FIGHT.zdorovyaOstalosKosyakov,
+        st.player.health.current,
+        st.player.health.max,
+        st.player.resources.joints
+      );
     } else {
-      st.hp += 10;
+      st.player.health.current = i16(st.player.health.current + 10);
       yield* println(
         turns === 3 ? FIGHT.kolesaPribavlyayutZZdorovya : FIGHT.kolesaPribavlyayutZZdorovya2,
         10,
-        st.hp,
-        st.hpMax,
-        st.joints
+        st.player.health.current,
+        st.player.health.max,
+        st.player.resources.joints
       );
     }
     yield* println(FIGHT.sila2);
@@ -355,62 +384,70 @@ export function smokeJoint(turns: number) {
 }
 
 const callBackup = Effect.gen(function* () {
-  const { st } = yield* Game;
-  if (st.denAccess === 1 && st.district * 10 + 10 <= st.respect) {
-    if (st.backup === 0) st.backup = 1;
-    if (st.phone === 1) {
-      st.backup = 3;
+  const st = yield* started;
+  if (st.world.places.den && st.world.district * 10 + 10 <= st.player.respect) {
+    if (st.combat.backup === 0) st.combat.backup = 1;
+    if (st.player.body.pockets.phone) {
+      st.combat.backup = 3;
       yield* println(FIGHT.podoshliPatsanySchaNachnetsya2);
     }
-  } else if (st.denAccess !== 0) yield* println(FIGHT.niKtoNeHochet);
+  } else if (st.world.places.den) yield* println(FIGHT.niKtoNeHochet);
   else yield* println(FIGHT.snachalaNadoSkoreshitsyaS);
-  if (st.backup > 0) {
-    if (st.backup < 3) yield* println(FIGHT.tebeNadoProderzhatsyaDo, 3 - st.backup);
-    else if (st.backup !== 3 || st.phone === 0) yield* println(FIGHT.oniUzheZdes);
+  if (st.combat.backup > 0) {
+    if (st.combat.backup < 3) yield* println(FIGHT.tebeNadoProderzhatsyaDo, 3 - st.combat.backup);
+    else if (st.combat.backup !== 3 || !st.player.body.pockets.phone)
+      yield* println(FIGHT.oniUzheZdes);
   }
 });
 
 const backupKicks = Effect.gen(function* () {
-  const { st } = yield* Game;
-  const prev = st.eHp;
-  let dmg = st.district * 3 + (yield* rnd(st.district * 4));
-  dmg -= div(st.eArmor, 3);
+  const st = yield* started;
+  const prev = st.enemy.health.current;
+  let dmg = st.world.district * 3 + (yield* rnd(st.world.district * 4));
+  dmg -= div(st.enemy.armor, 3);
   if (dmg < 0) dmg = 0;
-  st.eHp -= dmg;
-  yield* println(FIGHT.vragaOtpinaliNaZ, prev - st.eHp, st.eHp);
+  st.enemy.health.current = i16(st.enemy.health.current - dmg);
+  yield* println(FIGHT.vragaOtpinaliNaZ, prev - st.enemy.health.current, st.enemy.health.current);
   if ((yield* rnd(2)) === 0) {
-    st.backup++;
-    if (st.backup === 3) yield* println(FIGHT.podoshliPatsany);
+    st.combat.backup = i16(st.combat.backup + 1);
+    if (st.combat.backup === 3) yield* println(FIGHT.podoshliPatsany);
   }
-  if (st.backup === 7) {
-    st.backup = 0;
+  if (st.combat.backup === 7) {
+    st.combat.backup = 0;
     yield* println(FIGHT.tvoyuPodmoguOtpinali);
   }
-  st.respect -= st.district * 5;
-  if (st.respect <= 0) {
-    st.backup = 0;
+  st.player.respect = i16(st.player.respect - st.world.district * 5);
+  if (st.player.respect <= 0) {
+    st.combat.backup = 0;
     yield* println(FIGHT.podmogeNadoeloStolkoParitsya);
   }
 });
 
+/** `f`: only reached with a pistol in the pocket */
 const shoot = Effect.gen(function* () {
-  const { st } = yield* Game;
-  if (!st.trail && !st.silencer) return yield* println(FIGHT.telzyaTutStrelyatMenty);
-  if (st.bullets <= 0) return yield* println(FIGHT.cheZaBatvaBlin);
-  st.bullets--;
+  const st = yield* started;
+  const pistol = st.player.body.pockets.pistol!;
+  if (!st.world.trail && !pistol.silencer) return yield* println(FIGHT.telzyaTutStrelyatMenty);
+  if (pistol.bullets <= 0) return yield* println(FIGHT.cheZaBatvaBlin);
+  pistol.bullets = i16(pistol.bullets - 1);
   const aim = yield* rnd(50);
-  if (st.agi > aim) {
-    const prev = st.eHp;
-    st.eHp -= (yield* rnd(10)) + 20;
-    yield* println(FIGHT.tyVystrelilIRanil, prev - st.eHp, st.eHp, st.bullets);
+  if (st.player.stats.agility > aim) {
+    const prev = st.enemy.health.current;
+    st.enemy.health.current = i16(st.enemy.health.current - ((yield* rnd(10)) + 20));
+    yield* println(
+      FIGHT.tyVystrelilIRanil,
+      prev - st.enemy.health.current,
+      st.enemy.health.current,
+      pistol.bullets
+    );
   } else yield* println(FIGHT.etoBylHrenovyyVystrel);
 });
 
 function enemyDied(kind: FightKind) {
   return Effect.gen(function* () {
-    const { st } = yield* Game;
+    const st = yield* started;
     if (kind === 4) {
-      st.exp = st.expNext;
+      st.player.progression.exp = st.player.progression.expNext;
       yield* levelUp(true);
       yield* lines(
         FIGHT.tyZamochilSamogoRektora,
@@ -424,112 +461,146 @@ function enemyDied(kind: FightKind) {
       return yield* victoryAnimation;
     }
     if (kind === 3) {
-      st.exp = st.expNext;
+      st.player.progression.exp = st.player.progression.expNext;
       yield* levelUp(true);
       yield* lines(FIGHT.tyZamochilSamogoRektora2, FIGHT.etoBylProrektorSuntsa);
     } else yield* println(FIGHT.vragSdoh);
     const rector = kind === 3;
     if (!rector) {
-      const exp = st.eStr + st.eAgi + st.eVit + st.eLuck;
+      const exp =
+        st.enemy.stats.strength +
+        st.enemy.stats.agility +
+        st.enemy.stats.vitality +
+        st.enemy.stats.luck;
       yield* println(FIGHT.zaOtpinVragaTy, exp);
-      st.exp += exp;
+      st.player.progression.exp = i16(st.player.progression.exp + exp);
     }
-    if (st.exp < st.expNext) {
+    if (st.player.progression.exp < st.player.progression.expNext) {
       if (!rector) {
         yield* println(FIGHT.tyZapinalSlishkomSlabogo);
-        yield* println(FIGHT.seychasUTebyaKachkov, st.exp, st.expNext);
+        yield* println(
+          FIGHT.seychasUTebyaKachkov,
+          st.player.progression.exp,
+          st.player.progression.expNext
+        );
       }
     } else yield* levelUp(false);
-    st.beer += st.eBeer;
-    st.money += st.eMoney;
-    st.junk += st.eJunk;
+    st.player.resources.beer = i16(st.player.resources.beer + st.enemy.loot.beer);
+    st.player.resources.money = i16(st.player.resources.money + st.enemy.loot.money);
+    st.player.resources.junk = i16(st.player.resources.junk + st.enemy.loot.junk);
     yield* println(FIGHT.pivoPobeditelyu);
-    st.hp += 5;
-    if (st.hp > st.hpMax) st.hp = st.hpMax;
-    st.respect += st.eType + 1 + div(st.eLevel, 3);
-    if (st.denAccess === 0 && st.level - (st.district - 1) * 10 >= 3) {
-      st.denAccess = 1;
+    st.player.health.current = i16(st.player.health.current + 5);
+    if (st.player.health.current > st.player.health.max)
+      st.player.health.current = st.player.health.max;
+    st.player.respect = i16(st.player.respect + (st.enemy.type + 1 + div(st.enemy.level, 3)));
+    if (!st.world.places.den && st.player.progression.level - (st.world.district - 1) * 10 >= 3) {
+      st.world.places.den = true;
       yield* println(FIGHT.ponovostUlutshilasNaStolko);
     }
     if ((yield* rnd(30)) === 0) {
-      if (!(st.ringPg && st.megaRing && st.ringGp)) yield* println(FIGHT.obaNaKolechkoVot);
+      if (
+        !(
+          st.player.body.hands.rings.pomogi &&
+          st.player.body.hands.rings.mega &&
+          st.player.body.hands.rings.pomiluy
+        )
+      )
+        yield* println(FIGHT.obaNaKolechkoVot);
       yield* gainRing(FIGHT.megaKoltso);
     }
     yield* loot;
     if (kind === 6) {
-      st.respect += st.district * 20;
-      yield* println(FIGHT.tyOtpinalEtogoMudaka, st.district * 20);
-      yield* println(FIGHT.tyPoluchaeshKachkovOpyta, st.district * 10);
-      st.exp += st.district * 10;
+      st.player.respect = i16(st.player.respect + st.world.district * 20);
+      yield* println(FIGHT.tyOtpinalEtogoMudaka, st.world.district * 20);
+      yield* println(FIGHT.tyPoluchaeshKachkovOpyta, st.world.district * 10);
+      st.player.progression.exp = i16(st.player.progression.exp + st.world.district * 10);
       yield* levelUp(false);
     }
   });
 }
 
 const loot = Effect.gen(function* () {
-  const { st } = yield* Game;
-  if ((yield* luckAtLeast(st.district * 25)) && st.eType === 2) {
-    st.joints += yield* rnd(3);
+  const st = yield* started;
+  if ((yield* luckAtLeast(st.world.district * 25)) && st.enemy.type === 2) {
+    st.player.resources.joints = i16(st.player.resources.joints + (yield* rnd(3)));
     yield* println(FIGHT.aUNarkaByl);
   }
-  if (!(yield* luckAtLeast(st.district * 40))) return;
+  if (!(yield* luckAtLeast(st.world.district * 40))) return;
   const weapon = (n: number) => {
-    st.dmgMin += n;
-    st.dmgMax += n;
+    st.player.damage.min = i16(st.player.damage.min + n);
+    st.player.damage.max = i16(st.player.damage.max + n);
   };
-  if (st.eType === 1) {
+  if (st.enemy.type === 1) {
     const r = yield* rnd(3);
-    if (r === 0 && !st.cross) {
-      st.luck += 2;
+    if (r === 0 && !st.player.body.neck.cross) {
+      st.player.stats.luck = i16(st.player.stats.luck + 2);
       yield* println(FIGHT.tyNashelKrestikUdacha);
-      st.cross = 1;
-    } else if (r === 1 && !st.ringGs) {
-      st.luck++;
+      st.player.body.neck.cross = true;
+    } else if (r === 1 && !st.player.body.hands.rings.spasi) {
+      st.player.stats.luck = i16(st.player.stats.luck + 1);
       yield* println(FIGHT.tyNashelKoltsoGospodi);
-      st.ringGs = 1;
-    } else if (r === 2 && !st.phone) {
+      st.player.body.hands.rings.spasi = true;
+    } else if (r === 2 && !st.player.body.pockets.phone) {
       yield* println(FIGHT.tyNashelMobilu);
-      st.phone = 1;
+      st.player.body.pockets.phone = true;
     }
-  } else if (st.eType >= 3 && st.eType <= 6) {
+  } else if (st.enemy.type >= 3 && st.enemy.type <= 6) {
     const r = yield* rnd(2);
-    if (r === 0 && !st.knuckles) {
-      st.knuckles = 1;
+    if (r === 0 && !st.player.body.hands.weapons.knuckles) {
+      st.player.body.hands.weapons.knuckles = true;
       yield* println(FIGHT.tyNadybalKastetUron);
-      if (!st.knife && !st.club && !st.cleaver) weapon(2);
+      if (
+        !st.player.body.hands.weapons.knife &&
+        !st.player.body.hands.weapons.club &&
+        !st.player.body.hands.weapons.cleaver
+      )
+        weapon(2);
       else yield* println(FIGHT.noUTebyaEst);
-    } else if (r === 1 && !st.club) {
-      st.club = 1;
+    } else if (r === 1 && !st.player.body.hands.weapons.club) {
+      st.player.body.hands.weapons.club = true;
       yield* println(FIGHT.tyOtobralUVraga);
-      if (!st.knife && !st.cleaver) weapon(st.knuckles ? 2 : 4);
+      if (!st.player.body.hands.weapons.knife && !st.player.body.hands.weapons.cleaver)
+        weapon(st.player.body.hands.weapons.knuckles ? 2 : 4);
       else yield* println(FIGHT.noUTebyaEst);
     }
-  } else if (st.eType === 7) {
+  } else if (st.enemy.type === 7) {
     const r = yield* rnd(2);
-    if (r === 0 && !st.glasses) {
-      st.glasses = 1;
+    if (r === 0 && !st.player.body.eyes.glasses) {
+      st.player.body.eyes.glasses = true;
       yield* println(FIGHT.tyNashelTemnyeOchki);
-    } else if (r === 1 && !st.phone) {
+    } else if (r === 1 && !st.player.body.pockets.phone) {
       yield* println(FIGHT.tyNashelMobilu);
-      st.phone = 1;
+      st.player.body.pockets.phone = true;
     }
-  } else if (st.eType === 9) {
+  } else if (st.enemy.type === 9) {
     const r = yield* rnd(2);
-    if (r === 0 && !st.knife) {
-      st.knife = 1;
+    if (r === 0 && !st.player.body.hands.weapons.knife) {
+      st.player.body.hands.weapons.knife = true;
       yield* println(FIGHT.tyNashelNozhikUron);
       // sic: the original's boolean arithmetic, stacking bonuses
-      if ((st.club === 0 ? 1 : 0) === st.knuckles) weapon(4);
-      if (st.club) weapon(2);
-      if (!st.knuckles && !st.club && !st.cleaver) weapon(6);
-      if (st.cleaver) yield* println(FIGHT.noUtebyaEstTesak);
-    } else if (r === 1 && !st.cleaver) {
-      st.cleaver = 1;
+      const w = st.player.body.hands.weapons;
+      if (!w.club === w.knuckles) weapon(4);
+      if (st.player.body.hands.weapons.club) weapon(2);
+      if (
+        !st.player.body.hands.weapons.knuckles &&
+        !st.player.body.hands.weapons.club &&
+        !st.player.body.hands.weapons.cleaver
+      )
+        weapon(6);
+      if (st.player.body.hands.weapons.cleaver) yield* println(FIGHT.noUtebyaEstTesak);
+    } else if (r === 1 && !st.player.body.hands.weapons.cleaver) {
+      st.player.body.hands.weapons.cleaver = true;
       yield* println(FIGHT.tyNashelTesakUron);
-      if ((!st.club && !st.knife ? 1 : 0) === st.knuckles) weapon(7);
-      if (st.club && !st.knife) weapon(5);
-      if (st.knife) weapon(3);
-      if (!st.knuckles && !st.club && !st.knife) weapon(9);
+      const w = st.player.body.hands.weapons;
+      if ((!w.club && !w.knife) === w.knuckles) weapon(7);
+      if (st.player.body.hands.weapons.club && !st.player.body.hands.weapons.knife) weapon(5);
+      if (st.player.body.hands.weapons.knife) weapon(3);
+      if (
+        !st.player.body.hands.weapons.knuckles &&
+        !st.player.body.hands.weapons.club &&
+        !st.player.body.hands.weapons.knife
+      )
+        weapon(9);
     }
   }
 });

@@ -1,6 +1,7 @@
 import { describe, expect, it } from '@effect/vitest';
 import { Effect } from 'effect';
 
+import { i16 } from '../../src/tp/num';
 import { hero, play } from '../../test/game';
 import { PRICE } from '../data/tables';
 import { market } from './places';
@@ -12,9 +13,12 @@ describe('market (0000:B940)', () => {
     Effect.gen(function* () {
       const { st } = yield* play(market, {
         keys: keys('2', '2', 'w'),
-        setup: (s) => (hero(s), (s.money = 12)),
+        setup: (s) => (hero(s), (s.player.resources.money = 12)),
       });
-      expect([st.money, st.beer]).toEqual([12 - 2 * PRICE.beer, 2]);
+      expect([st.player.resources.money, st.player.resources.beer]).toEqual([
+        12 - 2 * PRICE.beer,
+        2,
+      ]);
     })
   );
 
@@ -22,9 +26,18 @@ describe('market (0000:B940)', () => {
     Effect.gen(function* () {
       const { st, lines } = yield* play(market, {
         keys: keys('2', '1', 'w'),
-        setup: (s) => (hero(s), (s.money = 3), (s.hp = 10), (s.jawBroken = 1)),
+        setup: (s) => (
+          hero(s),
+          (s.player.resources.money = 3),
+          (s.player.health.current = 10),
+          (s.player.injuries.jaw = true)
+        ),
       });
-      expect([st.money, st.beer, st.hp]).toEqual([3, 0, 10]);
+      expect([
+        st.player.resources.money,
+        st.player.resources.beer,
+        st.player.health.current,
+      ]).toEqual([3, 0, 10]);
       expect(lines).toEqual(
         expect.arrayContaining(['Не хватает', 'Ты не можешь хавать из-за сломаной челюсти.'])
       );
@@ -35,10 +48,14 @@ describe('market (0000:B940)', () => {
     Effect.gen(function* () {
       const { st, lines } = yield* play(market, {
         keys: keys('7', 'w'),
-        setup: (s) => (hero(s), (s.money = 40)),
+        setup: (s) => (hero(s), (s.player.resources.money = 40)),
       });
       expect(lines.some((l) => l.includes('adidas'))).toBe(false);
-      expect([st.adidas, st.armor, st.money]).toEqual([1, 2, 40 - PRICE.adidas]);
+      expect([st.player.body.torso.adidas, st.player.armor, st.player.resources.money]).toEqual([
+        true,
+        2,
+        40 - PRICE.adidas,
+      ]);
     })
   );
 
@@ -48,7 +65,7 @@ describe('market (0000:B940)', () => {
         const { rand } = yield* play(market, {
           seed: 11,
           keys: [...keys('t'), ...keys('run'), ...keys('w')],
-          setup: (s) => (hero(s), (s.luck = luck)),
+          setup: (s) => (hero(s), (s.player.stats.luck = i16(luck))),
         });
         expect(rand[0].n).toBe(10);
       }
@@ -60,10 +77,10 @@ describe('market (0000:B940)', () => {
       const { st, lines } = yield* play(market, {
         seed: 11,
         keys: [...keys('t'), ...keys('run')],
-        setup: (s) => (hero(s), (s.luck = -642)),
+        setup: (s) => (hero(s), (s.player.stats.luck = i16(-642))),
       });
       expect(lines).toContain('Корявый! ты попался!');
-      expect([st.marketHeat, st.input]).toEqual([5, 'w']);
+      expect([st.world.heat.market, st.scratch.input]).toEqual([5, 'w']);
     })
   );
 });

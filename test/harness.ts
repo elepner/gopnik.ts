@@ -11,7 +11,8 @@ import { Dos, IMG, keyCode, LOAD_SEG, VIDEO } from '../oracle/dos';
 import { biosKey, EndOfInput, type IKeyboard, makeCrt } from '../src/crt/crt';
 import { Game } from '../src/game/prelude';
 import { gameLayer, program } from '../src/runtime';
-import { snapshot } from '../src/state/layout';
+import { snapshot, snapshotState } from '../src/state/legacy';
+import type { GameState } from '../src/state/state';
 import { Seed } from '../src/tp/brands';
 import { CP866 as CP } from '../src/tp/cp866';
 import { Rng, type RandCall } from '../src/tp/rng';
@@ -84,7 +85,7 @@ export async function runPort(seed: number, keys: readonly string[], dir: string
   const crt = makeCrt();
   const queue = [...keys];
   const snaps: Snapshot[] = [];
-  let mem: Uint8Array | undefined;
+  let state: GameState | undefined;
   let log: readonly RandCall[] = [];
   let prints: readonly PrintRecord[] = [];
   // a key seen by KeyPressed was already "in the buffer": reading it is not a new wait
@@ -92,7 +93,11 @@ export async function runPort(seed: number, keys: readonly string[], dir: string
   const keyboard: IKeyboard = {
     read: Effect.suspend(() => {
       if (!polled)
-        snaps.push({ cells: crt.screen.cells.slice(), state: snapshot(mem!), rand: log.length });
+        snaps.push({
+          cells: crt.screen.cells.slice(),
+          state: snapshotState(state!),
+          rand: log.length,
+        });
       polled = false;
       const k = queue.shift();
       if (k === undefined) return Effect.fail(new EndOfInput());
@@ -104,7 +109,7 @@ export async function runPort(seed: number, keys: readonly string[], dir: string
   const exit = await Effect.runPromiseExit(
     Effect.gen(function* () {
       const game = yield* Game;
-      mem = game.mem.bytes;
+      state = game.st;
       prints = game.transcript;
       log = yield* (yield* Rng).log;
       yield* program;

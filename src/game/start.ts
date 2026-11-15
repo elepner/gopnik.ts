@@ -2,41 +2,44 @@
 import { Effect } from 'effect';
 
 import { clrScr, readKey, readLine, writeLn } from '../crt/crt';
-import { District, SaveName, TypeId } from '../tp/brands';
-import { div, val } from '../tp/num';
-import { Disk, Game, println, print } from './prelude';
+import { decodeSave, decodePlaces } from '../state/legacy';
+import { CHARACTER_TYPES, startGame } from '../state/state';
+import { District, SaveName } from '../tp/brands';
+import { div, i16, u8, val } from '../tp/num';
+import { Disk, Game, println, print, started } from './prelude';
 import { titleScreen } from './screens';
 import { START } from './texts';
 
 /** 0000:6A0D */
 export const newGame = Effect.gen(function* () {
-  const { st, mem } = yield* Game;
+  const { st } = yield* Game;
   const disk = yield* Disk;
   yield* clrScr;
-  st.dir = 'C:\\GOP\\';
+  st.scratch.dir = 'C:\\GOP\\';
   yield* titleScreen;
   // Randomize happens here; the Rng service is seeded when it is created
-  st.saveCount = 0;
+  st.scratch.saveCount = 0;
   const saves = yield* disk.list(/^save_r.\.sav$/i);
   for (const name of saves) {
-    if (st.saveCount > 0) yield* println(START.ili);
-    st.saveCount++;
+    if (st.scratch.saveCount > 0) yield* println(START.ili);
+    st.scratch.saveCount = u8(st.scratch.saveCount + 1);
     const ch = name.toUpperCase()[6];
     if (ch !== '0') yield* println(START.mozhnoNachatSRayona, ch);
     if (ch === '0') yield* println(START.mozhnoNachatSTogo);
   }
-  if (st.saveCount > 0) {
+  if (st.scratch.saveCount > 0) {
     yield* println(START.nazhmiTsifruSKakogo);
-    st.saveKey = yield* readKey;
-    const key = String.fromCharCode(st.saveKey);
+    st.scratch.saveKey = u8(yield* readKey);
+    const key = String.fromCharCode(st.scratch.saveKey);
     if ('23450'.includes(key)) {
       const rec = yield* disk.read(SaveName(`save_r${key}.sav`));
       if (rec) {
-        st.district = District(val(key)[0]);
-        mem.loadRecord(rec);
+        st.world.district = District(val(key)[0]);
+        decodeSave(st, rec);
         yield* println(START.zagruzhenoIzSaveR, key);
-        if (st.district === 0) yield* loadPlaces;
-        if (st.district === 0) st.district = District(div(st.level, 10) + 1);
+        if (st.world.district === 0) yield* loadPlaces;
+        if (st.world.district === 0)
+          st.world.district = District(div(st.player.progression.level, 10) + 1);
         return yield* arrive;
       }
       yield* println(START.cheToGlyukanuloNaverno);
@@ -47,10 +50,10 @@ export const newGame = Effect.gen(function* () {
 });
 
 const loadPlaces = Effect.gen(function* () {
-  const { mem } = yield* Game;
+  const st = yield* started;
   const places = yield* (yield* Disk).read(SaveName('places.sav'));
   if (places) {
-    mem.loadPlaces(places);
+    decodePlaces(st, places);
     yield* println(START.zagruzhenoIzPlaces);
     return;
   }
@@ -60,24 +63,24 @@ const loadPlaces = Effect.gen(function* () {
 
 /** places a character type keeps when moving to a new district (also used on load failure) */
 export const resetPlaces = Effect.gen(function* () {
-  const { st } = yield* Game;
-  st.knowsHospital = 0;
-  st.knowsMarket = 0;
-  if (st.charType !== 3) st.knowsClub = 0;
-  st.knowsGym = 0;
-  if (st.charType !== 3) st.hasGirl = 0;
-  st.knowsDealers = 0;
-  if (st.charType !== 5) st.denAccess = 0;
+  const st = yield* started;
+  st.world.places.hospital = false;
+  st.world.places.market = false;
+  if (st.player.type !== 'patsan') st.world.places.club = false;
+  st.world.places.gym = false;
+  if (st.player.type !== 'patsan') st.world.places.girlfriend = false;
+  st.world.places.dealers = false;
+  if (st.player.type !== 'gopnik') st.world.places.den = false;
 });
 
 /** 0000:6DBE */
 const createCharacter = Effect.gen(function* () {
-  const { st } = yield* Game;
-  st.district = District(1);
-  st.knowsHospital = 1;
-  st.knowsMarket = 1;
+  const st = yield* creating;
+  st.world.district = District(1);
+  st.world.places.hospital = true;
+  st.world.places.market = true;
   st.version = START.gopnikVersion102;
-  st.expNext = 10;
+  st.player.progression.expNext = 10;
   yield* println(START.god2xxxOtR);
   yield* readKey;
   yield* println(START.posledniyDenTyPrishel);
@@ -101,8 +104,8 @@ const createCharacter = Effect.gen(function* () {
   for (const line of TYPE_MENU) yield* println(line);
   yield* println(START.n4CheZaBatva);
   yield* readType;
-  if (st.charType === 4) {
-    st.charType = TypeId(0);
+  if (st.typeChoice === 4) {
+    st.typeChoice = 0;
     yield* writeLn;
     yield* println(START.patsanEtoNormalnyyTip);
     yield* println(START.otmorozokTupoyKoryavyyMudak);
@@ -113,21 +116,21 @@ const createCharacter = Effect.gen(function* () {
     for (const line of TYPE_MENU) yield* println(line);
     yield* readType;
   }
-  if (st.charType < 0 || st.charType > 3) st.charType = TypeId(0);
-  const [str, agi, vit, luck] = START_STATS[st.charType];
-  st.str = str;
-  st.agi = agi;
-  st.vit = vit;
-  st.luck = luck;
-  st.charType = TypeId(st.charType + 3);
-  st.hpMax = st.vit * 5 + 10 + st.str;
-  st.hp = st.hpMax;
-  st.dmgMin = div(st.str, 2);
-  st.dmgMax = st.str;
+  if (st.typeChoice < 0 || st.typeChoice > 3) st.typeChoice = 0;
+  const [str, agi, vit, luck] = START_STATS[st.typeChoice];
+  st.player.stats.strength = i16(str);
+  st.player.stats.agility = i16(agi);
+  st.player.stats.vitality = i16(vit);
+  st.player.stats.luck = i16(luck);
+  startGame(st, CHARACTER_TYPES[st.typeChoice]);
+  st.player.health.max = i16(st.player.stats.vitality * 5 + 10 + st.player.stats.strength);
+  st.player.health.current = st.player.health.max;
+  st.player.damage.min = i16(div(st.player.stats.strength, 2));
+  st.player.damage.max = st.player.stats.strength;
   yield* print(START.aZovutTebya);
-  st.name = yield* readLine;
-  if (st.name === '') st.name = START.razDolBay;
-  st.name = START.namePrefix + st.name;
+  st.player.name = yield* readLine;
+  if (st.player.name === '') st.player.name = START.razDolBay;
+  st.player.name = START.namePrefix + st.player.name;
 });
 
 const TYPE_MENU = [START.n0Patsan, START.n1Otmorozok, START.n2Gopnik, START.n3Vor];
@@ -141,17 +144,17 @@ const START_STATS = [
 ] as const;
 
 const readType = Effect.gen(function* () {
-  const { st } = yield* Game;
-  st.tmp = yield* readLine;
-  const [v, code] = val(st.tmp);
-  st.charType = TypeId(v);
-  st.valCode = code;
+  const st = yield* creating;
+  st.scratch.tmp = yield* readLine;
+  const [v, code] = val(st.scratch.tmp);
+  st.typeChoice = i16(v);
+  st.scratch.valCode = i16(code);
 });
 
 /** 0000:7262 — district intro, starting bonuses of the character type */
 const arrive = Effect.gen(function* () {
-  const { st } = yield* Game;
-  switch (st.district) {
+  const st = yield* started;
+  switch (st.world.district) {
     case 1:
       yield* println(START.tyStoishUDverey);
       yield* println(START.otsyudaTyNachneshSvoy);
@@ -170,18 +173,25 @@ const arrive = Effect.gen(function* () {
       break;
     case 5:
       yield* println(START.poraNakonetsOtomstitRektoru);
-      st.rector = 1;
+      st.world.rector = true;
       break;
   }
-  if (st.district === 1) {
+  if (st.world.district === 1) {
     yield* println(START.dokazatSvoyuKrutiznuTy);
     yield* println(START.tebePridetsyaPorabotatNad);
     yield* println(START.vvediIChtobyPosmotret);
   }
-  if (st.charType === 5) st.denAccess = 1;
-  else if (st.charType === 3) {
-    st.hasGirl = 1;
-    st.knowsClub = 1;
-  } else if (st.charType === 6) st.knowsDealers = 1;
-  st.loans = 5;
+  if (st.player.type === 'gopnik') st.world.places.den = true;
+  else if (st.player.type === 'patsan') {
+    st.world.places.girlfriend = true;
+    st.world.places.club = true;
+  } else if (st.player.type === 'vor') st.world.places.dealers = true;
+  st.world.den.loans = 5;
+});
+
+/** the state while the character is being created */
+const creating = Effect.gen(function* () {
+  const { st } = yield* Game;
+  if (st.phase !== 'not-started') throw new Error('the character already exists');
+  return st;
 });

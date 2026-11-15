@@ -6,7 +6,7 @@
 import { join } from 'node:path';
 
 import { Dos, IMG, LOAD_SEG, VIDEO } from '../oracle/dos';
-import { snapshot } from '../src/state/layout';
+import { snapshot } from '../src/state/legacy';
 import { CP866 } from '../src/tp/cp866';
 import { compare, screenText } from './harness';
 

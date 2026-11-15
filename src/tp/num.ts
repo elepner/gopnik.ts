@@ -5,6 +5,11 @@ export function i16(x: number): number {
   return (x << 16) >> 16;
 }
 
+/** wrap to Byte */
+export function u8(x: number): number {
+  return x & 0xff;
+}
+
 /** wrap to Longint */
 export function i32(x: number): number {
   return x | 0;
