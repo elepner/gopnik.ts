@@ -116,7 +116,12 @@
   with `push`. The loop (`fight`, `kickSeries`) runs the rules and `tell`s returned events right
   away: `fight-view.ts` turns events into texts and key pauses and reads what the state already
   knows (health left, bullets, names) from the state. Don't put state into events.
-- `fight(kind)` only fights and returns its outcome (`won`, `died`, `fled`, `bailedOut`); the
+- Every fight is the same loop; what differs is a `FightRules` object: the crowd (a `Rule`; the
+  rector's fights roll nothing), `flee`, whether the den lads bail the hero out, and the backup
+  (`DEN_LADS`: access, arrival and beaten counts). `STREET_FIGHT` and `RECTOR_FIGHT`; the fight
+  never reads `world.rector`. The caller picks the enemy, `tell`s its `greeting` and settles the
+  outcome.
+- `fight(rules)` only fights and returns its outcome (`won`, `died`, `fled`, `bailedOut`); the
   caller decides what follows, right after the call (not later in the main loop: places go on
   printing and reading after a fight). `aftermath.ts`: `settle(outcome)` claims a victory or ends
   the game; the rector's fights use `beatFakeRector`/`beatRector`/`killedByRector`, the den adds

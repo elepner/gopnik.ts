@@ -5,7 +5,7 @@ import { i16 } from '../../src/tp/num';
 import { hero, play } from '../../test/game';
 import type { GameState as State } from '../state/state';
 import { claimVictory } from './aftermath';
-import { fight } from './fight';
+import { fight, RECTOR_FIGHT, STREET_FIGHT } from './fight';
 
 /** a sturdy Гопник of level 5 in front of the hero */
 function enemy(st: State) {
@@ -26,7 +26,7 @@ const keys = (line: string) => [...line, 'enter'];
 describe('fight (0000:3D11)', () => {
   it.effect('running away takes back the last level-up', () =>
     Effect.gen(function* () {
-      const { st, lines } = yield* play(fight('street'), {
+      const { st, lines } = yield* play(fight(STREET_FIGHT), {
         keys: keys('run'),
         setup: (s) => {
           hero(s);
@@ -57,14 +57,14 @@ describe('fight (0000:3D11)', () => {
 
   it.effect('no running on a broken leg or from the rector', () =>
     Effect.gen(function* () {
-      const leg = yield* play(fight('street'), {
+      const leg = yield* play(fight(STREET_FIGHT), {
         keys: keys('run'),
         setup: (s) => (hero(s), enemy(s), (s.player.injuries.leg = true)),
       });
       expect(leg.lines).toContain('Ты не можешь убежать на сломаной ноге.');
-      const rector = yield* play(fight('fakeRector'), {
-        keys: [' ', ' ', ' ', ' ', ...keys('run')],
-        setup: (s) => (hero(s), enemy(s), (s.world.rector = true)),
+      const rector = yield* play(fight(RECTOR_FIGHT), {
+        keys: keys('run'),
+        setup: (s) => (hero(s), enemy(s)),
       });
       expect(rector.lines).toContain('Ректор: Кудa? Стоять! Бейся до конца трусливый урод!');
     })
@@ -72,7 +72,7 @@ describe('fight (0000:3D11)', () => {
 
   it.effect('a joint in a fight: 3 turns stoned, +2 strength, up to 10 health', () =>
     Effect.gen(function* () {
-      const { st } = yield* play(fight('street'), {
+      const { st } = yield* play(fight(STREET_FIGHT), {
         keys: [...keys('kos'), ...keys('run')],
         setup: (s) => (
           hero(s),
@@ -95,7 +95,7 @@ describe('fight (0000:3D11)', () => {
   it.effect('the crit check calls Random(100) after the damage roll, even with negative luck', () =>
     Effect.gen(function* () {
       for (const luck of [3, -642]) {
-        const { rand } = yield* play(fight('street'), {
+        const { rand } = yield* play(fight(STREET_FIGHT), {
           seed: 5,
           keys: keys('k'),
           setup: (s) => (
@@ -113,7 +113,7 @@ describe('fight (0000:3D11)', () => {
 
   it.effect('winning pays experience, loot and a beer', () =>
     Effect.gen(function* () {
-      const won = Effect.flatMap(fight('street'), (outcome) =>
+      const won = Effect.flatMap(fight(STREET_FIGHT), (outcome) =>
         outcome === 'won' ? claimVictory : Effect.die(`not won: ${outcome}`)
       );
       const { st, lines } = yield* play(won, {

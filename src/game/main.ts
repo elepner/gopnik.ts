@@ -11,7 +11,8 @@ import { beatFakeRector, beatRector, killedByRector, settle } from './aftermath'
 import { CMD, type Command, parseCommand } from './commands';
 import { saveMage, temple } from './encounters';
 import { setupRector, spawnEnemy } from './enemy';
-import { fight, smokeJoint } from './fight';
+import { fight, RECTOR_FIGHT, smokeJoint, STREET_FIGHT } from './fight';
+import { tell } from './fight-view';
 import { drinkBeer, showStats } from './hero';
 import { club, dealers, den, girlfriend, gym, market, prompt, vet } from './places';
 import {
@@ -42,11 +43,15 @@ const turn = Effect.gen(function* () {
     yield* nextDistrict;
   if (st.world.rector) {
     st.world.places.den = true;
-    // no running from the rector and no lads to pick you up: his fights end in a victory or death
+    // the rector's fights end in a victory or death
     yield* setupRector(0);
-    yield* (yield* fight('fakeRector')) === 'won' ? beatFakeRector : killedByRector;
+    yield* tell({ type: 'greeting', by: 'fakeRector' });
+    const fake = yield* fight(RECTOR_FIGHT);
+    yield* fake === 'won' ? beatFakeRector : killedByRector;
     yield* setupRector(1);
-    yield* (yield* fight('rector')) === 'won' ? beatRector : killedByRector;
+    yield* tell({ type: 'greeting', by: 'rector' });
+    const real = yield* fight(RECTOR_FIGHT);
+    yield* real === 'won' ? beatRector : killedByRector;
   }
   yield* print(plain`\\`);
   const cmd = parseCommand('main', lowerCase(yield* readLine));
@@ -275,7 +280,10 @@ const meetSomeone = Effect.gen(function* () {
       engaged = true;
     }
   }
-  if (engaged) yield* settle(yield* fight('street'));
+  if (engaged) {
+    yield* tell({ type: 'greeting', by: 'enemy' });
+    yield* settle(yield* fight(STREET_FIGHT));
+  }
 });
 
 const nothingHappens = Effect.gen(function* () {

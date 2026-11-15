@@ -64,3 +64,9 @@ each entry names the original code address and the place in the port.
     wrapped value, and `money` itself can wrap negative after a big theft. The port stores state
     in the original byte layout, so it wraps identically. Note for porting: every luck check of
     the original calls `Random` _before_ comparing, also when the luck is negative.
+14. **"Подошли пацаны." after the lads' kicks can never show** — `0000:4DA7`: the lads kick only
+    when the backup counter is at least 3; then, with Random(2) = 0, it grows by one and is
+    compared with 3 to say the lads arrived. After the increment it is at least 4, so the line is
+    dead (the counter goes on towards 7, when the lads get beaten up). Probably the lads were
+    meant to arrive on their own once, before the entry condition changed. The port keeps the
+    check (`backupKicks`); it costs no Random.

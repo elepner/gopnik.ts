@@ -10,13 +10,15 @@ import { readKey, writeLn } from '../crt/crt';
 import { type CharacterType, ENEMIES } from '../state/kinds';
 import { typeName } from '../state/names';
 import { type Health, type StatKey } from '../state/state';
-import type { FightKind } from './fight';
 import { type ChainRing, ringLines, showStats } from './hero';
 import { print, println, started } from './prelude';
 import type { Text } from './text';
 import { FIGHT } from './texts';
 
 export type Side = 'hero' | 'enemy';
+
+/** `enemy`: a line by the enemy's group; the others are fixed speeches */
+export type Greeting = 'enemy' | 'caughtStealing' | 'fakeRector' | 'rector';
 
 /** a kick that landed */
 export interface Hit {
@@ -38,7 +40,8 @@ export type LootItem =
   | 'cleaver';
 
 export type FightEvent =
-  | { readonly type: 'greeting'; readonly kind: FightKind }
+  /** what the enemy says first; a fight may also start without a word */
+  | { readonly type: 'greeting'; readonly by: Greeting }
   /** the opponent's agility takes kicks away */
   | {
       readonly type: 'slowedDown';
@@ -105,7 +108,7 @@ function show(event: FightEvent) {
     const st = yield* started;
     switch (event.type) {
       case 'greeting':
-        return yield* greeting(event.kind);
+        return yield* greeting(event.by);
       case 'slowedDown':
         return yield* println(
           event.side === 'enemy'
@@ -257,13 +260,13 @@ function show(event: FightEvent) {
   });
 }
 
-function greeting(kind: FightKind) {
+function greeting(by: Greeting) {
   return Effect.gen(function* () {
     const st = yield* started;
     const hero = st.player;
     const enemy = ENEMIES[st.enemy.type].group;
     const type = typeName(hero.type);
-    if (kind === 'street' || kind === 'denHelp') {
+    if (by === 'enemy') {
       if (enemy === 'weakling') {
         yield* println(FIGHT.slyshVas());
         yield* println(FIGHT.aCheVasche());
@@ -276,15 +279,15 @@ function greeting(kind: FightKind) {
         yield* println(FIGHT.yaManyak());
         yield* println(FIGHT.radPoznakomitsya(type));
       }
-    } else if (kind === 'caughtStealing') yield* println(FIGHT.otdayKoshelekUrod());
-    else if (kind === 'fakeRector')
+    } else if (by === 'caughtStealing') yield* println(FIGHT.otdayKoshelekUrod());
+    else if (by === 'fakeRector')
       yield* pausedLines(
         FIGHT.nuVotMyI(),
         FIGHT.cheTeNadaKozel(),
         FIGHT.urytTebyaUblyudok(),
         FIGHT.nuTyMenyaDostal()
       );
-    else if (kind === 'rector')
+    else if (by === 'rector')
       yield* pausedLines(
         FIGHT.tutZahoditNastoyaschiyRektor(),
         FIGHT.mudakTyTupoyDebil(),

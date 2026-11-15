@@ -392,3 +392,36 @@ function* heroInjuries(st: Game): Generator<Text> {
   if (st.player.injuries.leg) yield HERO.slomanaNoga();
   if (st.player.stoned > 0) yield HERO.obdolbanyy();
 }
+
+/** running away: the stats of the last level-up and the level itself are taken back */
+export function levelDown(st: Game): readonly StatKey[] {
+  const progression = st.player.progression;
+  const lost = progression.history[progression.level] ?? [];
+  progression.history[progression.level] = [];
+  for (const stat of lost) loseStat(st, stat);
+  progression.level = i16(progression.level - 1);
+  progression.expNext = i16(progression.expNext - 10);
+  if (progression.exp >= progression.expNext) progression.exp = i16(progression.expNext - 1);
+  return lost;
+}
+
+function loseStat(st: Game, stat: StatKey) {
+  if (stat === 'strength') {
+    st.player.stats.strength = i16(st.player.stats.strength - 1);
+    st.player.damage.max = i16(st.player.damage.max - 1);
+    if (mod(st.player.stats.strength, 2) === 1)
+      st.player.damage.min = i16(st.player.damage.min - 1);
+    st.player.health.max = i16(st.player.health.max - 1);
+    if (st.player.health.current > st.player.health.max)
+      st.player.health.current = st.player.health.max;
+  } else if (stat === 'agility') {
+    st.player.stats.agility = i16(st.player.stats.agility - 1);
+  } else if (stat === 'vitality') {
+    st.player.stats.vitality = i16(st.player.stats.vitality - 1);
+    st.player.health.max = i16(st.player.health.max - 5);
+    if (st.player.health.current > st.player.health.max)
+      st.player.health.current = st.player.health.max;
+  } else if (stat === 'luck') {
+    st.player.stats.luck = i16(st.player.stats.luck - 1);
+  }
+}

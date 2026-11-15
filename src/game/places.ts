@@ -8,7 +8,8 @@ import { i16, mod, u8 } from '../tp/num';
 import { denHelpReward, settle } from './aftermath';
 import { CMD, NO_ANSWER, parseCommand } from './commands';
 import { spawnEnemy } from './enemy';
-import { fight } from './fight';
+import { fight, STREET_FIGHT } from './fight';
+import { tell } from './fight-view';
 import { levelUp } from './hero';
 import { lowerCase, luckAtLeast, print, println, rnd, started } from './prelude';
 import { type Color, type Text } from './text';
@@ -161,7 +162,8 @@ const pickpocket = Effect.gen(function* () {
   yield* spawnEnemy(1);
   yield* println(PLACES.koryavyyTyPopalsya());
   yield* println(PLACES.etoUrovnya(typeName(st.enemy.type), st.enemy.level));
-  yield* settle(yield* fight('caughtStealing'));
+  yield* tell({ type: 'greeting', by: 'caughtStealing' });
+  yield* settle(yield* fight(STREET_FIGHT));
   yield* println(PLACES.blinMentyZapalyatSmatyvaysya());
   st.session.lastAnswer = CMD.market.leave;
   st.world.heat.market = 5;
@@ -500,7 +502,8 @@ export const den = Effect.gen(function* () {
     ) {
       yield* spawnEnemy(1);
       yield* println(PLACES.etoUrovnya(typeName(st.enemy.type), st.enemy.level));
-      const outcome = yield* fight('denHelp');
+      yield* tell({ type: 'greeting', by: 'enemy' });
+      const outcome = yield* fight(STREET_FIGHT);
       yield* settle(outcome);
       if (outcome === 'won') yield* denHelpReward;
       st.world.den.helpQuest = false;
@@ -546,7 +549,7 @@ const job = Effect.gen(function* () {
     if (yield* luckAtLeast(st.world.district * 15)) yield* println(PLACES.tySmylsyaOtMentov());
     else {
       yield* spawnEnemy(2);
-      yield* settle(yield* fight('cops'));
+      yield* settle(yield* fight(STREET_FIGHT));
       yield* println(PLACES.poraValit());
     }
   }
@@ -617,7 +620,7 @@ function playCards(stake: number) {
     yield* println(PLACES.tyPoluchaeshKachkovOpyta(st.world.district * 5));
     st.player.progression.exp = i16(st.player.progression.exp + st.world.district * 5);
     yield* levelUp(false);
-    yield* settle(yield* fight('caughtCheating'));
+    yield* settle(yield* fight(STREET_FIGHT));
     yield* println(PLACES.unosiNogiPokaNe());
     st.world.heat.club = 5;
     st.session.lastAnswer = CMD.club.leave;
