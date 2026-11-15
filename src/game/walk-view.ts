@@ -10,12 +10,16 @@ import { MAIN } from './texts';
 import type { View } from './view';
 
 export type WalkEvent =
+  /** the time a walk takes: the joint wears off, loans refill, the heat cools, the hero heals */
+  | { readonly type: 'walkStepped' }
   /** the joint wore off */
   | { readonly type: 'walkSoberedUp' }
   /** `run` instead of `w` */
   | { readonly type: 'walkRan' }
   /** the dealers call: the pistol's 25 walks are over */
   | { readonly type: 'walkDealersCalled' }
+  /** the den has a quest now (the call comes only with a phone) */
+  | { readonly type: 'walkDenQuest'; readonly quest: 'help' | 'job' }
   /** the den calls: a lad needs help */
   | { readonly type: 'walkDenCalledForHelp' }
   /** the den calls: there is a job */
@@ -59,6 +63,8 @@ export type WalkEvent =
 /** walking as the player sees it */
 export const walkView: View<WalkEvent> = {
   events: {
+    walkStepped: true,
+    walkDenQuest: true,
     walkSoberedUp: true,
     walkRan: true,
     walkDealersCalled: true,
@@ -94,6 +100,9 @@ function showWalk(event: WalkEvent) {
   return Effect.gen(function* () {
     const st = yield* started;
     switch (event.type) {
+      case 'walkStepped':
+      case 'walkDenQuest':
+        return;
       case 'walkSoberedUp':
         return yield* println(MAIN.glyukiProshliSila2());
       case 'walkRan':

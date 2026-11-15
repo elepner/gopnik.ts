@@ -3,14 +3,16 @@ import { Effect } from 'effect';
 
 import { readLine } from '../crt/crt';
 import { encodeSave } from '../state/legacy';
+import type { Game } from '../state/state';
 import { SaveName } from '../tp/brands';
 import { str } from '../tp/num';
 import { beatFakeRector, beatRector, killedByRector } from './aftermath';
 import { drink } from './beer';
 import { CMD, type Command, promptCommand, readAnswer } from './commands';
 import { encounter, setupRector } from './enemy';
-import { emit } from './events';
+import { emit, reporter } from './events';
 import { fight, RECTOR_FIGHT, smokeJoint } from './fight';
+import type { MainEvent } from './main-view';
 import { club } from './places/club';
 import { dealers } from './places/dealers';
 import { den } from './places/den';
@@ -24,6 +26,8 @@ import { resetPlaces } from './start';
 import { MAIN } from './texts';
 import { walk } from './walk';
 
+const report = reporter(apply);
+
 /** 0000:AB75 — every command is one transaction of the game state */
 export const mainLoop = Effect.gen(function* () {
   for (;;) yield* transaction(turn);
@@ -35,7 +39,7 @@ const turn = Effect.gen(function* () {
   if (st.world.district * 10 <= st.player.progression.level && st.world.district < 5)
     yield* nextDistrict;
   if (st.world.rector) {
-    st.world.places.den = true;
+    yield* report({ type: 'mainRectorAhead' });
     // the rector's fights end in a victory or death
     yield* encounter(
       setupRector(0),
@@ -61,27 +65,19 @@ const turn = Effect.gen(function* () {
 /** 0000:AB92 — the district is done: move on, maybe save */
 const nextDistrict = Effect.gen(function* () {
   const st = yield* started;
-  st.world.district++;
   yield* resetPlaces;
-  st.world.heat.market = 0;
-  st.world.heat.club = 0;
-  yield* emit({ type: 'mainDistrictDone' });
+  yield* report({ type: 'mainDistrictDone' });
   if ((yield* readAnswer) === CMD.answer.yes) {
     yield* (yield* Disk).write(SaveName(`save_r${str(st.world.district)}.sav`), encodeSave(st));
     yield* emit({ type: 'mainSaved' });
   }
-  yield* emit({ type: 'mainDistrictEntered' });
-  if (st.world.district === 5) st.world.rector = true;
+  yield* report({ type: 'mainDistrictEntered' });
 });
 
 /** `name` */
 const rename = Effect.gen(function* () {
-  const st = yield* started;
   yield* emit({ type: 'mainRenaming' });
-  st.player.name = yield* readLine;
-  // the default name and the prefix are data kept in texts.ts (start.ts does the same)
-  if (st.player.name === '') st.player.name = MAIN.razDolBay().format;
-  st.player.name = MAIN.namePrefix().format + st.player.name;
+  yield* report({ type: 'mainRenamed', name: yield* readLine });
 });
 
 /** `exit`/`e`: the results, then quit */
@@ -114,3 +110,25 @@ const MAIN_COMMANDS = {
   [CMD.main.exit]: exit,
   [CMD.main.exitShort]: exit,
 } satisfies Record<Command<'main'>, unknown>;
+
+/** what happens at the main prompt goes into the state */
+function apply(st: Game, event: MainEvent) {
+  const w = st.world;
+  switch (event.type) {
+    case 'mainRectorAhead':
+      w.places.den = true;
+      return;
+    case 'mainDistrictDone':
+      w.district++;
+      w.heat.market = 0;
+      w.heat.club = 0;
+      return;
+    case 'mainDistrictEntered':
+      if (w.district === 5) w.rector = true;
+      return;
+    case 'mainRenamed':
+      // the default name and the prefix are data kept in texts.ts (start.ts does the same)
+      st.player.name = MAIN.namePrefix().format + (event.name || MAIN.razDolBay().format);
+      return;
+  }
+}

@@ -2,43 +2,41 @@
 import { Effect } from 'effect';
 
 import { readLine } from '../crt/crt';
-import { attr } from '../state/attributes';
+import { attr, inc, set } from '../state/attributes';
 import { ENEMIES, enemyAt } from '../state/kinds';
-import { battle } from '../state/state';
-import { i16, u8 } from '../tp/num';
+import { battle, type Game } from '../state/state';
+import { u8 } from '../tp/num';
 import { settle } from './aftermath';
 import { CMD, readAnswer } from './commands';
 import { saveMage, temple } from './encounters';
 import { encounter, spawnEnemy } from './enemy';
-import { emit } from './events';
+import { emit, reporter } from './events';
 import { fight, STREET_FIGHT } from './fight';
 import { luckAtLeast, rnd, started } from './prelude';
+import type { WalkEvent } from './walk-view';
+
+const report = reporter(apply);
 
 /** 0000:AEA1 — `w`/`run`: wander around looking for trouble */
 export function walk(running: boolean) {
   return Effect.gen(function* () {
     const st = yield* started;
-    if (st.player.stoned > 0) {
-      st.player.stoned = u8(st.player.stoned - 1);
-      if (st.player.stoned === 0) {
-        yield* emit({ type: 'walkSoberedUp' });
-      }
-    }
+    // what the step changes is told against the state before it
+    const stoned = st.player.stoned;
+    const dealerCalls = st.world.dealerCalls;
+    const heat = { ...st.world.heat };
+    yield* report({ type: 'walkStepped' });
+    if (stoned === 1) yield* emit({ type: 'walkSoberedUp' });
     if (running) yield* emit({ type: 'walkRan' });
-    if (st.world.den.loans < st.world.district * 10)
-      st.world.den.loans = u8(st.world.den.loans + 1);
-    if (st.world.places.dealers && st.player.body.pockets.pistol && st.world.dealerCalls < 25) {
-      st.world.dealerCalls = u8(st.world.dealerCalls + 1);
-      if (st.world.dealerCalls === 25 && st.player.body.pockets.phone)
-        yield* emit({ type: 'walkDealersCalled' });
-    }
+    if (dealerCalls === 24 && st.world.dealerCalls === 25 && st.player.body.pockets.phone)
+      yield* emit({ type: 'walkDealersCalled' });
     if (!st.world.den.helpQuest && (yield* rnd(20)) === 0) {
-      st.world.den.helpQuest = true;
+      yield* report({ type: 'walkDenQuest', quest: 'help' });
       if (st.world.places.den && st.player.body.pockets.phone)
         yield* emit({ type: 'walkDenCalledForHelp' });
     }
     if (!st.world.den.jobQuest && (yield* rnd(20)) === 0) {
-      st.world.den.jobQuest = true;
+      yield* report({ type: 'walkDenQuest', quest: 'job' });
       if (st.world.places.den && st.player.respect >= 100 && st.player.body.pockets.phone)
         yield* emit({ type: 'walkDenCalledForJob' });
     }
@@ -48,53 +46,22 @@ export function walk(running: boolean) {
       if ((yield* rnd(100)) === 0 && st.world.places.girlfriend) {
         yield* emit({ type: 'walkGirlfriendCalled' });
       }
-      if (st.world.heat.market === 1 && st.world.places.den)
+      if (heat.market === 1 && st.world.places.den)
         yield* emit({ type: 'walkHeatCalled', from: 'market' });
-      if (st.world.heat.club === 1 && st.world.places.den)
+      if (heat.club === 1 && st.world.places.den)
         yield* emit({ type: 'walkHeatCalled', from: 'club' });
     }
-    if (st.world.heat.market > 0) st.world.heat.market = u8(st.world.heat.market - 1);
-    if (st.world.heat.club > 0) st.world.heat.club = u8(st.world.heat.club - 1);
-    if ((yield* rnd(10)) === 0 && !st.world.places.hospital) {
-      st.world.places.hospital = true;
-      yield* emit({ type: 'walkFound', place: 'hospital' });
+    for (const [place, odds] of FINDS)
+      if ((yield* rnd(odds)) === 0 && !st.world.places[place])
+        yield* report({ type: 'walkFound', place });
+    if (st.player.body.hands.rings.pomiluy && (yield* rnd(20)) === 0) {
+      if (!st.player.injuries.jaw && st.player.injuries.leg)
+        yield* report({ type: 'walkHealed', injury: 'leg' });
+      if (st.player.injuries.jaw) yield* report({ type: 'walkHealed', injury: 'jaw' });
     }
-    if ((yield* rnd(10)) === 0 && !st.world.places.market) {
-      st.world.places.market = true;
-      yield* emit({ type: 'walkFound', place: 'market' });
-    }
-    if ((yield* rnd(100)) === 0 && !st.world.places.club) {
-      st.world.places.club = true;
-      yield* emit({ type: 'walkFound', place: 'club' });
-    }
-    if ((yield* rnd(100)) === 0 && !st.world.places.gym) {
-      st.world.places.gym = true;
-      yield* emit({ type: 'walkFound', place: 'gym' });
-    }
-    if (st.player.body.hands.rings.pomiluy) {
-      if (st.player.health.current < attr(st.player, 'healthMax')) {
-        st.player.health.current = i16(st.player.health.current + 3);
-        if (st.player.health.current > attr(st.player, 'healthMax'))
-          st.player.health.current = attr(st.player, 'healthMax');
-      }
-      if ((yield* rnd(20)) === 0) {
-        if (!st.player.injuries.jaw && st.player.injuries.leg) {
-          st.player.injuries.leg = false;
-          yield* emit({ type: 'walkHealed', injury: 'leg' });
-        }
-        if (st.player.injuries.jaw) {
-          st.player.injuries.jaw = false;
-          yield* emit({ type: 'walkHealed', injury: 'jaw' });
-        }
-      }
-    }
-    if (st.player.type === 'otmorozok') {
-      if (st.player.health.current < attr(st.player, 'healthMax'))
-        st.player.health.current = i16(st.player.health.current + 1);
-    } else if (st.player.type === 'vor' && (yield* luckAtLeast(st.world.district * 20))) {
-      const found = i16((yield* rnd(st.world.district * 5)) + 1);
-      st.player.resources.money = i16(st.player.resources.money + found);
-      yield* emit({ type: 'walkMoneyFound', money: found });
+    if (st.player.type === 'vor' && (yield* luckAtLeast(st.world.district * 20))) {
+      const money = (yield* rnd(st.world.district * 5)) + 1;
+      yield* report({ type: 'walkMoneyFound', money });
     }
     // what happens on this walk: 1 path, 2 girl, 3 someone comes along, 4 nothing (by 1/25 odds)
     const roll = (yield* rnd(25)) + 1;
@@ -106,7 +73,7 @@ export function walk(running: boolean) {
     if ((yield* rnd(100)) === 0) yield* saveMage;
     switch (event) {
       case 1:
-        return yield* toggleTrail;
+        return yield* report({ type: 'walkTrailToggled' });
       case 2:
         return yield* prettyGirl;
       case 3:
@@ -119,21 +86,21 @@ export function walk(running: boolean) {
   });
 }
 
-const toggleTrail = Effect.gen(function* () {
-  const st = yield* started;
-  st.world.trail = !st.world.trail;
-  yield* emit({ type: 'walkTrailToggled' });
-});
+/** places found on the way, with the odds (1 in n) of finding each one */
+const FINDS = [
+  ['hospital', 10],
+  ['market', 10],
+  ['club', 100],
+  ['gym', 100],
+] as const;
 
 const prettyGirl = Effect.gen(function* () {
   const st = yield* started;
   if (st.world.places.girlfriend) return yield* emit({ type: 'walkVeryQuiet' });
   yield* emit({ type: 'walkGirlSeen' });
   if ((yield* readAnswer) !== CMD.answer.yes) return;
-  if ((yield* rnd(2)) === 0) {
-    yield* emit({ type: 'walkGirlWon' });
-    st.world.places.girlfriend = true;
-  } else yield* emit({ type: 'walkGirlLost' });
+  if ((yield* rnd(2)) === 0) yield* report({ type: 'walkGirlWon' });
+  else yield* emit({ type: 'walkGirlLost' });
 });
 
 const meetSomeone = encounter(
@@ -182,3 +149,52 @@ const nothingHappens = Effect.gen(function* () {
     yield* emit({ type: 'walkGlitchGone' });
   } else yield* emit({ type: 'walkQuiet' });
 });
+
+/** what happens on the way goes into the state */
+function apply(st: Game, event: WalkEvent) {
+  const p = st.player;
+  const w = st.world;
+  switch (event.type) {
+    case 'walkStepped':
+      return step(st);
+    case 'walkDenQuest':
+      if (event.quest === 'help') w.den.helpQuest = true;
+      else w.den.jobQuest = true;
+      return;
+    case 'walkFound':
+      w.places[event.place] = true;
+      return;
+    case 'walkHealed':
+      p.injuries[event.injury] = false;
+      return;
+    case 'walkMoneyFound':
+      return inc(p, 'money', event.money);
+    case 'walkTrailToggled':
+      w.trail = !w.trail;
+      return;
+    case 'walkGirlWon':
+      w.places.girlfriend = true;
+      return;
+  }
+}
+
+/**
+ * the time a walk takes, before anything happens on it: the joint wears off, the den's loans
+ * refill, the dealers count the pistol's walks, the heat cools down, the hero heals
+ */
+function step(st: Game) {
+  const p = st.player;
+  const w = st.world;
+  if (p.stoned > 0) p.stoned = u8(p.stoned - 1);
+  if (w.den.loans < w.district * 10) w.den.loans = u8(w.den.loans + 1);
+  if (w.places.dealers && p.body.pockets.pistol && w.dealerCalls < 25)
+    w.dealerCalls = u8(w.dealerCalls + 1);
+  if (w.heat.market > 0) w.heat.market = u8(w.heat.market - 1);
+  if (w.heat.club > 0) w.heat.club = u8(w.heat.club - 1);
+  // the ring «Помилуй» heals 3 up to the maximum, an отморозок 1
+  if (p.body.hands.rings.pomiluy && p.health.current < attr(p, 'healthMax')) {
+    inc(p, 'health', 3);
+    if (p.health.current > attr(p, 'healthMax')) set(p, 'health', attr(p, 'healthMax'));
+  }
+  if (p.type === 'otmorozok' && p.health.current < attr(p, 'healthMax')) inc(p, 'health', 1);
+}
