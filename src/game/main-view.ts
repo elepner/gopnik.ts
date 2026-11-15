@@ -10,6 +10,8 @@ import { MAIN } from './texts';
 import type { View } from './view';
 
 export type MainEvent =
+  /** the rector is near: the den is open for the fights with him */
+  | { readonly type: 'mainRectorAhead' }
   /** the district is done (`world.district` is the next one): save? */
   | { readonly type: 'mainDistrictDone' }
   | { readonly type: 'mainSaved' }
@@ -27,6 +29,8 @@ export type MainEvent =
   | { readonly type: 'mainKick' }
   /** `name`: what is the new name? */
   | { readonly type: 'mainRenaming' }
+  /** what was typed for the new name (empty: the default one) */
+  | { readonly type: 'mainRenamed'; readonly name: string }
   | { readonly type: 'mainVersion' }
   /** `exit`: the results before the game ends */
   | { readonly type: 'mainQuit' };
@@ -34,6 +38,8 @@ export type MainEvent =
 /** the main prompt as the player sees it */
 export const mainView: View<MainEvent> = {
   events: {
+    mainRectorAhead: true,
+    mainRenamed: true,
     mainDistrictDone: true,
     mainSaved: true,
     mainDistrictEntered: true,
@@ -53,6 +59,9 @@ function showMain(event: MainEvent) {
   return Effect.gen(function* () {
     const st = yield* started;
     switch (event.type) {
+      case 'mainRectorAhead':
+      case 'mainRenamed':
+        return;
       case 'mainDistrictDone':
         yield* println(MAIN.tyDokazalChtoTy());
         yield* println(MAIN.hocheshSohranitSvoiDostizheniya());

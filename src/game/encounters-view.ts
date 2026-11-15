@@ -26,10 +26,13 @@ export type EncountersEvent =
   | { readonly type: 'mageDeclined' }
   /** not enough money */
   | { readonly type: 'mageUnpaid' }
+  /** paid for the save, before it is written */
+  | { readonly type: 'magePaid' }
   | { readonly type: 'mageSaved' }
   /** the temple, before this visit is counted (`world.templeVisits`) */
   | { readonly type: 'templeEntered' }
-  /** God's blessing, before it is given */
+  /** God's blessing (this visit counted): what it gives at once is given, the level-up and
+   *  strength follow */
   | { readonly type: 'templeBlessed'; readonly blessing: Blessing }
   /** the next ring of the chain, given */
   | { readonly type: 'templeRingGiven'; readonly ring: ChainRing }
@@ -43,6 +46,7 @@ export const encountersView: View<EncountersEvent> = {
     mageMet: true,
     mageDeclined: true,
     mageUnpaid: true,
+    magePaid: true,
     mageSaved: true,
     templeEntered: true,
     templeBlessed: true,
@@ -69,6 +73,8 @@ function showEncounters(event: EncountersEvent) {
         return yield* println(ENCOUNTERS.nehotiteKakHotiteMoe());
       case 'mageUnpaid':
         return yield* println(ENCOUNTERS.parenVseStoitBabok());
+      case 'magePaid':
+        return;
       case 'mageSaved':
         return yield* println(ENCOUNTERS.sohranenoMozheshBespredelnichatDalshe());
       case 'templeEntered':
