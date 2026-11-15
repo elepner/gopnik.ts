@@ -6,6 +6,7 @@ import { battle } from '../../state/state';
 import { println, started } from '../prelude';
 import { PLACES } from '../texts';
 import type { View } from '../view';
+import { CLUB_PRICE } from './club';
 import { affordable } from './shop';
 
 export type ClubEvent =
@@ -63,9 +64,13 @@ function showClub(event: ClubEvent) {
       case 'enteredClub':
         yield* println(PLACES.tyPrishelVKlub());
         yield* println(PLACES.zdesMozhnoSygratV());
-        yield* println(PLACES.n115PotusovatsyaNa(affordable(st.player.resources.money >= 15)));
+        yield* println(
+          PLACES.n115PotusovatsyaNa(affordable(st.player.resources.money >= CLUB_PRICE.disco))
+        );
         if (st.world.district > 1)
-          yield* println(PLACES.n222RazuznatPriemy(affordable(st.player.resources.money >= 22)));
+          yield* println(
+            PLACES.n222RazuznatPriemy(affordable(st.player.resources.money >= CLUB_PRICE.tricks))
+          );
         return;
       case 'clubCantCoverBet':
         return yield* println(PLACES.neHvataetDenegNado(event.bet));

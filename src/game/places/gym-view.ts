@@ -4,7 +4,7 @@ import { Effect } from 'effect';
 import { println, started } from '../prelude';
 import { PLACES } from '../texts';
 import type { View } from '../view';
-import { tooCoolToTrain, trainedArmor } from './gym';
+import { GYM_PRICE, tooCoolToTrain, trainedArmor } from './gym';
 import { affordable } from './shop';
 
 /** what the gym trains (or sells) */
@@ -49,14 +49,14 @@ function showGym(event: GymEvent) {
       case 'enteredGym': {
         const c = (price: number) => affordable(st.player.resources.money >= price);
         yield* println(PLACES.tyPrishelVKachalku());
-        yield* println(PLACES.n120KachatsyaGatelyami(c(20)));
-        yield* println(PLACES.n220KachatsyaNa(c(20)));
+        yield* println(PLACES.n120KachatsyaGatelyami(c(GYM_PRICE.weights)));
+        yield* println(PLACES.n220KachatsyaNa(c(GYM_PRICE.machines)));
         if (st.world.district > 1 && !tooCoolToTrain(st))
-          yield* println(PLACES.n310ProkachatKachkov(c(10), 10));
-        if (st.world.district > 1) yield* println(PLACES.n430KupitZubnuyu(c(30)));
+          yield* println(PLACES.n310ProkachatKachkov(c(GYM_PRICE.exp), 10));
+        if (st.world.district > 1) yield* println(PLACES.n430KupitZubnuyu(c(GYM_PRICE.mouthGuard)));
         // sic: offered below district × 2, trained up to (district − 2) × 10
         if (st.world.district > 2 && trainedArmor(st.player) < st.world.district * 2)
-          yield* println(PLACES.n520ProkachatPress(c(20)));
+          yield* println(PLACES.n520ProkachatPress(c(GYM_PRICE.press)));
         return;
       }
       case 'gymTrained':
